@@ -1,7 +1,7 @@
 app_name = "llantascs_customs"
 app_title = "Llantascs Customs"
 app_publisher = "Consultoria en Negocios y Aplicaciones"
-app_description = "Personalizaciones ERPNEXT llantas CS"
+app_description = "Customizaciones ERPNEXT Llantas CS"
 app_email = "it@buzola.mx"
 app_license = "mit"
 

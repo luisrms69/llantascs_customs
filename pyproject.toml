@@ -3,7 +3,7 @@ name = "llantascs_customs"
 authors = [
     { name = "Consultoria en Negocios y Aplicaciones", email = "it@buzola.mx"}
 ]
-description = "Personalizaciones ERPNEXT llantas CS"
+description = "Customizaciones ERPNEXT Llantas CS"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
