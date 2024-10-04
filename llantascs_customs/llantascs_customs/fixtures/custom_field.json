@@ -1,0 +1,12 @@
+[
+    {
+        "doctype": "Custom Field",
+        "dt": "Item",
+        "fieldname": "cubicaje_llantas",
+        "fieldtype": "Int",
+        "insert_after": "item_group",
+        "label": "Cubicaje",
+        "module": "Llantascs Customs",
+        "name": "cubicaje"
+    }
+]
