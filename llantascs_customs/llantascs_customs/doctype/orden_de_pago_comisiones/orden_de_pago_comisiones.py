@@ -15,7 +15,7 @@ class OrdendePagoComisiones(Document):
 		get_sales_invoices(self.desde, self.hasta_fecha)
 		get_costo_ventas_sales_invoice('ACC-SINV-2024-00096')
 		
-	def on_update(self):
+	def on_submit(self):
 		self.create_orden_pago_comision()
 
 
