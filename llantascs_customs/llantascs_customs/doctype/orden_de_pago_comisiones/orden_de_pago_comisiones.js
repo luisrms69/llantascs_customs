@@ -15,6 +15,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
             frappe.call({
                 method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
                 args: {
+                    'sucursal': frm.doc.sucursal,
                     'fecha_inicial': frm.doc.desde,
                     'fecha_final': frm.doc.hasta_fecha
                 },

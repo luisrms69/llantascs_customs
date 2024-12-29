@@ -12,7 +12,7 @@ from llantascs_customs.llantascs_customs.api import *
 class OrdendePagoComisiones(Document):
 	
 	def create_orden_pago_comision(self):
-		get_sales_invoices(self.desde, self.hasta_fecha)
+		get_sales_invoices(self.sucursal,self.desde, self.hasta_fecha)
 		get_costo_ventas_sales_invoice('ACC-SINV-2024-00096')
 		
 	def on_submit(self):
