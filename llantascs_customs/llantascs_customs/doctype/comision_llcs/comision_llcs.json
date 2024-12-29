@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-27 23:38:12.533524",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "datos_section",
+  "sales_invoice_id",
+  "persona_de_ventas",
+  "ingreso",
+  "costo_de_ventas",
+  "utilidad_transaccion",
+  "total_comision",
+  "porcentaje_comision"
+ ],
+ "fields": [
+  {
+   "fieldname": "datos_section",
+   "fieldtype": "Section Break",
+   "label": "Datos"
+  },
+  {
+   "fieldname": "persona_de_ventas",
+   "fieldtype": "Link",
+   "label": "Persona de Ventas",
+   "options": "Sales Person"
+  },
+  {
+   "fieldname": "ingreso",
+   "fieldtype": "Float",
+   "label": "Ingreso"
+  },
+  {
+   "fieldname": "costo_de_ventas",
+   "fieldtype": "Currency",
+   "label": "Costo de Ventas"
+  },
+  {
+   "fieldname": "utilidad_transaccion",
+   "fieldtype": "Currency",
+   "is_virtual": 1,
+   "label": "Utilidad Transaccion"
+  },
+  {
+   "fieldname": "total_comision",
+   "fieldtype": "Currency",
+   "label": "Total Comision"
+  },
+  {
+   "fieldname": "porcentaje_comision",
+   "fieldtype": "Float",
+   "label": "Porcentaje Comision"
+  },
+  {
+   "fieldname": "sales_invoice_id",
+   "fieldtype": "Link",
+   "label": "Sales Invoice ID",
+   "options": "Sales Invoice"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-28 17:07:01.167499",
+ "modified_by": "Administrator",
+ "module": "Llantascs Customs",
+ "name": "Comision LLCS",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

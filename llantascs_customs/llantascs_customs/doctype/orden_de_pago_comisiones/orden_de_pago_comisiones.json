@@ -1,0 +1,91 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:COMISIONES-{YYYY}-{MM}-{DD}-{#####}",
+ "creation": "2024-12-28 11:36:14.614812",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_6yse",
+  "desde",
+  "amended_from",
+  "column_break_adkr",
+  "hasta_fecha",
+  "relacion_de_notas_de_venta_a_pagar_section",
+  "comisiones_incluidas"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_6yse",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Orden de Pago Comisiones",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "relacion_de_notas_de_venta_a_pagar_section",
+   "fieldtype": "Section Break",
+   "label": "Relacion de Notas de Venta a Pagar"
+  },
+  {
+   "fieldname": "comisiones_incluidas",
+   "fieldtype": "Table",
+   "label": "Comisiones Incluidas",
+   "options": "Comision LLCS",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "hasta_fecha",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Hasta Fecha",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "desde",
+   "fieldtype": "Date",
+   "label": "Desde",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_adkr",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-12-28 18:36:33.967851",
+ "modified_by": "Administrator",
+ "module": "Llantascs Customs",
+ "name": "Orden de Pago Comisiones",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
