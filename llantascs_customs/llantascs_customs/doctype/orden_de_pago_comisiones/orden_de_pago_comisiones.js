@@ -19,7 +19,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
-                    // frm.refresh_field('comisiones_incluidas');
                     console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
                     console.log(r.message);
                     if (r.message) {
@@ -53,9 +52,9 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                             child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision) / 100
                                             frm.refresh_field('comisiones_incluidas');
                                         }
-                                        frm.refresh_field('comisiones_incluidas');
+                                        // frm.refresh_field('comisiones_incluidas');
                                     }
-                                    frm.refresh_field('comisiones_incluidas');
+                                    // frm.refresh_field('comisiones_incluidas');
                                 }
                             })
                         })
