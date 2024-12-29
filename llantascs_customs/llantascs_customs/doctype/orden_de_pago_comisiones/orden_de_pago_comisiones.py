@@ -9,11 +9,24 @@ from frappe.model.document import Document
 # from frappe.utils.password import get_decrypted_password #se importa para poder acceder al password
 from llantascs_customs.llantascs_customs.api import *
 
-class OrdendePagoComisiones(Document):
-	
+class OrdendePagoComisiones(Document):	
 	def create_orden_pago_comision(self):
-		get_sales_invoices(self.sucursal,self.desde, self.hasta_fecha)
-		get_costo_ventas_sales_invoice('ACC-SINV-2024-00096')
+		table = get_sales_invoices(self.sucursal,self.desde, self.hasta_fecha)
+		for invoice in table:
+			actualizar_status_sales_invoice(invoice.name,1)
+			actualizar_orden_pago_sales_invoice(invoice.name, self.name)
+
+        # frappe.db.set_value("Sales Invoice", invoice_id,
+        #                   'custom_orden_de_pago_comision', orden_de_pago)
+
+		# self.fecha_envio = Now
+		# get_costo_ventas_sales_invoice('ACC-SINV-2024-00096')
+
+
+		# Se obtienen los datos de producto, estan en un child table
+	# get_sales_invoices(invoice_data)
+
+		# frappe.msgprint(str(table))
 		
 	def on_submit(self):
 		self.create_orden_pago_comision()
