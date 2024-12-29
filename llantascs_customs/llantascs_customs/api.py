@@ -5,13 +5,14 @@ import json
 estados_comisiones = ['Sin Enviar','Enviado','Pagada']
 cogs_accounts = ['501-000-001 - Costo de Llantas - LLCS']
 
-def get_sales_invoices_id(fecha_inicial, fecha_final):
+def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
     sales_invoice_list = frappe.db.get_list(
         'Sales Invoice', 
         filters = { 
             'status': 'paid', 
             'custom_status_comisiones':estados_comisiones[0], 
-            'posting_date': ['between',[fecha_inicial,fecha_final]]
+            'posting_date': ['between',[fecha_inicial,fecha_final]],
+            'cost_center': sucursal
             },
             pluck = 'name')
     
@@ -66,8 +67,8 @@ def get_delivery_note_for_sales_invoice(sales_invoice_id):
     return variables, cogs
 
 @frappe.whitelist()
-def get_sales_invoices(fecha_inicial,fecha_final):
-    sales_invoice_id_list = get_sales_invoices_id(fecha_inicial, fecha_final)
+def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
+    sales_invoice_id_list = get_sales_invoices_id(sucursal,fecha_inicial, fecha_final)
     sales_invoices = []
     for sales_invoice in sales_invoice_id_list:
         sales_invoices.append(frappe.get_doc('Sales Invoice', sales_invoice))
