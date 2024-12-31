@@ -115,34 +115,3 @@ def get_costo_ventas_sales_invoice(sales_invoice_id):
     cogs += get_costo_ventas_dn(sales_invoice_id)
 
     return cogs
-
-
-# Se obtienen los datos de producto, estan en un child table
-
-
-# def get_items_info(invoice_data):
-#     items_info = []
-#     invoice_tax = get_invoice_tax(invoice_data.taxes)
-#     for producto in invoice_data.items:
-#         detalle_item = {
-#             'quantity': producto.qty,
-#             'discount': producto.discount_amount,
-#             'product': {
-#                 'description': producto.item_name,
-#                 'product_key': get_product_key(producto.item_code),
-#                 'price': producto.net_rate,
-#                 'tax_included': "false",
-#                 # 'taxes' : get_tax_info(producto.item_tax_rate,invoice_tax),
-#                 'taxes': [{
-#                      'rate': 0.16,
-#                      'type': "IVA"  # fix: Hardcoded mejorar
-#                      }],
-#                 'unit_key': producto.uom.partition(" ")[0]
-#             }
-#         }
-#         if not detalle_item['product']['product_key']:
-#             frappe.throw(
-#                 "Todos los productos deben tener un código SAT válido (product_key).  Añadir en los productos seleccionados")
-#         items_info.append(detalle_item)
-
-#     return items_info
