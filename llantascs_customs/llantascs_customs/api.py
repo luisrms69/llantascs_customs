@@ -83,21 +83,21 @@ def get_commission_rate():
 
 
 # clean: no se ocupa, unicamente en pruebas, borrar
-@frappe.whitelist()
-def get_delivery_note_for_sales_invoice(sales_invoice_id):
+# @frappe.whitelist()
+# def get_delivery_note_for_sales_invoice(sales_invoice_id):
 
-    dn_items_list = frappe.db.get_list(
-            "Delivery Note Item",
-            filters={'against_sales_invoice' : sales_invoice_id},
-            pluck = 'name'
-        )
+#     dn_items_list = frappe.db.get_list(
+#             "Delivery Note Item",
+#             filters={'against_sales_invoice' : sales_invoice_id},
+#             pluck = 'name'
+#         )
 
-    for dn_item in dn_items_list:
-        cogs = 0
-        variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
-        cogs += variables[0]*variables[1]*variables[2]
+#     for dn_item in dn_items_list:
+#         cogs = 0
+#         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
+#         cogs += variables[0]*variables[1]*variables[2]
 
-    return variables, cogs
+#     return variables, cogs
 
 @frappe.whitelist()
 def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
