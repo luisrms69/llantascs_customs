@@ -18,8 +18,9 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                 // },
                 callback: function (r) {
                     if (r.message) {
-                        console.log(r.message)
+                        // console.log(r.message)
                         commission_rate = r.message
+                        frm.set_value('comision_sobre_utilidad_', commission_rate)
                     };
                 }
             })
@@ -27,13 +28,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
     }
 }
 )
-
-
-
-
-
-
-
 
 
 // fix:voy a duplicar el codigo, deberia ser solo uno

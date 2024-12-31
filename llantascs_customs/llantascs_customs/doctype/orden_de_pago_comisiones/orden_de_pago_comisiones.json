@@ -15,6 +15,7 @@
   "column_break_adkr",
   "desde",
   "hasta_fecha",
+  "comision_sobre_utilidad_",
   "relacion_de_notas_de_venta_a_pagar_section",
   "comisiones_incluidas"
  ],
@@ -94,12 +95,19 @@
    "fieldtype": "Data",
    "label": "Confirmacion de pago",
    "read_only": 1
+  },
+  {
+   "fieldname": "comision_sobre_utilidad_",
+   "fieldtype": "Float",
+   "label": "Comision sobre utilidad (%)",
+   "precision": "1",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-29 15:58:16.945316",
+ "modified": "2024-12-30 23:47:10.964294",
  "modified_by": "Administrator",
  "module": "Llantascs Customs",
  "name": "Orden de Pago Comisiones",
