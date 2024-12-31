@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-30 22:55:27.266561",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "calculo_de_comisiones_llantas_de_calidad_star_section",
+  "porcentaje_sobre_utilidad"
+ ],
+ "fields": [
+  {
+   "fieldname": "calculo_de_comisiones_llantas_de_calidad_star_section",
+   "fieldtype": "Section Break",
+   "label": "Calculo de comisiones Llantas de Calidad Star"
+  },
+  {
+   "fieldname": "porcentaje_sobre_utilidad",
+   "fieldtype": "Float",
+   "label": "Porcentaje sobre utilidad"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-12-30 22:56:18.798740",
+ "modified_by": "Administrator",
+ "module": "Llantascs Customs",
+ "name": "Comisiones Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
