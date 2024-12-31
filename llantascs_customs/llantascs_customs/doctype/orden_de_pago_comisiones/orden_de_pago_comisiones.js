@@ -7,6 +7,35 @@
 // 	},
 // });
 
+frappe.ui.form.on('Orden de Pago Comisiones', {
+    onload: function (frm) {
+        // frm.refresh_field('comisiones_incluidas');
+        // if (frm.doc.desde) {
+            frappe.call({
+                method: 'llantascs_customs.llantascs_customs.api.get_commission_rate',
+                // args: {
+                //     'sales_invoice_id': 'ACC-SINV-2024-00099'
+                // },
+                callback: function (r) {
+                    if (r.message) {
+                        console.log(r.message)
+                        commission_rate = r.message
+                    };
+                }
+            })
+        // }
+    }
+}
+)
+
+
+
+
+
+
+
+
+
 // fix:voy a duplicar el codigo, deberia ser solo uno
 frappe.ui.form.on('Orden de Pago Comisiones', {
     hasta_fecha: function (frm) {
@@ -50,7 +79,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
                                             child.costo_de_ventas = cogs;
                                             child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision) / 100
+                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
                                             frm.refresh_field('comisiones_incluidas');
                                         }
                                         // frm.refresh_field('comisiones_incluidas');
@@ -109,7 +138,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
                                             child.costo_de_ventas = cogs;
                                             child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision) / 100
+                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
                                             frm.refresh_field('comisiones_incluidas');
                                         }
                                         // frm.refresh_field('comisiones_incluidas');
@@ -168,7 +197,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
                                             child.costo_de_ventas = cogs;
                                             child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision) / 100
+                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
                                             frm.refresh_field('comisiones_incluidas');
                                         }
                                         // frm.refresh_field('comisiones_incluidas');

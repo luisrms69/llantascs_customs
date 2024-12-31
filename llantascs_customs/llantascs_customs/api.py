@@ -75,6 +75,13 @@ def actualizar_sales_invoices_pagada(orden_pago_id):
       return estados_comisiones[2]
 
 
+@frappe.whitelist()
+def get_commission_rate():
+    commission_rate = frappe.db.get_single_value('Comisiones Settings', 'porcentaje_sobre_utilidad')
+
+    return commission_rate
+
+
 # clean: no se ocupa, unicamente en pruebas, borrar
 @frappe.whitelist()
 def get_delivery_note_for_sales_invoice(sales_invoice_id):
