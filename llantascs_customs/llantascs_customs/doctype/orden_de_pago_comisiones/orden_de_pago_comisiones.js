@@ -83,8 +83,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
-                    console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
-                    console.log(r.message);
+                    // console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
+                    // console.log(r.message);
                     if (r.message) {
                         frm.clear_table('comisiones_incluidas')
                         r.message.forEach(function (invoice) {
@@ -131,8 +131,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
-                    console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
-                    console.log(r.message);
+                    // console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
+                    // console.log(r.message);
                     if (r.message) {
                         frm.clear_table('comisiones_incluidas')
                         r.message.forEach(function (invoice) {

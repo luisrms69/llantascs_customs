@@ -73,21 +73,17 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "fecha_confirmacion_pago",
    "fieldtype": "Data",
    "label": "Fecha confirmacion pago",
    "read_only": 1
   },
   {
-   "allow_on_submit": 1,
    "default": "Today",
    "fieldname": "fecha_de_envio",
    "fieldtype": "Date",
    "label": "Fecha de Envio",
-   "read_only": 1,
-   "reqd": 1,
-   "search_index": 1
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -107,7 +103,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-30 23:47:10.964294",
+ "modified": "2024-12-31 09:37:54.309755",
  "modified_by": "Administrator",
  "module": "Llantascs Customs",
  "name": "Orden de Pago Comisiones",
