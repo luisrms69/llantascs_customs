@@ -4,7 +4,8 @@ from frappe.utils import now
 
 # Variables globales llantas Customs
 estados_comisiones = ['Sin Enviar','Enviado','Pagada']
-cogs_accounts = ['501-000-001 - Costo de Llantas - LLCS']
+# fix: esto no puede quedar asi, me esta ocasionando muchos problemas, necesito estandarizar
+cogs_accounts = ['501-005-001 - COSTO DE VENTA LLANTAS - LLCS','501-005-002 - COSTO DE VENTA RINES - LLCS', '501-005-003 - OTROS COSTO DE VENTA - LLCS']
 
 def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
     sales_invoice_list = frappe.db.get_list(
@@ -31,6 +32,9 @@ def get_costo_ventas_si(sales_invoice_id):
         'account': ['in', cogs_accounts]},
         pluck = 'name'
     )
+    frappe.msgprint("glentries invoice")
+    frappe.msgprint(str(gl_entries_invoice))
+
 
     for entry in gl_entries_invoice:
         cogs += frappe.db.get_value('GL Entry', entry, 'debit')
@@ -58,11 +62,18 @@ def get_costo_ventas_dn(sales_invoice_id):
 
     for dn_item in dn_items_list:
         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
+        
+        frappe.msgprint("variables")
+        frappe.msgprint(str(variables[0]))
+        frappe.msgprint(str(variables[1]))
+        frappe.msgprint(str(variables[2]))
+
+        
         cogs += variables[0]*variables[1]*variables[2]
 
-    frappe.msgprint("salida get costo ventas si")
+    frappe.msgprint("salida get costo ventas dn")
     frappe.msgprint(str(cogs))
-    frappe.msgprint("salida get costo ventas si")
+    frappe.msgprint("salida get costo ventas dn")
 
 
     return cogs
@@ -134,7 +145,7 @@ def get_costo_ventas_sales_invoice(sales_invoice_id):
     cogs += get_costo_ventas_dn(sales_invoice_id)
 
     frappe.msgprint("salida get costo sales invocie")
-    frappe.msgprint(cogs)
+    frappe.msgprint(str(cogs))
     frappe.msgprint("salida get costo sales invocie")
 
     return cogs
