@@ -23,7 +23,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-12-30 22:56:18.798740",
+ "modified": "2025-01-03 23:28:29.270345",
  "modified_by": "Administrator",
  "module": "Llantascs Customs",
  "name": "Comisiones Settings",
@@ -36,6 +36,16 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Llantas CS Manager",
    "share": 1,
    "write": 1
   }
