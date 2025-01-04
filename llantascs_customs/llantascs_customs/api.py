@@ -21,6 +21,8 @@ def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
 
 def get_costo_ventas_si(sales_invoice_id):
     cogs = 0
+    frappe.msgprint("entrada get costo ventas si")
+    frappe.msgprint(str(sales_invoice_id))
     # GL entries for Sales Invoice, no delivery note
     gl_entries_invoice = frappe.db.get_list('GL Entry',
     filters = {
@@ -37,6 +39,12 @@ def get_costo_ventas_si(sales_invoice_id):
 
 def get_costo_ventas_dn(sales_invoice_id):
     # GL entries for Delivery Note cases
+
+
+    frappe.msgprint("entrada get costo ventas dn")
+    frappe.msgprint(str(sales_invoice_id))
+
+
     cogs = 0
     dn_items_list = frappe.db.get_list(
             "Delivery Note Item",
@@ -47,6 +55,9 @@ def get_costo_ventas_dn(sales_invoice_id):
     for dn_item in dn_items_list:
         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
         cogs += variables[0]*variables[1]*variables[2]
+
+    frappe.msgprint(cogs)
+
 
     return cogs
 
@@ -110,8 +121,12 @@ def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
 
 @frappe.whitelist()
 def get_costo_ventas_sales_invoice(sales_invoice_id):
+    frappe.msgprint("entrada get costo sales invocie")
+    frappe.msgprint(str(sales_invoice_id))
     cogs = 0
     cogs += get_costo_ventas_si(sales_invoice_id)
     cogs += get_costo_ventas_dn(sales_invoice_id)
+
+    frappe.msgprint(cogs)
 
     return cogs
