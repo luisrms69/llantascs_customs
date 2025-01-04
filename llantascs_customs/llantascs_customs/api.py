@@ -37,6 +37,8 @@ def get_costo_ventas_si(sales_invoice_id):
 
 
     for entry in gl_entries_invoice:
+        frappe.msgprint("debe entrar si hay Si")
+        frappe.msgprint(str(entry))
         cogs += frappe.db.get_value('GL Entry', entry, 'debit')
 
     frappe.msgprint("salida get costo ventas si")
@@ -61,6 +63,8 @@ def get_costo_ventas_dn(sales_invoice_id):
         )
 
     for dn_item in dn_items_list:
+        frappe.msgprint("entra al loop dn item list")
+        frappe.msgprint(dn_item)
         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
         
         frappe.msgprint("variables")
