@@ -49,10 +49,14 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                     'sales_invoice_id': invoice.name
                                 },
                                 callback: function (s) {
+                                    console.log("before if s message")
+                                    console.log(s.message)
                                     if (s.message) {
+                                        console.log("s message")
                                         console.log(s.message)
                                         cogs = s.message * 1;
                                         for (i in invoice.sales_team) {
+                                            console.log(" i ")
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
                                             console.log(" i ")
