@@ -5,7 +5,7 @@ from frappe.utils import now
 # Variables globales llantas Customs
 estados_comisiones = ['Sin Enviar','Enviado','Pagada']
 # fix: esto no puede quedar asi, me esta ocasionando muchos problemas, necesito estandarizar
-cogs_accounts = ['501-005-001 - COSTO DE VENTA LLANTAS - LLCS']
+cogs_accounts = ['501-005-001 - COSTO DE VENTA LLANTAS   - LLCS']
 
 def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
     sales_invoice_list = frappe.db.get_list(
