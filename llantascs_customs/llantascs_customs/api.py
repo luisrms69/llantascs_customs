@@ -35,6 +35,10 @@ def get_costo_ventas_si(sales_invoice_id):
     for entry in gl_entries_invoice:
         cogs += frappe.db.get_value('GL Entry', entry, 'debit')
 
+    frappe.msgprint("salida get costo ventas si")
+    frappe.msgprint(str(cogs))
+    frappe.msgprint("salida get costo ventas si")
+
     return cogs
 
 def get_costo_ventas_dn(sales_invoice_id):
@@ -56,7 +60,9 @@ def get_costo_ventas_dn(sales_invoice_id):
         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
         cogs += variables[0]*variables[1]*variables[2]
 
-    frappe.msgprint(cogs)
+    frappe.msgprint("salida get costo ventas si")
+    frappe.msgprint(str(cogs))
+    frappe.msgprint("salida get costo ventas si")
 
 
     return cogs
@@ -127,6 +133,8 @@ def get_costo_ventas_sales_invoice(sales_invoice_id):
     cogs += get_costo_ventas_si(sales_invoice_id)
     cogs += get_costo_ventas_dn(sales_invoice_id)
 
+    frappe.msgprint("salida get costo sales invocie")
     frappe.msgprint(cogs)
+    frappe.msgprint("salida get costo sales invocie")
 
     return cogs
