@@ -28,6 +28,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 frappe.ui.form.on('Orden de Pago Comisiones', {
     hasta_fecha: function (frm) {
         frm.refresh_field('comisiones_incluidas');
+        console.log("entro hasta")
         if (frm.doc.hasta_fecha) {
             frappe.call({
                 method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
@@ -37,6 +38,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
+                    console.log("respuesta hasta")
+                    console.log(r.message);
                     if (r.message) {
                         frm.clear_table('comisiones_incluidas')
                         r.message.forEach(function (invoice) {
@@ -74,6 +77,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 frappe.ui.form.on('Orden de Pago Comisiones', {
     sucursal: function (frm) {
         frm.refresh_field('comisiones_incluidas');
+        console.log("entro sucursal")
         if (frm.doc.sucursal) {
             frappe.call({
                 method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
@@ -83,8 +87,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
-                    // console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
-                    // console.log(r.message);
+                    console.log("respuesta sucirsa;")
+                    console.log(r.message);
                     if (r.message) {
                         frm.clear_table('comisiones_incluidas')
                         r.message.forEach(function (invoice) {
@@ -122,6 +126,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 frappe.ui.form.on('Orden de Pago Comisiones', {
     desde: function (frm) {
         frm.refresh_field('comisiones_incluidas');
+        console.log("entro desde")
         if (frm.doc.desde) {
             frappe.call({
                 method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
@@ -131,8 +136,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
-                    // console.log("SE RECIBE EL MENSJAE INCIAL, NUMERO DE FACTURAS")
-                    // console.log(r.message);
+                    console.log("respuesta desde")
+                    console.log(r.message);
                     if (r.message) {
                         frm.clear_table('comisiones_incluidas')
                         r.message.forEach(function (invoice) {
