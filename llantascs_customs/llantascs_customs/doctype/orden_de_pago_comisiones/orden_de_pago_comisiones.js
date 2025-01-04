@@ -50,10 +50,13 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 },
                                 callback: function (s) {
                                     if (s.message) {
+                                        console.log(s.message)
                                         cogs = s.message * 1;
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
+                                            console.log(" i ")
+                                            console.log(invoice.name)
                                             child.ingreso = invoice.amount_eligible_for_commission;
                                             child.persona_de_ventas = invoice.sales_team[i].sales_person;
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
