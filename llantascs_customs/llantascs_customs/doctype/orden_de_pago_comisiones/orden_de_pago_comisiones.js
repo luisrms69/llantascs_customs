@@ -59,6 +59,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                             // console.log(" i ")
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
+                                            child.folio_fiscal = invoice.custom_folio_fiscal;
                                             // console.log(" i ")
                                             // console.log(invoice.name)
                                             child.ingreso = invoice.amount_eligible_for_commission;
@@ -110,6 +111,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
+                                            child.folio_fiscal = invoice.custom_folio_fiscal;
                                             child.ingreso = invoice.amount_eligible_for_commission;
                                             child.persona_de_ventas = invoice.sales_team[i].sales_person;
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
@@ -159,6 +161,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
+                                            child.folio_fiscal = invoice.custom_folio_fiscal;
                                             child.ingreso = invoice.amount_eligible_for_commission;
                                             child.persona_de_ventas = invoice.sales_team[i].sales_person;
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;

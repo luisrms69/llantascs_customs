@@ -8,6 +8,7 @@
  "field_order": [
   "datos_section",
   "sales_invoice_id",
+  "folio_fiscal",
   "persona_de_ventas",
   "porcentaje_comision",
   "ingreso",
@@ -58,12 +59,18 @@
    "fieldtype": "Link",
    "label": "Sales Invoice ID",
    "options": "Sales Invoice"
+  },
+  {
+   "fieldname": "folio_fiscal",
+   "fieldtype": "Data",
+   "label": "Folio Fiscal",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-30 23:48:57.695617",
+ "modified": "2025-01-28 07:48:17.465159",
  "modified_by": "Administrator",
  "module": "Llantascs Customs",
  "name": "Comision LLCS",
