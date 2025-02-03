@@ -197,7 +197,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                             method: 'llantascs_customs.llantascs_customs.api.actualizar_status_orden_pago',
                             args: {
                                 orden_pago_id: frm.doc.name,
-                                status: 2
+                                status: valueOf(2)
                             },
                             callback: function (r) {
                                 if (r.message) {

@@ -12,5 +12,7 @@ class OrdendePagoComisiones(Document):
 			actualizar_status_sales_invoice(invoice.name,1)
 			actualizar_orden_pago_sales_invoice(invoice.name, self.name)
 		
+		actualizar_status_orden_pago(self.name, 1)
+		
 	def on_submit(self):
 		self.create_orden_pago_comision()
