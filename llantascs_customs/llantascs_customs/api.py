@@ -93,8 +93,8 @@ def actualizar_orden_pago_sales_invoice(invoice_id, orden_de_pago):
 
 @frappe.whitelist()
 def actualizar_status_orden_pago(orden_pago_id, status):
-    #   frappe.msgprint("entering actualizar prinicipio")
-    #   frappe.msgprint(str(orden_pago_id))
+      frappe.msgprint("entering actualizar prinicipio")
+      frappe.msgprint(str(status))
       orden_pago = frappe.get_doc('Orden de Pago Comisiones', orden_pago_id)
       orden_pago.db_set({
             'confirmacion_de_pago': estados_comisiones[status],
