@@ -95,13 +95,14 @@ def actualizar_orden_pago_sales_invoice(invoice_id, orden_de_pago):
 def actualizar_status_orden_pago(orden_pago_id, status):
       frappe.msgprint("entering actualizar prinicipio")
       frappe.msgprint(str(status))
+      status_number = int(status)
       orden_pago = frappe.get_doc('Orden de Pago Comisiones', orden_pago_id)
       orden_pago.db_set({
-            'confirmacion_de_pago': estados_comisiones[status],
+            'confirmacion_de_pago': estados_comisiones[status_number],
             'fecha_confirmacion_pago': str(now())
       })
       for invoice in orden_pago.comisiones_incluidas:
-          actualizar_status_sales_invoice(invoice.sales_invoice_id, status)
+          actualizar_status_sales_invoice(invoice.sales_invoice_id, status_number)
           actualizar_orden_pago_sales_invoice(invoice.sales_invoice_id, orden_pago_id)
           
       return estados_comisiones[2]
