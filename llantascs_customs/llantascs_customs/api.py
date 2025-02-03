@@ -92,16 +92,16 @@ def actualizar_orden_pago_sales_invoice(invoice_id, orden_de_pago):
 
 
 @frappe.whitelist()
-def actualizar_sales_invoices_pagada(orden_pago_id):
+def actualizar_status_orden_pago(orden_pago_id, status):
     #   frappe.msgprint("entering actualizar prinicipio")
     #   frappe.msgprint(str(orden_pago_id))
       orden_pago = frappe.get_doc('Orden de Pago Comisiones', orden_pago_id)
       orden_pago.db_set({
-            'confirmacion_de_pago': estados_comisiones[2],
+            'confirmacion_de_pago': estados_comisiones[status],
             'fecha_confirmacion_pago': str(now())
       })
       for invoice in orden_pago.comisiones_incluidas:
-          actualizar_status_sales_invoice(invoice.sales_invoice_id, 2)
+          actualizar_status_sales_invoice(invoice.sales_invoice_id, status)
           actualizar_orden_pago_sales_invoice(invoice.sales_invoice_id, orden_pago_id)
           
       return estados_comisiones[2]
@@ -113,23 +113,6 @@ def get_commission_rate():
 
     return commission_rate
 
-
-# clean: no se ocupa, unicamente en pruebas, borrar
-# @frappe.whitelist()
-# def get_delivery_note_for_sales_invoice(sales_invoice_id):
-
-#     dn_items_list = frappe.db.get_list(
-#             "Delivery Note Item",
-#             filters={'against_sales_invoice' : sales_invoice_id},
-#             pluck = 'name'
-#         )
-
-#     for dn_item in dn_items_list:
-#         cogs = 0
-#         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
-#         cogs += variables[0]*variables[1]*variables[2]
-
-#     return variables, cogs
 
 @frappe.whitelist()
 def get_sales_invoices(sucursal,fecha_inicial,fecha_final):

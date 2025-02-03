@@ -194,7 +194,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     primary_action: function () {
                         var data = d.get_values();
                         frappe.call({
-                            method: 'llantascs_customs.llantascs_customs.api.actualizar_sales_invoices_pagada',
+                            method: 'llantascs_customs.llantascs_customs.api.actualizar_status_orden_pago',
                             args: {
                                 orden_pago_id: frm.doc.name,
                                 status: 2
@@ -203,6 +203,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 if (r.message) {
                                     console.log("#######server script message#########");
                                     console.log(r.message);
+                                    frm.refresh()
                                 }
                                 d.hide();
                             }
