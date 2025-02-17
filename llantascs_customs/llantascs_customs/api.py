@@ -59,13 +59,14 @@ def get_costo_ventas_dn(sales_invoice_id):
     dn_items_list = frappe.db.get_list(
             "Delivery Note Item",
             filters={'against_sales_invoice' : sales_invoice_id},
-            pluck = 'name'
+            pluck = 'name',
+            ignore_permissions= True
         )
 
     for dn_item in dn_items_list:
         # frappe.msgprint("entra al loop dn item list")
         # frappe.msgprint(dn_item)
-        variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
+        variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'], ignore_permissions=True)
         
         # frappe.msgprint("variables")
         # frappe.msgprint(str(variables[0]))
