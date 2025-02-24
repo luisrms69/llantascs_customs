@@ -201,8 +201,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                             },
                             callback: function (r) {
                                 if (r.message) {
-                                    console.log("#######server script message#########");
-                                    console.log(r.message);
+                                    // console.log("#######server script message#########");
+                                    // console.log(r.message);
                                     frm.refresh()
                                 }
                                 d.hide();

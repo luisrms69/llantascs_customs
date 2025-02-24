@@ -22,7 +22,7 @@ def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
 
 def get_costo_ventas_si(sales_invoice_id):
     cogs = 0
-    frappe.msgprint("entrada get costo ventas si")
+    # frappe.msgprint("entrada get costo ventas si")
     # frappe.msgprint(str(sales_invoice_id))
     # GL entries for Sales Invoice, no delivery note
     gl_entries_invoice = frappe.db.get_list('GL Entry',
@@ -32,8 +32,8 @@ def get_costo_ventas_si(sales_invoice_id):
         'account': ['in', cogs_accounts]},
         pluck = 'name'
     )
-    frappe.msgprint("glentries invoice")
-    frappe.msgprint(str(gl_entries_invoice))
+    # frappe.msgprint("glentries invoice")
+    # frappe.msgprint(str(gl_entries_invoice))
 
 
     for entry in gl_entries_invoice:
@@ -42,9 +42,9 @@ def get_costo_ventas_si(sales_invoice_id):
         cogs += frappe.db.get_value('GL Entry', entry, 'debit')
         cogs -= frappe.db.get_value('GL Entry', entry, 'credit')
 
-    frappe.msgprint("salida get costo ventas si")
-    frappe.msgprint(str(cogs))
-    frappe.msgprint("salida get costo ventas si")
+    # frappe.msgprint("salida get costo ventas si")
+    # frappe.msgprint(str(cogs))
+    # frappe.msgprint("salida get costo ventas si")
 
     return cogs
 
@@ -52,8 +52,8 @@ def get_costo_ventas_dn(sales_invoice_id):
     # GL entries for Delivery Note cases
 
 
-    frappe.msgprint("entrada get costo ventas dn")
-    frappe.msgprint(str(sales_invoice_id))
+    # frappe.msgprint("entrada get costo ventas dn")
+    # frappe.msgprint(str(sales_invoice_id))
 
 
     cogs = 0
@@ -69,17 +69,17 @@ def get_costo_ventas_dn(sales_invoice_id):
         # frappe.msgprint(dn_item)
         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
         
-        frappe.msgprint("variables")
-        frappe.msgprint(str(variables[0]))
-        frappe.msgprint(str(variables[1]))
-        frappe.msgprint(str(variables[2]))
+        # frappe.msgprint("variables")
+        # frappe.msgprint(str(variables[0]))
+        # frappe.msgprint(str(variables[1]))
+        # frappe.msgprint(str(variables[2]))
 
         
         cogs += variables[0]*variables[1]*variables[2]
 
-    frappe.msgprint("salida get costo ventas dn")
-    frappe.msgprint(str(cogs))
-    frappe.msgprint("salida get costo ventas dn")
+    # frappe.msgprint("salida get costo ventas dn")
+    # frappe.msgprint(str(cogs))
+    # frappe.msgprint("salida get costo ventas dn")
 
 
     return cogs
