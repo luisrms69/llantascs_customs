@@ -40,6 +40,7 @@ def get_costo_ventas_si(sales_invoice_id):
         # frappe.msgprint("debe entrar si hay Si")
         # frappe.msgprint(str(entry))
         cogs += frappe.db.get_value('GL Entry', entry, 'debit')
+        cogs -= frappe.db.get_vale('GL Entry', entry, 'credit')
 
     frappe.msgprint("salida get costo ventas si")
     frappe.msgprint(str(cogs))
