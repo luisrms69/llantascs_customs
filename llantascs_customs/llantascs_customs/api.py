@@ -5,9 +5,29 @@ from frappe.utils import now
 # Variables globales llantas Customs
 estados_comisiones = ['Sin Enviar','Enviado','Pagada']
 # fix: esto no puede quedar asi, me esta ocasionando muchos problemas, necesito estandarizar
-cogs_accounts = ['501-005-001 - COSTO DE VENTA LLANTAS   - LLCS', '501-005-002 - COSTO DE VENTA RINES  - LLCS', '501-005-003 - OTROS COSTO DE VENTA  - LLCS']
+# fix: corregido el 2 de marzo 2025, se puede elimianr
+# cogs_accounts = ['501-005-001 - COSTO DE VENTA LLANTAS   - LLCS', '501-005-002 - COSTO DE VENTA RINES  - LLCS', '501-005-003 - OTROS COSTO DE VENTA  - LLCS']
+
+def get_cogs_account():
+    cogs_accounts = frappe.db.get_list(
+        'Account', 
+        filters = { 
+            'account_type': "Cost of Goods Sold"
+            },
+            pluck = 'name')
+
+    return cogs_accounts
+
+
+
 
 def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
+
+    # frappe.msgprint(str(sucursal))
+    # frappe.msgprint(str(fecha_inicial))
+    # frappe.msgprint(str(fecha_final))
+
+
     sales_invoice_list = frappe.db.get_list(
         'Sales Invoice', 
         filters = { 
@@ -17,11 +37,12 @@ def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
             'cost_center': sucursal
             },
             pluck = 'name')
-    
+
     return sales_invoice_list
 
 def get_costo_ventas_si(sales_invoice_id):
     cogs = 0
+    cogs_accounts = get_cogs_account()
     # frappe.msgprint("entrada get costo ventas si")
     # frappe.msgprint(str(sales_invoice_id))
     # GL entries for Sales Invoice, no delivery note
@@ -32,8 +53,6 @@ def get_costo_ventas_si(sales_invoice_id):
         'account': ['in', cogs_accounts]},
         pluck = 'name'
     )
-    # frappe.msgprint("glentries invoice")
-    # frappe.msgprint(str(gl_entries_invoice))
 
 
     for entry in gl_entries_invoice:
@@ -121,9 +140,10 @@ def get_commission_rate():
 def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
     sales_invoice_id_list = get_sales_invoices_id(sucursal,fecha_inicial, fecha_final)
     sales_invoices = []
+    
     for sales_invoice in sales_invoice_id_list:
         sales_invoices.append(frappe.get_doc('Sales Invoice', sales_invoice))
-    
+
     return sales_invoices
 
 @frappe.whitelist()

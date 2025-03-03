@@ -28,7 +28,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 frappe.ui.form.on('Orden de Pago Comisiones', {
     hasta_fecha: function (frm) {
         frm.refresh_field('comisiones_incluidas');
-        console.log("entro hasta")
         if (frm.doc.hasta_fecha) {
             frappe.call({
                 method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
@@ -49,19 +48,12 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                     'sales_invoice_id': invoice.name
                                 },
                                 callback: function (s) {
-                                    // console.log("before if s message")
-                                    // console.log(s.message)
                                     if (s.message) {
-                                        // console.log("s message")
-                                        // console.log(s.message)
                                         cogs = s.message * 1;
                                         for (i in invoice.sales_team) {
-                                            // console.log(" i ")
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
                                             child.folio_fiscal = invoice.custom_folio_fiscal;
-                                            // console.log(" i ")
-                                            // console.log(invoice.name)
                                             child.ingreso = invoice.amount_eligible_for_commission;
                                             child.persona_de_ventas = invoice.sales_team[i].sales_person;
                                             child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
@@ -107,7 +99,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 },
                                 callback: function (s) {
                                     if (s.message) {
-                                        cogs = s.message * 1;
+                                        cogs = s.message;
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
                                             child.sales_invoice_id = invoice.name;
@@ -145,8 +137,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     'fecha_final': frm.doc.hasta_fecha
                 },
                 callback: function (r) {
-                    // console.log("respuesta desde")
-                    // console.log(r.message);
                     if (r.message) {
                         frm.clear_table('comisiones_incluidas')
                         r.message.forEach(function (invoice) {
@@ -201,8 +191,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                             },
                             callback: function (r) {
                                 if (r.message) {
-                                    // console.log("#######server script message#########");
-                                    // console.log(r.message);
                                     frm.refresh()
                                 }
                                 d.hide();
