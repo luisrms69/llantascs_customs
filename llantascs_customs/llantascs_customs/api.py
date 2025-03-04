@@ -19,15 +19,7 @@ def get_cogs_account():
     return cogs_accounts
 
 
-
-
 def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
-
-    # frappe.msgprint(str(sucursal))
-    # frappe.msgprint(str(fecha_inicial))
-    # frappe.msgprint(str(fecha_final))
-
-
     sales_invoice_list = frappe.db.get_list(
         'Sales Invoice', 
         filters = { 
@@ -43,8 +35,7 @@ def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
 def get_costo_ventas_si(sales_invoice_id):
     cogs = 0
     cogs_accounts = get_cogs_account()
-    # frappe.msgprint("entrada get costo ventas si")
-    # frappe.msgprint(str(sales_invoice_id))
+
     # GL entries for Sales Invoice, no delivery note
     gl_entries_invoice = frappe.db.get_list('GL Entry',
     filters = {
@@ -56,24 +47,13 @@ def get_costo_ventas_si(sales_invoice_id):
 
 
     for entry in gl_entries_invoice:
-        # frappe.msgprint("debe entrar si hay Si")
-        # frappe.msgprint(str(entry))
         cogs += frappe.db.get_value('GL Entry', entry, 'debit')
         cogs -= frappe.db.get_value('GL Entry', entry, 'credit')
-
-    # frappe.msgprint("salida get costo ventas si")
-    # frappe.msgprint(str(cogs))
-    # frappe.msgprint("salida get costo ventas si")
 
     return cogs
 
 def get_costo_ventas_dn(sales_invoice_id):
     # GL entries for Delivery Note cases
-
-
-    # frappe.msgprint("entrada get costo ventas dn")
-    # frappe.msgprint(str(sales_invoice_id))
-
 
     cogs = 0
     dn_items_list = frappe.db.get_list(
@@ -84,22 +64,9 @@ def get_costo_ventas_dn(sales_invoice_id):
         )
 
     for dn_item in dn_items_list:
-        # frappe.msgprint("entra al loop dn item list")
-        # frappe.msgprint(dn_item)
         variables = frappe.db.get_value('Delivery Note Item', dn_item,['qty','grant_commission','incoming_rate'])
-        
-        # frappe.msgprint("variables")
-        # frappe.msgprint(str(variables[0]))
-        # frappe.msgprint(str(variables[1]))
-        # frappe.msgprint(str(variables[2]))
 
-        
         cogs += variables[0]*variables[1]*variables[2]
-
-    # frappe.msgprint("salida get costo ventas dn")
-    # frappe.msgprint(str(cogs))
-    # frappe.msgprint("salida get costo ventas dn")
-
 
     return cogs
 
@@ -114,8 +81,6 @@ def actualizar_orden_pago_sales_invoice(invoice_id, orden_de_pago):
 
 @frappe.whitelist()
 def actualizar_status_orden_pago(orden_pago_id, status):
-    #   frappe.msgprint("entering actualizar prinicipio")
-    #   frappe.msgprint(str(status))
       status_number = int(status)
       orden_pago = frappe.get_doc('Orden de Pago Comisiones', orden_pago_id)
       orden_pago.db_set({
@@ -148,14 +113,9 @@ def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
 
 @frappe.whitelist()
 def get_costo_ventas_sales_invoice(sales_invoice_id):
-    # frappe.msgprint("entrada get costo sales invocie")
-    # frappe.msgprint(str(sales_invoice_id))
+
     cogs = 0
     cogs += get_costo_ventas_si(sales_invoice_id)
     cogs += get_costo_ventas_dn(sales_invoice_id)
-
-    # frappe.msgprint("salida get costo sales invocie")
-    # frappe.msgprint(str(cogs))
-    # frappe.msgprint("salida get costo sales invocie")
 
     return cogs
