@@ -48,7 +48,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                     'sales_invoice_id': invoice.name
                                 },
                                 callback: function (s) {
-                                    if (s.message) {
+                                    if (Object.keys(s).length > 0) {
                                         cogs = s.message * 1;
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
@@ -98,7 +98,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                     'sales_invoice_id': invoice.name
                                 },
                                 callback: function (s) {
-                                    if (s.message) {
+                                    if (Object.keys(s).length > 0) {
                                         cogs = s.message;
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
@@ -146,7 +146,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                     'sales_invoice_id': invoice.name
                                 },
                                 callback: function (s) {
-                                    if (s.message) {
+                                    if (Object.keys(s).length > 0) {
                                         cogs = s.message * 1;
                                         for (i in invoice.sales_team) {
                                             var child = frm.add_child('comisiones_incluidas');
