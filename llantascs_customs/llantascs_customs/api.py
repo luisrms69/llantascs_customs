@@ -107,7 +107,9 @@ def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
     sales_invoices = []
     
     for sales_invoice in sales_invoice_id_list:
-        sales_invoices.append(frappe.get_doc('Sales Invoice', sales_invoice))
+        sinv = frappe.get_doc('Sales Invoice', sales_invoice)
+        if sinv.sales_team:
+             sales_invoices.append(sinv)
 
     return sales_invoices
 
