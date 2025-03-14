@@ -244,5 +244,6 @@ override_whitelisted_methods = {
 
 # fixtures = ["Role"]
 
-fixtures = ["Custom Field"]
+fixtures = [{"dt":"Custom Field",
+             "filters":{"module":"Llantascs Customs"}}]
 
