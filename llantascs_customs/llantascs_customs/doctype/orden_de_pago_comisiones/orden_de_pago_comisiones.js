@@ -55,7 +55,7 @@ function create_order(frm, message) {
 }
 
 
-function generate_order(frm){
+function generate_order(frm) {
     frappe.call({
         method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
         args: {
@@ -65,7 +65,7 @@ function generate_order(frm){
         },
         callback: function (r) {
             if (r.message) {
-                create_order(frm,r.message)
+                create_order(frm, r.message)
             };
         }
     })
@@ -131,7 +131,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                         });
                     }
                 });
-
                 d.show();
             })
         }
