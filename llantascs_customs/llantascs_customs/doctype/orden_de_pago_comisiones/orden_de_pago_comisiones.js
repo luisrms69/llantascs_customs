@@ -44,19 +44,8 @@ function create_order(frm, message) {
             callback: function (s) {
                 if (Object.keys(s).length > 0) {
                     cogs = s.message;
-                    // console.log("entro sucursal")
                     for (i in invoice.sales_team) {
                         populate_child_sales(frm, invoice, cogs)
-                        // var child = frm.add_child('comisiones_incluidas');
-                        // child.sales_invoice_id = invoice.name;
-                        // child.folio_fiscal = invoice.custom_folio_fiscal;
-                        // child.ingreso = invoice.amount_eligible_for_commission;
-                        // child.persona_de_ventas = invoice.sales_team[i].sales_person;
-                        // child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
-                        // child.costo_de_ventas = cogs;
-                        // child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                        // child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
-                        // frm.refresh_field('comisiones_incluidas');
                     }
                 }
             }
@@ -89,19 +78,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
         monto_total = 0
         if (frm.doc.hasta_fecha) {
             generate_order(frm)
-            // frappe.call({
-            //     method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
-            //     args: {
-            //         'sucursal': frm.doc.sucursal,
-            //         'fecha_inicial': frm.doc.desde,
-            //         'fecha_final': frm.doc.hasta_fecha
-            //     },
-            //     callback: function (r) {
-            //         if (r.message) {
-            //             create_order(frm,r.message)
-            //         };
-            //     }
-            // })
         }
     }
 }
@@ -113,19 +89,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
         monto_total = 0
         if (frm.doc.sucursal) {
             generate_order(frm)
-            // frappe.call({
-            //     method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
-            //     args: {
-            //         'sucursal': frm.doc.sucursal,
-            //         'fecha_inicial': frm.doc.desde,
-            //         'fecha_final': frm.doc.hasta_fecha
-            //     },
-            //     callback: function (r) {
-            //         if (r.message) {
-            //             create_order(frm, r.message)
-            //         };
-            //     }
-            // })
         }
     }
 }
@@ -137,19 +100,6 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
         monto_total = 0
         if (frm.doc.desde) {
             generate_order(frm)
-            // frappe.call({
-            //     method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
-            //     args: {
-            //         'sucursal': frm.doc.sucursal,
-            //         'fecha_inicial': frm.doc.desde,
-            //         'fecha_final': frm.doc.hasta_fecha
-            //     },
-            //     callback: function (r) {
-            //         if (r.message) {
-            //             create_order(frm, r.message)
-            //         };
-            //     }
-            // })
         }
     }
 }
