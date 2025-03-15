@@ -9,22 +9,22 @@
 // Al cargar la pagina, capturar el valor asignado a las comsiones
 frappe.ui.form.on('Orden de Pago Comisiones', {
     onload: function (frm) {
-            frappe.call({
-                method: 'llantascs_customs.llantascs_customs.api.get_commission_rate',
-                callback: function (r) {
-                    if (r.message) {
-                        commission_rate = r.message
-                        frm.set_value('comision_sobre_utilidad_', commission_rate)
-                    };
-                }
-            })
+        frappe.call({
+            method: 'llantascs_customs.llantascs_customs.api.get_commission_rate',
+            callback: function (r) {
+                if (r.message) {
+                    commission_rate = r.message
+                    frm.set_value('comision_sobre_utilidad_', commission_rate)
+                };
+            }
+        })
         // }
     }
 }
 )
 
 
-function populate_child_sales(frm, invoice, cogs){
+function populate_child_sales(frm, invoice, cogs) {
     var child = frm.add_child('comisiones_incluidas');
     child.sales_invoice_id = invoice.name;
     child.folio_fiscal = invoice.custom_folio_fiscal;
@@ -35,14 +35,56 @@ function populate_child_sales(frm, invoice, cogs){
     child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
     child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
     frm.refresh_field('comisiones_incluidas');
+    frm.doc.monto_total += child.total_comision
     // console.log("able")
 }
+
+function create_order(frm, invoice, cogs) {
+    frm.clear_table('comisiones_incluidas')
+    r.message.forEach(function (invoice) {
+        frappe.call({
+            method: 'llantascs_customs.llantascs_customs.api.get_costo_ventas_sales_invoice',
+            args: {
+                'sales_invoice_id': invoice.name
+            },
+            callback: function (s) {
+                if (Object.keys(s).length > 0) {
+                    cogs = s.message;
+                    // console.log("entro sucursal")
+                    for (i in invoice.sales_team) {
+                        populate_child_sales(frm, invoice, cogs)
+                        // var child = frm.add_child('comisiones_incluidas');
+                        // child.sales_invoice_id = invoice.name;
+                        // child.folio_fiscal = invoice.custom_folio_fiscal;
+                        // child.ingreso = invoice.amount_eligible_for_commission;
+                        // child.persona_de_ventas = invoice.sales_team[i].sales_person;
+                        // child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
+                        // child.costo_de_ventas = cogs;
+                        // child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
+                        // child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
+                        // frm.refresh_field('comisiones_incluidas');
+                    }
+                }
+            }
+        })
+    })
+    frm.doc.monto_total = monto_total
+}
+
+
+
+
+
+
+
+
 
 
 // fix:voy a duplicar el codigo, deberia ser solo uno
 frappe.ui.form.on('Orden de Pago Comisiones', {
     hasta_fecha: function (frm) {
         frm.refresh_field('comisiones_incluidas');
+        monto_total = 0
         if (frm.doc.hasta_fecha) {
             frappe.call({
                 method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
@@ -83,6 +125,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 }
                             })
                         })
+                        frm.doc.monto_total = monto_total
                     };
                 }
             })
@@ -94,6 +137,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 frappe.ui.form.on('Orden de Pago Comisiones', {
     sucursal: function (frm) {
         frm.refresh_field('comisiones_incluidas');
+        monto_total = 0
         // console.log("entro sucursal")
         if (frm.doc.sucursal) {
             frappe.call({
@@ -135,6 +179,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 }
                             })
                         })
+                        frm.doc.monto_total = monto_total
                     };
                 }
             })
@@ -146,6 +191,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 frappe.ui.form.on('Orden de Pago Comisiones', {
     desde: function (frm) {
         frm.refresh_field('comisiones_incluidas');
+        monto_total = 0
         // console.log("entro desde")
         if (frm.doc.desde) {
             frappe.call({
@@ -185,6 +231,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 }
                             })
                         })
+                        frm.doc.monto_total = monto_total
                     };
                 }
             })

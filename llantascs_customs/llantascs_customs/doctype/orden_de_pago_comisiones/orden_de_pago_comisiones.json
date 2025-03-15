@@ -12,6 +12,7 @@
   "fecha_de_envio",
   "fecha_confirmacion_pago",
   "confirmacion_de_pago",
+  "monto_total",
   "column_break_adkr",
   "desde",
   "hasta_fecha",
@@ -98,12 +99,20 @@
    "label": "Comision sobre utilidad (%)",
    "precision": "1",
    "read_only": 1
+  },
+  {
+   "fieldname": "monto_total",
+   "fieldtype": "Currency",
+   "label": "Monto Total de esta Orden",
+   "non_negative": 1,
+   "read_only": 1
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-03 18:54:57.947859",
+ "modified": "2025-03-14 12:31:01.223375",
  "modified_by": "Administrator",
  "module": "Llantascs Customs",
  "name": "Orden de Pago Comisiones",
