@@ -33,13 +33,14 @@ def get_sales_invoices_id(sucursal, fecha_inicial, fecha_final):
     return sales_invoice_list
 
 def is_delivered(sales_invoice):
-     frappe.msgprint("entra a is delivered")
-     frappe.msgprint(str(sales_invoice))
-     for partida in sales_invoice.items:
-          if (partida.delivered_qty + partida.delivered_by_supplier) < partida.qty:
-               return 0
+    #  frappe.msgprint("entra a is delivered")
+    #  frappe.msgprint(str(sales_invoice))
+    if sales_invoice.update_stock == 0:
+         for partida in sales_invoice.items:
+              if (partida.delivered_qty + partida.delivered_by_supplier) < partida.qty:
+                   return 0
     
-     return 1
+    return 1
 
 def get_costo_ventas_si(sales_invoice_id):
     cogs = 0
@@ -115,18 +116,18 @@ def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
     sales_invoice_id_list = get_sales_invoices_id(sucursal,fecha_inicial, fecha_final)
     sales_invoices = []
 
-    frappe.msgprint("entro a get sales invoices")
+    # frappe.msgprint("entro a get sales invoices")
     
     for sales_invoice in sales_invoice_id_list:
         sinv = frappe.get_doc('Sales Invoice', sales_invoice)
-        frappe.msgprint(str(sales_invoice))
-        frappe.msgprint(str(is_delivered(sinv)))
+        # frappe.msgprint(str(sales_invoice))
+        # frappe.msgprint(str(is_delivered(sinv)))
         if sinv.sales_team and is_delivered(sinv):
              sales_invoices.append(sinv)
 
 
-    frappe.msgprint("estas son las invoices")
-    frappe.msgprint(str(sales_invoices))
+    # frappe.msgprint("estas son las invoices")
+    # frappe.msgprint(str(sales_invoices))
 
     return sales_invoices
 
