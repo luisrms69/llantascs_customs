@@ -66,24 +66,42 @@ function create_order(frm, message) {
 }
 
 
+function generate_order(frm){
+    frappe.call({
+        method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
+        args: {
+            'sucursal': frm.doc.sucursal,
+            'fecha_inicial': frm.doc.desde,
+            'fecha_final': frm.doc.hasta_fecha
+        },
+        callback: function (r) {
+            if (r.message) {
+                create_order(frm,r.message)
+            };
+        }
+    })
+}
+
+
 frappe.ui.form.on('Orden de Pago Comisiones', {
     hasta_fecha: function (frm) {
         frm.refresh_field('comisiones_incluidas');
         monto_total = 0
         if (frm.doc.hasta_fecha) {
-            frappe.call({
-                method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
-                args: {
-                    'sucursal': frm.doc.sucursal,
-                    'fecha_inicial': frm.doc.desde,
-                    'fecha_final': frm.doc.hasta_fecha
-                },
-                callback: function (r) {
-                    if (r.message) {
-                        create_order(frm,r.message)
-                    };
-                }
-            })
+            generate_order(frm)
+            // frappe.call({
+            //     method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
+            //     args: {
+            //         'sucursal': frm.doc.sucursal,
+            //         'fecha_inicial': frm.doc.desde,
+            //         'fecha_final': frm.doc.hasta_fecha
+            //     },
+            //     callback: function (r) {
+            //         if (r.message) {
+            //             create_order(frm,r.message)
+            //         };
+            //     }
+            // })
         }
     }
 }
@@ -94,19 +112,20 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
         frm.refresh_field('comisiones_incluidas');
         monto_total = 0
         if (frm.doc.sucursal) {
-            frappe.call({
-                method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
-                args: {
-                    'sucursal': frm.doc.sucursal,
-                    'fecha_inicial': frm.doc.desde,
-                    'fecha_final': frm.doc.hasta_fecha
-                },
-                callback: function (r) {
-                    if (r.message) {
-                        create_order(frm, r.message)
-                    };
-                }
-            })
+            generate_order(frm)
+            // frappe.call({
+            //     method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
+            //     args: {
+            //         'sucursal': frm.doc.sucursal,
+            //         'fecha_inicial': frm.doc.desde,
+            //         'fecha_final': frm.doc.hasta_fecha
+            //     },
+            //     callback: function (r) {
+            //         if (r.message) {
+            //             create_order(frm, r.message)
+            //         };
+            //     }
+            // })
         }
     }
 }
@@ -117,19 +136,20 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
         frm.refresh_field('comisiones_incluidas');
         monto_total = 0
         if (frm.doc.desde) {
-            frappe.call({
-                method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
-                args: {
-                    'sucursal': frm.doc.sucursal,
-                    'fecha_inicial': frm.doc.desde,
-                    'fecha_final': frm.doc.hasta_fecha
-                },
-                callback: function (r) {
-                    if (r.message) {
-                        create_order(frm, r.message)
-                    };
-                }
-            })
+            generate_order(frm)
+            // frappe.call({
+            //     method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
+            //     args: {
+            //         'sucursal': frm.doc.sucursal,
+            //         'fecha_inicial': frm.doc.desde,
+            //         'fecha_final': frm.doc.hasta_fecha
+            //     },
+            //     callback: function (r) {
+            //         if (r.message) {
+            //             create_order(frm, r.message)
+            //         };
+            //     }
+            // })
         }
     }
 }
