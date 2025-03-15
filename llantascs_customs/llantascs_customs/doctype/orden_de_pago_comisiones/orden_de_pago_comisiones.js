@@ -30,12 +30,13 @@ function populate_child_sales(frm, invoice, cogs) {
     child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
     frm.refresh_field('comisiones_incluidas');
     frm.doc.monto_total += child.total_comision
-    // console.log("able")
+    console.log("able")
 }
 
 function create_order(frm, message) {
     frm.clear_table('comisiones_incluidas')
     message.forEach(function (invoice) {
+        console.log("foreach invoice")
         frappe.call({
             method: 'llantascs_customs.llantascs_customs.api.get_costo_ventas_sales_invoice',
             args: {
@@ -45,6 +46,7 @@ function create_order(frm, message) {
                 if (Object.keys(s).length > 0) {
                     cogs = s.message;
                     for (i in invoice.sales_team) {
+                        console.log("foreach sales person")
                         populate_child_sales(frm, invoice, cogs)
                     }
                 }

@@ -112,11 +112,18 @@ def get_commission_rate():
 def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
     sales_invoice_id_list = get_sales_invoices_id(sucursal,fecha_inicial, fecha_final)
     sales_invoices = []
+
+    frappe.msgprint("entro a get sales invoices")
     
     for sales_invoice in sales_invoice_id_list:
         sinv = frappe.get_doc('Sales Invoice', sales_invoice)
+        frappe.msgprint(str(is_delivered(sinv)))
         if sinv.sales_team and is_delivered(sinv):
              sales_invoices.append(sinv)
+
+
+    frappe.msgprint("estas son las invoices")
+    frappe.msgprint(str(sales_invoices))
 
     return sales_invoices
 
