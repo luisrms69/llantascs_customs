@@ -24,6 +24,21 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 )
 
 
+function populate_child_sales(frm, invoice, cogs){
+    var child = frm.add_child('comisiones_incluidas');
+    child.sales_invoice_id = invoice.name;
+    child.folio_fiscal = invoice.custom_folio_fiscal;
+    child.ingreso = invoice.amount_eligible_for_commission;
+    child.persona_de_ventas = invoice.sales_team[i].sales_person;
+    child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
+    child.costo_de_ventas = cogs;
+    child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
+    child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
+    frm.refresh_field('comisiones_incluidas');
+    // console.log("able")
+}
+
+
 // fix:voy a duplicar el codigo, deberia ser solo uno
 frappe.ui.form.on('Orden de Pago Comisiones', {
     hasta_fecha: function (frm) {
@@ -50,17 +65,19 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 callback: function (s) {
                                     if (Object.keys(s).length > 0) {
                                         cogs = s.message * 1;
+                                        // console.log("entro hasta")
                                         for (i in invoice.sales_team) {
-                                            var child = frm.add_child('comisiones_incluidas');
-                                            child.sales_invoice_id = invoice.name;
-                                            child.folio_fiscal = invoice.custom_folio_fiscal;
-                                            child.ingreso = invoice.amount_eligible_for_commission;
-                                            child.persona_de_ventas = invoice.sales_team[i].sales_person;
-                                            child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
-                                            child.costo_de_ventas = cogs;
-                                            child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
-                                            frm.refresh_field('comisiones_incluidas');
+                                            populate_child_sales(frm, invoice, cogs)
+                                            // var child = frm.add_child('comisiones_incluidas');
+                                            // child.sales_invoice_id = invoice.name;
+                                            // child.folio_fiscal = invoice.custom_folio_fiscal;
+                                            // child.ingreso = invoice.amount_eligible_for_commission;
+                                            // child.persona_de_ventas = invoice.sales_team[i].sales_person;
+                                            // child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
+                                            // child.costo_de_ventas = cogs;
+                                            // child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
+                                            // child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
+                                            // frm.refresh_field('comisiones_incluidas');
                                         }
                                     }
                                 }
@@ -100,17 +117,19 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 callback: function (s) {
                                     if (Object.keys(s).length > 0) {
                                         cogs = s.message;
+                                        // console.log("entro sucursal")
                                         for (i in invoice.sales_team) {
-                                            var child = frm.add_child('comisiones_incluidas');
-                                            child.sales_invoice_id = invoice.name;
-                                            child.folio_fiscal = invoice.custom_folio_fiscal;
-                                            child.ingreso = invoice.amount_eligible_for_commission;
-                                            child.persona_de_ventas = invoice.sales_team[i].sales_person;
-                                            child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
-                                            child.costo_de_ventas = cogs;
-                                            child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
-                                            frm.refresh_field('comisiones_incluidas');
+                                            populate_child_sales(frm, invoice, cogs)
+                                            // var child = frm.add_child('comisiones_incluidas');
+                                            // child.sales_invoice_id = invoice.name;
+                                            // child.folio_fiscal = invoice.custom_folio_fiscal;
+                                            // child.ingreso = invoice.amount_eligible_for_commission;
+                                            // child.persona_de_ventas = invoice.sales_team[i].sales_person;
+                                            // child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
+                                            // child.costo_de_ventas = cogs;
+                                            // child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
+                                            // child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
+                                            // frm.refresh_field('comisiones_incluidas');
                                         }
                                     }
                                 }
@@ -148,17 +167,19 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 callback: function (s) {
                                     if (Object.keys(s).length > 0) {
                                         cogs = s.message * 1;
+                                        // console.log("entro desde")
                                         for (i in invoice.sales_team) {
-                                            var child = frm.add_child('comisiones_incluidas');
-                                            child.sales_invoice_id = invoice.name;
-                                            child.folio_fiscal = invoice.custom_folio_fiscal;
-                                            child.ingreso = invoice.amount_eligible_for_commission;
-                                            child.persona_de_ventas = invoice.sales_team[i].sales_person;
-                                            child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
-                                            child.costo_de_ventas = cogs;
-                                            child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
-                                            child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
-                                            frm.refresh_field('comisiones_incluidas');
+                                            populate_child_sales(frm, invoice, cogs)
+                                            // var child = frm.add_child('comisiones_incluidas');
+                                            // child.sales_invoice_id = invoice.name;
+                                            // child.folio_fiscal = invoice.custom_folio_fiscal;
+                                            // child.ingreso = invoice.amount_eligible_for_commission;
+                                            // child.persona_de_ventas = invoice.sales_team[i].sales_person;
+                                            // child.porcentaje_comision = invoice.sales_team[i].allocated_percentage;
+                                            // child.costo_de_ventas = cogs;
+                                            // child.utilidad_transaccion = invoice.amount_eligible_for_commission - cogs
+                                            // child.total_comision = (child.utilidad_transaccion * child.porcentaje_comision * commission_rate) / 10000
+                                            // frm.refresh_field('comisiones_incluidas');
                                         }
                                     }
                                 }
