@@ -37,6 +37,8 @@ def is_delivered(sales_invoice):
     #  frappe.msgprint(str(sales_invoice))
     if sales_invoice.update_stock == 0:
          for partida in sales_invoice.items:
+              if partida.item_group == "Servicios":
+                   return 1
               if (partida.delivered_qty + partida.delivered_by_supplier) < partida.qty:
                    return 0
     
@@ -124,7 +126,6 @@ def get_sales_invoices(sucursal,fecha_inicial,fecha_final):
         # frappe.msgprint(str(is_delivered(sinv)))
         if sinv.sales_team and is_delivered(sinv):
              sales_invoices.append(sinv)
-
 
     # frappe.msgprint("estas son las invoices")
     # frappe.msgprint(str(sales_invoices))
