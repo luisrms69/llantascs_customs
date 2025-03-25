@@ -1,5 +1,6 @@
 {
  "add_total_row": 1,
+ "add_translate_data": 0,
  "columns": [
   {
    "fieldname": "posting_date",
@@ -27,25 +28,40 @@
  "filters": [
   {
    "default": "Today",
-   "fieldname": "fecha",
+   "fieldname": "fecha_inicio",
    "fieldtype": "Date",
-   "label": "Fecha",
+   "label": "Fecha Inicial",
    "mandatory": 1,
    "options": "",
    "wildcard_filter": 0
+  },
+  {
+   "fieldname": "fecha_final",
+   "fieldtype": "Date",
+   "label": "Fecha Final",
+   "mandatory": 1,
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "sucursal",
+   "fieldtype": "Link",
+   "label": "Sucursal",
+   "mandatory": 1,
+   "options": "Cost Center",
+   "wildcard_filter": 0
   }
  ],
- "idx": 0,
+ "idx": 3,
  "is_standard": "Yes",
  "letter_head": "Letter head Llantascs",
  "letterhead": null,
- "modified": "2025-03-05 00:15:31.903882",
+ "modified": "2025-03-25 13:19:46.365103",
  "modified_by": "Administrator",
  "module": "Llantascs Customs",
  "name": "Reporte Cobranza por Sucural",
  "owner": "Administrator",
  "prepared_report": 0,
- "query": "SELECT\nposting_date AS \"Fecha de Pago\", sum(paid_amount) AS \"Total Pagado\" , cost_center AS \"Sucursal\"\nFROM \n`tabPayment Entry`\nWHERE\ndocstatus=1\nAND\nposting_date=%(fecha)s\nAND\npayment_type='Receive'\nGROUP BY cost_center;",
+ "query": "SELECT\nposting_date AS \"Fecha de Pago\", sum(paid_amount) AS \"Total Pagado\" , cost_center AS \"Sucursal\"\nFROM \n`tabPayment Entry`\nWHERE\ndocstatus=1\nAND\nposting_date between %(fecha_inicio)s and %(fecha_final)s\nAND\npayment_type='Receive'\nAND\ncost_center=%(sucursal)s\nGROUP BY posting_date;",
  "ref_doctype": "Payment Entry",
  "reference_report": "",
  "report_name": "Reporte Cobranza por Sucural",
