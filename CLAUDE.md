@@ -100,6 +100,41 @@ Test files are located alongside their respective doctype files:
   ```
 - Execute with: `bench --site llantascs.dev execute llantascs_customs.one_offs.script_name.function`
 
+## Cuándo debes actualizar `docs/`
+Actualiza la documentación en **cualquier PR** que haga alguno de estos cambios:
+- Campos nuevos o eliminados en DocTypes (JSON).
+- Cambios en lógica de negocio: `apply_reduction`, `evaluate_eligibility`, resolvers, hooks.
+- Nuevos toggles o defaults en **Comisiones Settings**.
+- Cambios en reportes (campos, SQL, columnas, KPIs).
+- Migraciones/patches que afecten datos de producción o interpretación de reportes.
+- Cambios en totales de Orden o políticas (márgenes negativos, elegibilidad).
+
+## Qué debes actualizar
+- `docs/settings.md`: nuevos campos, defaults y efectos.
+- `docs/commission-policy.md`: si cambia la política o su efecto en totales.
+- `docs/cogs-resolution.md`: si cambia el orden o metadatos del resolver.
+- `docs/eligibility.md`: si cambia alguna regla de gate (entrega/pago/persona/tolerancia).
+- `docs/reports.md`: si cambia qué se suma o cómo se presentan totales/KPIs.
+- `docs/operations.md`: si cambia el runbook (deploy/rollback).
+- `docs/migrations.md` y `docs/playbooks/*`: si se agregan pasos de backfill.
+- `docs/ADRs/*`: agrega una ADR por cada decisión de arquitectura relevante.
+
+## Estándar mínimo por PR
+- Incluir actualización de **al menos un archivo** en `docs/`.
+- Si el cambio es sustantivo, incluir **nueva ADR** en `docs/ADRs/`.
+- Actualizar `docs/CHANGELOG.md` con un bullet conciso.
+
+## Cómo validar
+- Revisa ortografía rápida.
+- Verifica rutas/archivos citados existen.
+- Si el cambio afecta tests, agrega/actualiza sección en `docs/testing.md`.
+
+## Anti-reglas
+- No merges a main sin tocar docs si cambiaste lógica o schema.
+- No dejes referencias a campos antiguos sin nota de transición.
+- No introduzcas siglas nuevas sin definir en `docs/glossary.md`.
+
+
 ## Important Notes
 
 - Commission calculations depend on delivery status verification
