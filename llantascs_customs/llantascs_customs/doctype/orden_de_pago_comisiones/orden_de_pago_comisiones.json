@@ -17,6 +17,7 @@
   "desde",
   "hasta_fecha",
   "comision_sobre_utilidad_",
+  "sin_ajuste_en_esta_orden",
   "relacion_de_notas_de_venta_a_pagar_section",
   "comisiones_incluidas"
  ],
@@ -99,6 +100,12 @@
    "label": "Comision sobre utilidad (%)",
    "precision": "1",
    "read_only": 1
+  },
+  {
+   "fieldname": "sin_ajuste_en_esta_orden",
+   "fieldtype": "Check",
+   "label": "Sin ajuste en esta orden",
+   "default": "0"
   },
   {
    "fieldname": "monto_total",

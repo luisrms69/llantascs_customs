@@ -163,5 +163,41 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                 d.show();
             })
         }
+
+        // Botón Aplicar Reducción A.2
+        if (frm.doc.name) {
+            frm.add_custom_button(__('Aplicar Reducción'), async () => {
+                frm.freeze(__('Aplicando...'));
+                try {
+                    const r = await frappe.call({
+                        method: 'llantascs_customs.llantascs_customs.api.apply_reduction',
+                        args: { opc_name: frm.doc.name }
+                    });
+                    await frm.reload_doc();
+                    const m = r.message || {};
+                    if (m.adjustments_applied === false) {
+                        const why = m.reason === 'disabled_global'
+                            ? __('Deshabilitada en Settings')
+                            : (m.reason === 'disabled_order' ? __('Ignorada por esta orden') : __('Deshabilitada'));
+                        frappe.msgprint({
+                            title: __('Sin ajuste'),
+                            message: __('Reducción no aplicada ({0}). Valores normalizados.', [why]),
+                            indicator: 'blue'
+                        });
+                    } else {
+                        frappe.msgprint({
+                            title: __('Reducción aplicada'),
+                            message: __('Fuente: {0} | % mensual: {1} | Días de gracia: {2}', [
+                                m.source, m.monthly_rate, m.grace_days
+                            ])
+                        });
+                    }
+                } catch (e) {
+                    frappe.msgprint({ title: __('Error'), message: e.message || e, indicator: 'red' });
+                } finally {
+                    frm.unfreeze();
+                }
+            });
+        }
     }
 });

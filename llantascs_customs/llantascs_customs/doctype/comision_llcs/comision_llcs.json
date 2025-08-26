@@ -14,7 +14,18 @@
   "ingreso",
   "costo_de_ventas",
   "utilidad_transaccion",
-  "total_comision"
+  "total_comision",
+  "fecha_programada_de_pago",
+  "dias_transcurridos",
+  "reduccion_ingreso_pct",
+  "monto_reduccion_ingreso",
+  "ingreso_original",
+  "ingreso_ajustado",
+  "reduccion_margen_pct",
+  "monto_reduccion_margen",
+  "margen_original",
+  "margen_ajustado",
+  "comision_post_reduccion"
  ],
  "fields": [
   {
@@ -65,6 +76,64 @@
    "fieldtype": "Data",
    "label": "Folio Fiscal",
    "read_only": 1
+  },
+  {
+   "fieldname": "fecha_programada_de_pago",
+   "fieldtype": "Date",
+   "label": "Fecha Programada de Pago",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "dias_transcurridos",
+   "fieldtype": "Int",
+   "label": "D\u00edas Transcurridos"
+  },
+  {
+   "fieldname": "reduccion_ingreso_pct",
+   "fieldtype": "Float",
+   "label": "% reducci\u00f3n sobre ingreso",
+   "precision": "2"
+  },
+  {
+   "fieldname": "monto_reduccion_ingreso",
+   "fieldtype": "Currency",
+   "label": "Monto reducci\u00f3n ingreso"
+  },
+  {
+   "fieldname": "ingreso_original",
+   "fieldtype": "Currency",
+   "label": "Ingreso original"
+  },
+  {
+   "fieldname": "ingreso_ajustado",
+   "fieldtype": "Currency",
+   "label": "Ingreso ajustado"
+  },
+  {
+   "fieldname": "reduccion_margen_pct",
+   "fieldtype": "Float",
+   "label": "Reducci\u00f3n Margen (%)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "monto_reduccion_margen",
+   "fieldtype": "Currency",
+   "label": "Monto Reducci\u00f3n Margen"
+  },
+  {
+   "fieldname": "margen_original",
+   "fieldtype": "Currency",
+   "label": "Margen Original"
+  },
+  {
+   "fieldname": "margen_ajustado",
+   "fieldtype": "Currency",
+   "label": "Margen Ajustado"
+  },
+  {
+   "fieldname": "comision_post_reduccion",
+   "fieldtype": "Currency",
+   "label": "Comisi\u00f3n Post Reducci\u00f3n"
   }
  ],
  "index_web_pages_for_search": 1,

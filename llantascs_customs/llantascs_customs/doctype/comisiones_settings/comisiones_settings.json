@@ -9,7 +9,12 @@
   "porcentaje_sobre_utilidad",
   "default_start_date",
   "default_end_date",
-  "rates_por_sucursal"
+  "rates_por_sucursal",
+  "reduccion_mensual_section",
+  "aplicar_reduccion_por_diferimiento",
+  "porcentaje_reduccion_mensual",
+  "dias_gracia_reduccion",
+  "fecha_base_reduccion"
  ],
  "fields": [
   {
@@ -37,6 +42,35 @@
    "label": "Rates por Sucursal",
    "fieldtype": "Table",
    "options": "Comisiones Rate Sucursal"
+  },
+  {
+   "fieldname": "reduccion_mensual_section",
+   "fieldtype": "Section Break",
+   "label": "Reducci\u00f3n Mensual"
+  },
+  {
+   "fieldname": "aplicar_reduccion_por_diferimiento",
+   "fieldtype": "Check",
+   "label": "Aplicar reducci\u00f3n por diferimiento",
+   "default": "1"
+  },
+  {
+   "fieldname": "porcentaje_reduccion_mensual",
+   "fieldtype": "Float",
+   "label": "% reducci\u00f3n mensual",
+   "precision": "2"
+  },
+  {
+   "fieldname": "dias_gracia_reduccion",
+   "fieldtype": "Int",
+   "label": "D\u00edas de gracia"
+  },
+  {
+   "fieldname": "fecha_base_reduccion",
+   "fieldtype": "Select",
+   "label": "Fecha base para reducci\u00f3n",
+   "options": "Due Date\nPosting Date",
+   "default": "Due Date"
   }
  ],
  "index_web_pages_for_search": 1,

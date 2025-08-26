@@ -203,3 +203,147 @@ def get_costo_ventas_sales_invoice(sales_invoice_id):
     cogs += get_costo_ventas_dn(sales_invoice_id)
 
     return cogs
+
+
+@frappe.whitelist()
+def apply_reduction(opc_name: str):
+    """Aplica reducción por diferimiento:
+       - Si está DESACTIVADA (Settings o override por Orden), normaliza a valores sin ajuste.
+       - Si está ACTIVADA, aplica reducción SOBRE INGRESO, recalcula margen y comisión (% comisión constante).
+       Idempotente: parte de ingreso_original/margen_original si existen; si no, los fija la 1ª vez.
+    """
+    from frappe.utils import getdate, nowdate, flt
+    from llantascs_customs.llantascs_customs.commissions_service import (
+        compute_reduction_percent,
+        resolve_revenue_original,
+        resolve_cost_original,
+        resolve_commission_rate_percent,
+    )
+
+    ss = frappe.get_single("Comisiones Settings")
+    monthly = flt(ss.porcentaje_reduccion_mensual or 0)
+    grace   = int(ss.dias_gracia_reduccion or 0)
+    src     = ss.fecha_base_reduccion or "Due Date"  # "Due Date" | "Posting Date"
+    global_on = bool(int(ss.aplicar_reduccion_por_diferimiento or 0))
+
+    opc = frappe.get_doc("Orden de Pago Comisiones", opc_name)
+    order_override_off = bool(int(getattr(opc, "sin_ajuste_en_esta_orden", 0) or 0))
+    today = getdate(nowdate())
+
+    changed = False
+    applied = False
+    reason = None
+
+    def normalize_row_no_adjust(row):
+        """Deja el renglón sin ajuste, recalculando comisión con el % actual y bases originales."""
+        R_base = resolve_revenue_original(row)
+        if not flt(getattr(row, "ingreso_original", 0)):
+            row.ingreso_original = R_base
+
+        C_base = resolve_cost_original(row, R_base)
+        if not flt(getattr(row, "margen_original", 0)):
+            row.margen_original = max(0.0, R_base - C_base)
+
+        # Valores sin reducción
+        row.reduccion_ingreso_pct = 0.0
+        row.monto_reduccion_ingreso = 0.0
+        row.ingreso_ajustado = R_base
+        row.margen_ajustado = max(0.0, R_base - C_base)
+        row.monto_reduccion_margen = 0.0
+        row.reduccion_margen_pct = 0.0
+        # días transcurridos se conservan si ya estaban; si no, calcularlos no es necesario
+
+        rc = resolve_commission_rate_percent(opc, row)
+        row.comision_post_reduccion = row.margen_ajustado * (rc / 100.0)
+
+    # Si el ajuste está globalmente OFF o override en la orden -> normaliza y retorna
+    if (not global_on) or order_override_off:
+        for row in opc.get("comisiones_incluidas", []):
+            normalize_row_no_adjust(row)
+            changed = True
+        if changed:
+            opc.flags.ignore_validate_update_after_submit = True
+            opc.save()
+        return {
+            "status": "OK",
+            "adjustments_applied": False,
+            "reason": "disabled_global" if not global_on else "disabled_order",
+            "monthly_rate": monthly,
+            "grace_days": grace,
+            "source": src,
+        }
+
+    # Ajuste ACTIVADO: aplicar reducción sobre INGRESO
+    for row in opc.get("comisiones_incluidas", []):
+        # 1) Fecha base (solo informativo + cálculo de días)
+        base_date = row.get("fecha_programada_de_pago")
+        if not base_date:
+            si_vals = None
+            if row.get("sales_invoice_id"):
+                try:
+                    si_vals = frappe.get_cached_value(
+                        "Sales Invoice",
+                        row.get("sales_invoice_id"),
+                        ["due_date", "posting_date"],
+                        as_dict=True,
+                    )
+                except Exception:
+                    si_vals = None
+            if src == "Due Date" and si_vals and si_vals.get("due_date"):
+                base_date = si_vals["due_date"]
+            elif si_vals and si_vals.get("posting_date"):
+                base_date = si_vals["posting_date"]
+            else:
+                base_date = today
+            row.fecha_programada_de_pago = base_date
+
+        dias = (today - getdate(base_date)).days if getdate(base_date) <= today else 0
+        row.dias_transcurridos = dias
+        effective_days = max(0, dias - grace)
+
+        # 2) % reducción sobre INGRESO
+        rho_pct = compute_reduction_percent(monthly, effective_days)  # 0..100
+        delta = rho_pct / 100.0
+        row.reduccion_ingreso_pct = rho_pct
+
+        # 3) Bases idempotentes
+        R_base = resolve_revenue_original(row)
+        if not flt(getattr(row, "ingreso_original", 0)):
+            row.ingreso_original = R_base
+
+        C_base = resolve_cost_original(row, R_base)
+        if not flt(getattr(row, "margen_original", 0)):
+            row.margen_original = max(0.0, R_base - C_base)
+
+        # 4) Ajustes
+        R_aj = max(0.0, R_base * (1.0 - delta))
+        M_aj = max(0.0, R_aj - C_base)
+
+        row.ingreso_ajustado = R_aj
+        row.margen_ajustado = M_aj
+        row.monto_reduccion_ingreso = max(0.0, R_base - R_aj)
+        row.monto_reduccion_margen = row.monto_reduccion_ingreso
+
+        if flt(row.margen_original):
+            row.reduccion_margen_pct = round((row.monto_reduccion_margen / row.margen_original) * 100.0, 6)
+        else:
+            row.reduccion_margen_pct = 0.0
+
+        rc = resolve_commission_rate_percent(opc, row)
+        row.comision_post_reduccion = M_aj * (rc / 100.0)
+
+        changed = True
+        applied = True
+
+    if changed:
+        opc.flags.ignore_validate_update_after_submit = True
+        opc.save()
+
+    return {
+        "status": "OK",
+        "adjustments_applied": applied,
+        "reason": None,
+        "monthly_rate": monthly,
+        "grace_days": grace,
+        "source": src,
+    }
