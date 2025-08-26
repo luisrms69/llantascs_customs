@@ -2,20 +2,50 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Orden de Pago Comisiones', {
-    onload: function (frm) {
-        frappe.call({
-            method: 'llantascs_customs.llantascs_customs.api.get_commission_rate',
-            callback: function (r) {
-                if (r.message) {
-                    commission_rate = r.message
-                    frm.set_value('comision_sobre_utilidad_', commission_rate)
-                };
-            }
-        })
-        // }
+  onload: async function(frm) {
+    // 1) Default de fechas desde Settings, solo si están vacías
+    try {
+      if (!frm.doc.desde) {
+        const defStart = await frappe.db.get_single_value('Comisiones Settings', 'default_start_date');
+        if (defStart) frm.set_value('desde', defStart);
+      }
+      if (!frm.doc.hasta_fecha) {
+        const defEnd = await frappe.db.get_single_value('Comisiones Settings', 'default_end_date');
+        if (defEnd) frm.set_value('hasta_fecha', defEnd);
+      }
+    } catch (e) {
+      console.log('No se pudieron leer defaults de fechas', e);
     }
+
+    // 2) Commission rate default según sucursal:
+    //    Solo poner si es un doc nuevo o si el campo está vacío (no sobreescribir órdenes existentes)
+    if (!frm.doc.comision_sobre_utilidad_ || frm.is_new()) {
+      await set_commission_rate_from_branch(frm);
+    }
+
+    // 3) Reaccionar a cambios de sucursal: si el rate está vacío, sugerirlo
+    frm.fields_dict.sucursal.df.onchange = async function() {
+      if (!frm.doc.comision_sobre_utilidad_) {
+        await set_commission_rate_from_branch(frm);
+      }
+    };
+  }
+});
+
+async function set_commission_rate_from_branch(frm) {
+  try {
+    const sucursal = frm.doc.sucursal || null;
+    const r = await frappe.call({
+      method: 'llantascs_customs.llantascs_customs.api.get_commission_rate',
+      args: { sucursal: sucursal }
+    });
+    if (r && r.message != null && (frm.is_new() || !frm.doc.comision_sobre_utilidad_)) {
+      frm.set_value('comision_sobre_utilidad_', r.message);
+    }
+  } catch (e) {
+    console.log('No se pudo obtener commission rate', e);
+  }
 }
-)
 
 
 function populate_child_sales(frm, invoice, cogs) {

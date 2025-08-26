@@ -6,7 +6,10 @@
  "engine": "InnoDB",
  "field_order": [
   "calculo_de_comisiones_llantas_de_calidad_star_section",
-  "porcentaje_sobre_utilidad"
+  "porcentaje_sobre_utilidad",
+  "default_start_date",
+  "default_end_date",
+  "rates_por_sucursal"
  ],
  "fields": [
   {
@@ -18,6 +21,22 @@
    "fieldname": "porcentaje_sobre_utilidad",
    "fieldtype": "Float",
    "label": "Porcentaje sobre utilidad"
+  },
+  {
+   "fieldname": "default_start_date",
+   "label": "Fecha inicio (default)",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "default_end_date",
+   "label": "Fecha fin (default)",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "rates_por_sucursal",
+   "label": "Rates por Sucursal",
+   "fieldtype": "Table",
+   "options": "Comisiones Rate Sucursal"
   }
  ],
  "index_web_pages_for_search": 1,

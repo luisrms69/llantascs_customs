@@ -155,12 +155,24 @@ def actualizar_status_orden_pago(orden_pago_id, status):
 
 
 @frappe.whitelist()
-def get_commission_rate():
-    commission_rate = frappe.db.get_single_value(
-        "Comisiones Settings", "porcentaje_sobre_utilidad"
-    )
+def get_commission_rate(sucursal: str | None = None):
+    """Devuelve el rate de comisión por sucursal si existe; si no, el global."""
+    global_rate = frappe.db.get_single_value("Comisiones Settings", "porcentaje_sobre_utilidad") or 0
 
-    return commission_rate
+    if sucursal:
+        rows = frappe.get_all(
+            "Comisiones Rate Sucursal",
+            fields=["cost_center", "rate_percent"],
+            filters={
+                "parenttype": "Comisiones Settings",
+                "parent": "Comisiones Settings"
+            }
+        )
+        by_cc = {r["cost_center"]: flt(r["rate_percent"]) for r in rows}
+        if sucursal in by_cc and by_cc[sucursal] is not None:
+            return by_cc[sucursal]
+
+    return global_rate
 
 
 @frappe.whitelist()

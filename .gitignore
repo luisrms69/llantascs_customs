@@ -5,3 +5,7 @@
 tags
 node_modules
 __pycache__
+
+# One-offs y scripts locales
+llantascs_customs/one_offs/
+llantascs_customs/scripts/
