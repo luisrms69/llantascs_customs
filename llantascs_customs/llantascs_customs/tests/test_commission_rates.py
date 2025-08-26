@@ -1,33 +1,58 @@
+import uuid
 import frappe
-from frappe.utils import nowdate, add_days
 from frappe.utils import flt
+from frappe.tests.utils import FrappeTestCase
 
-def test_commission_rate_by_branch_and_global():
-    # Arrange: prepara Settings
-    ss = frappe.get_single("Comisiones Settings")
-    ss.porcentaje_sobre_utilidad = 2.5
-    # limpia tabla
-    ss.set("rates_por_sucursal", [])
-    ss.append("rates_por_sucursal", {"cost_center": "CC Norte", "rate_percent": 4.0})
-    ss.append("rates_por_sucursal", {"cost_center": "CC Sur", "rate_percent": 3.5})
-    ss.save()
+from llantascs_customs.llantascs_customs.tests._utils import (
+    set_lang_es_temporarily,
+    require_any_company,
+    get_or_create_cost_center,
+    safe_delete,
+)
 
-    from llantascs_customs.llantascs_customs import api
+class TestCommissionRates(FrappeTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        set_lang_es_temporarily()  # sólo contexto de test
 
-    # 1) Rate por sucursal
-    assert flt(api.get_commission_rate("CC Norte")) == 4.0
-    assert flt(api.get_commission_rate("CC Sur")) == 3.5
+        # Requiere que exista al menos un Company en el sitio
+        cls.company = require_any_company()
 
-    # 2) Fallback global si sucursal no está en tabla
-    assert flt(api.get_commission_rate("CC Centro")) == 2.5
+        # Creamos 2 CC de prueba (si existen, los reutilizamos)
+        suffix = uuid.uuid4().hex[:6].upper()
+        cls.cc_a_name = f"__TEST__CC_NORTE_{suffix}"
+        cls.cc_b_name = f"__TEST__CC_SUR_{suffix}"
 
-    # 3) Sin sucursal => global
-    assert flt(api.get_commission_rate()) == 2.5
+        cls.cc_a = get_or_create_cost_center(cls.cc_a_name, cls.company)
+        cls.cc_b = get_or_create_cost_center(cls.cc_b_name, cls.company)
 
-def test_default_dates_on_settings():
-    ss = frappe.get_single("Comisiones Settings")
-    ss.default_start_date = nowdate()
-    ss.default_end_date = add_days(nowdate(), 30)
-    ss.save()
-    # No se valida el JS aquí; QC manual en UI para precarga de fechas.
-    assert True
+    @classmethod
+    def tearDownClass(cls):
+        # Limpia los CC de prueba (si no tienen dependencias)
+        safe_delete("Cost Center", cls.cc_a)
+        safe_delete("Cost Center", cls.cc_b)
+        super().tearDownClass()
+
+    def test_commission_rate_by_branch_and_global(self):
+        # Arrange: configura Comisiones Settings
+        ss = frappe.get_single("Comisiones Settings")
+        ss.porcentaje_sobre_utilidad = 2.5  # global default
+        ss.set("rates_por_sucursal", [])
+        ss.append("rates_por_sucursal", {
+            "cost_center": self.cc_a,
+            "rate_percent": 4.0
+        })
+        ss.save(ignore_permissions=True)
+
+        # Act
+        from llantascs_customs.llantascs_customs.api import get_commission_rate
+
+        rate_a = flt(get_commission_rate(self.cc_a))
+        rate_b = flt(get_commission_rate(self.cc_b))     # no está en tabla -> usa global
+        rate_global = flt(get_commission_rate())         # sin sucursal -> global
+
+        # Assert
+        self.assertEqual(rate_a, 4.0)
+        self.assertEqual(rate_b, 2.5)
+        self.assertEqual(rate_global, 2.5)

@@ -1,2 +1,6 @@
+# -*- coding: utf-8 -*-
 import frappe
-# DocType hijo sin lógica de servidor
+from frappe.model.document import Document
+
+class ComisionesRateSucursal(Document):
+    pass

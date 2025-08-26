@@ -110,3 +110,4 @@ Test files are located alongside their respective doctype files:
 - el nombre del sitio donde puedes operar es unicamente llantascs.dev no puedes ocupar ningun otro
 - no se permiten committs --no-verify bajo ninguna circunstancia
 - todos los committs seran autorizados por mi no puedes hacer committs sin mi autorizacion
+- claude code solo puede implementar codigo que se le entregue, cualquier codigo que quiera generar debe ser aprobado por el usuario
