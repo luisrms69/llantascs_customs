@@ -74,9 +74,17 @@ class TestNegativeMarginPolicy(FrappeTestCase):
         from llantascs_customs.llantascs_customs.api import evaluate_eligibility
         evaluate_eligibility(opc.name)
         opc.reload()
+        # Trigger validate() para calcular buckets
+        opc.save(ignore_permissions=True)
+        opc.reload()
         r = opc.comisiones_incluidas[0]
         # comision = M_raw * rate = -30 * 10% = -3.0
         self.assertAlmostEqual(flt(r.comision_a_pagar), -3.0, places=2)
+        
+        # B.4: Validar buckets en la orden (cap por defecto)
+        self.assertEqual(flt(opc.total_comision_bruta), 0.0)  # No hay positivos
+        self.assertAlmostEqual(flt(opc.total_compensaciones_negativas), -3.0, places=2)  # Solo negativos
+        self.assertEqual(flt(opc.monto_total), 0.0)  # Cap por defecto (permitir_total_orden_negativo=0)
 
     def test_policy_requires_approval(self):
         opc = self._make_order_row(M_original_raw=10, M_aj_raw=-5, base_comm=0, rate_percent=10)

@@ -3,11 +3,37 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import flt, cint
 from llantascs_customs.llantascs_customs.api import *
 
 class OrdendePagoComisiones(Document):
 	def before_insert(self):
 		self._ensure_branch_rates_snapshot()
+
+	def validate(self):
+		"""B.4: Acumuladores y total pagable con política de negativos."""
+		pos = 0.0
+		neg = 0.0
+		
+		for row in (self.comisiones_incluidas or []):
+			v = flt(getattr(row, "comision_a_pagar", None) or getattr(row, "total_comision", 0))
+			if v >= 0:
+				pos += v
+			else:
+				neg += v  # neg es <= 0
+
+		self.total_comision_bruta = pos
+		self.total_compensaciones_negativas = neg
+
+		# Net pagable
+		neto = pos + neg
+
+		# Settings: cap o permitir negativo
+		ss = frappe.get_single("Comisiones Settings")
+		permitir_negativo = cint(getattr(ss, "permitir_total_orden_negativo", 0))
+
+		# Si NO se permite negativo, cap en 0 para respetar non_negative del JSON
+		self.monto_total = neto if permitir_negativo else max(0.0, neto)
 
 	def _ensure_branch_rates_snapshot(self):
 		"""Si no hay snapshot en la orden, copiar las tasas por sucursal desde Settings."""

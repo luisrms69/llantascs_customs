@@ -13,6 +13,8 @@
   "fecha_confirmacion_pago",
   "confirmacion_de_pago",
   "monto_total",
+  "total_comision_bruta",
+  "total_compensaciones_negativas",
   "column_break_adkr",
   "desde",
   "hasta_fecha",
@@ -113,6 +115,18 @@
    "fieldtype": "Currency",
    "label": "Monto Total de esta Orden",
    "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_comision_bruta",
+   "fieldtype": "Currency",
+   "label": "Total Comisiones Positivas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_compensaciones_negativas",
+   "fieldtype": "Currency",
+   "label": "Total Compensaciones Negativas",
    "read_only": 1
   },
   {

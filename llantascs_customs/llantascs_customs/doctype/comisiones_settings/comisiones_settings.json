@@ -22,7 +22,8 @@
   "tolerancia_pago_monetaria",
   "politica_margen_negativo",
   "permitir_negativo_solo_si_margen_original",
-  "avisar_negativo_en_ui"
+  "avisar_negativo_en_ui",
+  "permitir_total_orden_negativo"
  ],
  "fields": [
   {
@@ -128,6 +129,12 @@
    "label": "Mostrar aviso en UI si hay filas con margen negativo",
    "fieldtype": "Check",
    "default": "1"
+  },
+  {
+   "fieldname": "permitir_total_orden_negativo",
+   "label": "Permitir total negativo en la Orden",
+   "fieldtype": "Check",
+   "default": "0"
   }
  ],
  "index_web_pages_for_search": 1,
