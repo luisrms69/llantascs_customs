@@ -366,6 +366,15 @@ def apply_reduction(opc_name: str):
         R_aj = max(0.0, R_base * (1.0 - delta))
         M_aj = max(0.0, R_aj - C_base)
 
+        # M_aj ya es max(0, R_aj - C_base). Guardar también el valor "raw" (sin cap a 0)
+        M_original_raw = R_base - C_base
+        M_aj_raw = R_aj - C_base
+
+        row.margen_ajustado_raw = M_aj_raw
+        row.margen_original_negativo = 1 if M_original_raw < 0 else 0
+        row.margen_ajustado_negativo = 1 if M_aj_raw < 0 else 0
+        row.negativo_por = "ORIGINAL" if M_original_raw < 0 else ("AJUSTE" if M_aj_raw < 0 else None)
+
         row.ingreso_ajustado = R_aj
         row.margen_ajustado = M_aj
         row.monto_reduccion_ingreso = max(0.0, R_base - R_aj)
@@ -394,3 +403,143 @@ def apply_reduction(opc_name: str):
         "grace_days": grace,
         "source": src,
     }
+
+
+@frappe.whitelist()
+def evaluate_eligibility(opc_name: str):
+    """B.3: Evalúa por renglón si la comisión es elegible (entregado + pagado).
+       - Guarda flags y razón
+       - Setea comision_a_pagar = comision_post_reduccion si elegible, si no 0
+    """
+    from frappe.utils import flt, cint
+    
+    ss = frappe.get_single("Comisiones Settings")
+    must_delivery = bool(cint(getattr(ss, "validar_entrega_total", 1)))
+    must_paid     = bool(cint(getattr(ss, "validar_pago_total", 1)))
+    tol_currency  = flt(getattr(ss, "tolerancia_pago_monetaria", 0) or 0)
+    require_sp    = bool(cint(getattr(ss, "requerir_persona_comision", 1)))
+
+    from llantascs_customs.llantascs_customs.eligibility_service import (
+        is_fully_delivered, is_fully_paid
+    )
+
+    opc = frappe.get_doc("Orden de Pago Comisiones", opc_name)
+    changed = False
+    summary = {"rows": 0, "eligible": 0, "not_eligible": 0}
+
+    for row in opc.get("comisiones_incluidas", []):
+        si_name = getattr(row, "sales_invoice_id", None) or getattr(row, "sales_invoice", None)
+        if not si_name:
+            # Sin SI asociada → no elegible (salvo que tu proceso permita comisiones por otros docs)
+            row.elig_entregado_ok = 0
+            row.elig_pagado_ok = 0
+            row.eligible_para_pago = 0
+            row.elig_razon = "Sin Sales Invoice vinculada"
+            row.comision_a_pagar = 0
+            changed = True
+            summary["rows"] += 1
+            summary["not_eligible"] += 1
+            continue
+
+        try:
+            si = frappe.get_doc("Sales Invoice", si_name)
+        except Exception:
+            row.elig_entregado_ok = 0
+            row.elig_pagado_ok = 0
+            row.eligible_para_pago = 0
+            row.elig_razon = f"Sales Invoice {si_name} no encontrada"
+            row.comision_a_pagar = 0
+            changed = True
+            summary["rows"] += 1
+            summary["not_eligible"] += 1
+            continue
+
+        # Resolver y escribir sales_person si falta y está requerido
+        from llantascs_customs.llantascs_customs.eligibility_service import resolve_sales_person_for_row
+        sp_name = resolve_sales_person_for_row(row, si)
+        if sp_name:
+            for fn in ("sales_person", "persona_de_ventas"):
+                try: 
+                    setattr(row, fn, sp_name)
+                except Exception: 
+                    pass
+
+        deliver_ok, deliver_notes = (True, ["Entrega no requerida"])
+        if must_delivery:
+            deliver_ok, deliver_notes = is_fully_delivered(si)
+
+        paid_ok, paid_notes = (True, ["Pago no requerido"])
+        if must_paid:
+            paid_ok, paid_notes = is_fully_paid(si, tol_currency)
+
+        row.elig_entregado_ok = 1 if deliver_ok else 0
+        row.elig_pagado_ok = 1 if paid_ok else 0
+
+        # Validar persona designada si está requerida
+        persona_ok = True
+        if require_sp:
+            current_sp = getattr(row, "sales_person", None) or getattr(row, "persona_de_ventas", None)
+            persona_ok = bool(current_sp)
+        
+        eligible = (deliver_ok and paid_ok and persona_ok)
+        row.eligible_para_pago = 1 if eligible else 0
+        reasons = []
+        if not deliver_ok:
+            reasons.append("No entregado totalmente")
+        if not paid_ok:
+            reasons.append("No pagado totalmente")
+        if not persona_ok:
+            reasons.append("Falta Sales Person")
+        row.elig_razon = "; ".join(reasons) if reasons else "OK"
+
+        # Comisión final a pagar - aplicar política de margen negativo
+        base_comm = flt(getattr(row, "comision_post_reduccion", 0))
+        
+        policy = (getattr(ss, "politica_margen_negativo", None) or "CERO").strip()
+        only_if_original = bool(int(getattr(ss, "permitir_negativo_solo_si_margen_original", 0) or 0))
+
+        # Por defecto, si NO elegible, no se paga
+        if not eligible:
+            row.comision_a_pagar = 0.0
+        else:
+            # Si elegible, aplicar política
+            M_raw = flt(getattr(row, "margen_ajustado_raw", 0))
+            from llantascs_customs.llantascs_customs.commissions_service import resolve_commission_rate_percent
+            rate = flt(resolve_commission_rate_percent(opc, row)) / 100.0
+            negative_from = (getattr(row, "negativo_por", None) or "").strip()  # "ORIGINAL" | "AJUSTE" | ""
+
+            if M_raw > 0:
+                # Positivo: usar la comisión ya calculada (post reducción)
+                row.comision_a_pagar = base_comm
+            else:
+                # M_raw <= 0: margen ≤ 0
+                if policy == "CERO":
+                    row.comision_a_pagar = 0.0
+                    row.elig_razon = ((row.elig_razon or "") + "; Margen <= 0 (política CERO)").strip("; ")
+                elif policy == "NEGATIVO_COMPENSA":
+                    if only_if_original and negative_from == "AJUSTE":
+                        # No permitir negativos generados solo por el diferimiento
+                        row.comision_a_pagar = 0.0
+                        row.elig_razon = ((row.elig_razon or "") + "; Margen <= 0 por AJUSTE, no compensa").strip("; ")
+                    else:
+                        # Compensa: comision negativa (M_raw * rate)
+                        row.comision_a_pagar = M_raw * rate  # será <= 0
+                elif policy == "REQUIERE_APROBACION":
+                    row.comision_a_pagar = 0.0
+                    row.requiere_aprobacion = 1
+                    row.elig_razon = ((row.elig_razon or "") + "; Requiere aprobación por margen <= 0").strip("; ")
+                else:
+                    # fallback conservador
+                    row.comision_a_pagar = 0.0
+                    row.elig_razon = ((row.elig_razon or "") + "; Margen <= 0 (política desconocida)").strip("; ")
+
+        changed = True
+        summary["rows"] += 1
+        summary["eligible"] += 1 if eligible else 0
+        summary["not_eligible"] += 0 if eligible else 1
+
+    if changed:
+        opc.flags.ignore_validate_update_after_submit = True
+        opc.save()
+
+    return {"status": "OK", **summary}

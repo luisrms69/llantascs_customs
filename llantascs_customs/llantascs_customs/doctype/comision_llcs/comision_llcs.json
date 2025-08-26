@@ -25,7 +25,17 @@
   "monto_reduccion_margen",
   "margen_original",
   "margen_ajustado",
-  "comision_post_reduccion"
+  "comision_post_reduccion",
+  "elig_entregado_ok",
+  "elig_pagado_ok",
+  "eligible_para_pago",
+  "elig_razon",
+  "comision_a_pagar",
+  "margen_ajustado_raw",
+  "margen_original_negativo",
+  "margen_ajustado_negativo",
+  "negativo_por",
+  "requiere_aprobacion"
  ],
  "fields": [
   {
@@ -156,6 +166,66 @@
    "fieldname": "cogs_refs",
    "label": "Referencias COGS (JSON)",
    "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "elig_entregado_ok",
+   "fieldtype": "Check",
+   "label": "Entregado OK",
+   "read_only": 1
+  },
+  {
+   "fieldname": "elig_pagado_ok",
+   "fieldtype": "Check",
+   "label": "Pagado OK",
+   "read_only": 1
+  },
+  {
+   "fieldname": "eligible_para_pago",
+   "fieldtype": "Check",
+   "label": "Elegible para Pago",
+   "read_only": 1
+  },
+  {
+   "fieldname": "elig_razon",
+   "fieldtype": "Small Text",
+   "label": "Raz\u00f3n Elegibilidad",
+   "read_only": 1
+  },
+  {
+   "fieldname": "comision_a_pagar",
+   "fieldtype": "Currency",
+   "label": "Comisi\u00f3n a Pagar"
+  },
+  {
+   "fieldname": "margen_ajustado_raw",
+   "label": "Margen ajustado (raw, puede ser negativo)",
+   "fieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "margen_original_negativo",
+   "label": "Margen original negativo",
+   "fieldtype": "Check",
+   "read_only": 1
+  },
+  {
+   "fieldname": "margen_ajustado_negativo",
+   "label": "Margen ajustado negativo",
+   "fieldtype": "Check",
+   "read_only": 1
+  },
+  {
+   "fieldname": "negativo_por",
+   "label": "Origen del negativo",
+   "fieldtype": "Select",
+   "options": "ORIGINAL\nAJUSTE",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requiere_aprobacion",
+   "label": "Requiere aprobaci\u00f3n",
+   "fieldtype": "Check",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,

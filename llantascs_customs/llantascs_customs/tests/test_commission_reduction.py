@@ -26,6 +26,7 @@ class TestCommissionReduction(FrappeTestCase):
         ss.porcentaje_reduccion_mensual = 6.0
         ss.dias_gracia_reduccion = 5
         ss.fecha_base_reduccion = "Due Date"
+        ss.politica_margen_negativo = "CERO"
         ss.save(ignore_permissions=True)
 
         # Need a dummy Cost Center for sucursal
@@ -78,6 +79,7 @@ class TestCommissionReduction(FrappeTestCase):
         ss.porcentaje_reduccion_mensual = 50.0
         ss.dias_gracia_reduccion = 0
         ss.fecha_base_reduccion = "Posting Date"
+        ss.politica_margen_negativo = "CERO"
         ss.save(ignore_permissions=True)
 
         company = require_any_company()

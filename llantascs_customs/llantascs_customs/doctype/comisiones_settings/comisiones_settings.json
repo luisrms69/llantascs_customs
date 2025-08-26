@@ -14,7 +14,15 @@
   "aplicar_reduccion_por_diferimiento",
   "porcentaje_reduccion_mensual",
   "dias_gracia_reduccion",
-  "fecha_base_reduccion"
+  "fecha_base_reduccion",
+  "validacion_elegibilidad_section",
+  "requerir_persona_comision",
+  "validar_entrega_total",
+  "validar_pago_total",
+  "tolerancia_pago_monetaria",
+  "politica_margen_negativo",
+  "permitir_negativo_solo_si_margen_original",
+  "avisar_negativo_en_ui"
  ],
  "fields": [
   {
@@ -71,6 +79,55 @@
    "label": "Fecha base para reducci\u00f3n",
    "options": "Due Date\nPosting Date",
    "default": "Due Date"
+  },
+  {
+   "fieldname": "validacion_elegibilidad_section",
+   "fieldtype": "Section Break",
+   "label": "Validaci\u00f3n de Elegibilidad"
+  },
+  {
+   "fieldname": "requerir_persona_comision",
+   "fieldtype": "Check",
+   "label": "Requerir persona de comisi\u00f3n designada",
+   "default": "1"
+  },
+  {
+   "fieldname": "validar_entrega_total",
+   "fieldtype": "Check",
+   "label": "Validar entrega total (excepto servicios)",
+   "default": "1"
+  },
+  {
+   "fieldname": "validar_pago_total",
+   "fieldtype": "Check",
+   "label": "Validar pago total",
+   "default": "1"
+  },
+  {
+   "fieldname": "tolerancia_pago_monetaria",
+   "fieldtype": "Currency",
+   "label": "Tolerancia de pago (moneda)",
+   "default": "0"
+  },
+  {
+   "fieldname": "politica_margen_negativo",
+   "label": "Política para margen negativo",
+   "fieldtype": "Select",
+   "options": "CERO\nNEGATIVO_COMPENSA\nREQUIERE_APROBACION",
+   "default": "CERO",
+   "reqd": 1
+  },
+  {
+   "fieldname": "permitir_negativo_solo_si_margen_original",
+   "label": "Permitir negativo sólo si el margen original ya era negativo",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "avisar_negativo_en_ui",
+   "label": "Mostrar aviso en UI si hay filas con margen negativo",
+   "fieldtype": "Check",
+   "default": "1"
   }
  ],
  "index_web_pages_for_search": 1,

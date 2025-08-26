@@ -220,5 +220,55 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                 }
             });
         }
+
+        // Botón: Evaluar entregado/pagado (B.3)
+        if (frm.doc.name) {
+            frm.add_custom_button(__('Evaluar Elegibilidad'), async () => {
+                frm.freeze(__('Evaluando elegibilidad...'));
+                try {
+                    const r = await frappe.call({
+                        method: 'llantascs_customs.llantascs_customs.api.evaluate_eligibility',
+                        args: { opc_name: frm.doc.name }
+                    });
+                    await frm.reload_doc();
+                    const m = r.message || {};
+                    frappe.msgprint({
+                        title: __('Resultado'),
+                        message: __('Filas: {0} | Elegibles: {1} | No elegibles: {2}', [
+                            m.rows, m.eligible, m.not_eligible
+                        ])
+                    });
+                    
+                    // Aviso si hay filas con margen negativo (según settings)
+                    frappe.call({
+                        method: 'frappe.client.get_value',
+                        args: {
+                            doctype: 'Comisiones Settings',
+                            fieldname: ['avisar_negativo_en_ui']
+                        }
+                    }).then(() => {
+                        const rows = frm.doc.comisiones_incluidas || [];
+                        let n_orig = 0, n_adj = 0;
+                        (rows || []).forEach(r => {
+                            if (r.margen_ajustado_negativo) {
+                                if (r.negativo_por === 'ORIGINAL') n_orig++;
+                                else if (r.negativo_por === 'AJUSTE') n_adj++;
+                            }
+                        });
+                        if ((n_orig + n_adj) > 0) {
+                            frappe.msgprint({
+                                title: __('Aviso de márgenes negativos'),
+                                message: __('<b>Original:</b> {0} &nbsp; | &nbsp; <b>Por ajuste:</b> {1}', [n_orig, n_adj]),
+                                indicator: 'orange'
+                            });
+                        }
+                    });
+                } catch (e) {
+                    frappe.msgprint({ title: __('Error'), message: e.message || e, indicator: 'red' });
+                } finally {
+                    frm.unfreeze();
+                }
+            });
+        }
     }
 });
