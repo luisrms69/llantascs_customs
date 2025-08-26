@@ -134,6 +134,28 @@
    "fieldname": "comision_post_reduccion",
    "fieldtype": "Currency",
    "label": "Comisi\u00f3n Post Reducci\u00f3n"
+  },
+  {
+   "fieldname": "cogs_resuelto",
+   "label": "Costo de ventas resuelto",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "cogs_source",
+   "label": "Fuente COGS",
+   "fieldtype": "Select",
+   "options": "SI_UPDATE_STOCK\nDN_DIRECT\nDN_VIA_SO\nDROP_SHIP_PO\nDROP_SHIP_PI\nDROP_SHIP_PR\nGL_FALLBACK"
+  },
+  {
+   "fieldname": "delivered_via",
+   "label": "Entregado v\u00eda",
+   "fieldtype": "Select",
+   "options": "SI\nDN\nDROP_SHIP\nN/A"
+  },
+  {
+   "fieldname": "cogs_refs",
+   "label": "Referencias COGS (JSON)",
+   "fieldtype": "Small Text"
   }
  ],
  "index_web_pages_for_search": 1,

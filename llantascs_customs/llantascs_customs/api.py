@@ -258,6 +258,19 @@ def apply_reduction(opc_name: str):
 
     def normalize_row_no_adjust(row):
         """Deja el renglón sin ajuste, recalculando comisión con el % actual y bases originales."""
+        # B.2: Si no hay costo en el renglón, resolverlo con el nuevo sistema
+        if not flt(getattr(row, "costo_de_ventas", 0)):
+            from llantascs_customs.llantascs_customs.delivery_cogs_resolver import resolve_cogs_for_row
+            info = resolve_cogs_for_row(opc, row)
+            row.costo_de_ventas = info["cogs"]
+            row.cogs_resuelto = info["cogs"]
+            row.cogs_source = info["source"]
+            row.delivered_via = info["delivered_via"]
+            try:
+                row.cogs_refs = json.dumps(info["refs"], ensure_ascii=False)
+            except Exception:
+                row.cogs_refs = ""
+
         R_base = resolve_revenue_original(row)
         if not flt(getattr(row, "ingreso_original", 0)):
             row.ingreso_original = R_base
@@ -297,6 +310,18 @@ def apply_reduction(opc_name: str):
 
     # Ajuste ACTIVADO: aplicar reducción sobre INGRESO
     for row in opc.get("comisiones_incluidas", []):
+        # B.2: Si no hay costo en el renglón, resolverlo con el nuevo sistema
+        if not flt(getattr(row, "costo_de_ventas", 0)):
+            from llantascs_customs.llantascs_customs.delivery_cogs_resolver import resolve_cogs_for_row
+            info = resolve_cogs_for_row(opc, row)
+            row.costo_de_ventas = info["cogs"]
+            row.cogs_resuelto = info["cogs"]
+            row.cogs_source = info["source"]
+            row.delivered_via = info["delivered_via"]
+            try:
+                row.cogs_refs = json.dumps(info["refs"], ensure_ascii=False)
+            except Exception:
+                row.cogs_refs = ""
         # 1) Fecha base (solo informativo + cálculo de días)
         base_date = row.get("fecha_programada_de_pago")
         if not base_date:
