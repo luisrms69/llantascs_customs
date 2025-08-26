@@ -206,6 +206,28 @@ def get_costo_ventas_sales_invoice(sales_invoice_id):
 
 
 @frappe.whitelist()
+def refresh_order_branch_rates(opc_name: str, replace: int = 1):
+    """Copia tasas de Settings a la Orden. Si replace=1 (default), reemplaza el snapshot existente."""
+    opc = frappe.get_doc("Orden de Pago Comisiones", opc_name)
+    ss = frappe.get_single("Comisiones Settings")
+    settings_rows = ss.get("rates_por_sucursal") or []
+
+    if int(replace or 0):
+        opc.set("rates_por_sucursal_orden", [])
+
+    for r in settings_rows:
+        # evita duplicados si replace=0
+        exists = any((row.cost_center == r.cost_center) for row in opc.get("rates_por_sucursal_orden"))
+        if not exists:
+            opc.append("rates_por_sucursal_orden", {
+                "cost_center": r.cost_center,
+                "rate_percent": r.rate_percent,
+            })
+    opc.save()
+    return {"status": "OK", "replaced": bool(int(replace or 0)), "rows": len(opc.get("rates_por_sucursal_orden") or [])}
+
+
+@frappe.whitelist()
 def apply_reduction(opc_name: str):
     """Aplica reducción por diferimiento:
        - Si está DESACTIVADA (Settings o override por Orden), normaliza a valores sin ajuste.

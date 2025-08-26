@@ -199,5 +199,26 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                 }
             });
         }
+
+        // Botón: refrescar tasas desde Settings (reemplaza snapshot) B.1
+        if (frm.doc.name) {
+            frm.add_custom_button(__('Refrescar tasas (Settings)'), async () => {
+                const confirm = await frappe.confirm(__('Esto reemplazará las tasas de esta Orden con las de Settings. ¿Continuar?'));
+                if (!confirm) return;
+                frm.freeze(__('Actualizando tasas...'));
+                try {
+                    const r = await frappe.call({
+                        method: 'llantascs_customs.llantascs_customs.api.refresh_order_branch_rates',
+                        args: { opc_name: frm.doc.name, replace: 1 }
+                    });
+                    await frm.reload_doc();
+                    frappe.msgprint(__('Tasas actualizadas ({0} filas).', [r.message.rows]));
+                } catch (e) {
+                    frappe.msgprint({ title: __('Error'), message: e.message || e, indicator: 'red' });
+                } finally {
+                    frm.unfreeze();
+                }
+            });
+        }
     }
 });

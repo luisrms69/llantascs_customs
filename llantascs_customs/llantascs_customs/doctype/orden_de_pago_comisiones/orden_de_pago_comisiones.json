@@ -18,6 +18,7 @@
   "hasta_fecha",
   "comision_sobre_utilidad_",
   "sin_ajuste_en_esta_orden",
+  "rates_por_sucursal_orden",
   "relacion_de_notas_de_venta_a_pagar_section",
   "comisiones_incluidas"
  ],
@@ -113,6 +114,14 @@
    "label": "Monto Total de esta Orden",
    "non_negative": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "rates_por_sucursal_orden",
+   "label": "Tasas por Sucursal (snapshot)",
+   "fieldtype": "Table",
+   "options": "Comisiones Rate Sucursal",
+   "reqd": 0,
+   "in_list_view": 0
   }
  ],
  "grid_page_length": 50,

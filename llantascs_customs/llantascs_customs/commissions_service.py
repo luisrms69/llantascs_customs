@@ -37,9 +37,43 @@ def resolve_cost_original(row, revenue_base: float | None = None) -> float:
     return 0.0
 
 def resolve_commission_rate_percent(opc, row) -> float:
-    """% de comisión a usar en el renglón."""
+    """Precedencia:
+       1) row.applied_rate (si existe)
+       2) snapshot de la Orden (rates_por_sucursal_orden) por cost_center del renglón (o sucursal/opc.sucursal)
+       3) % a nivel Orden (comision_sobre_utilidad_)
+       4) Settings por sucursal (rates_por_sucursal en Settings)
+       5) Settings global (porcentaje_sobre_utilidad)
+    """
+    # 1) por renglón
     if flt(getattr(row, "applied_rate", 0)):
         return flt(row.applied_rate)
+
+    # clave de sucursal/cost center en el renglón u orden
+    cc = getattr(row, "cost_center", None) or getattr(row, "sucursal", None) or getattr(opc, "sucursal", None)
+
+    # 2) snapshot de la Orden
+    try:
+        for r in (opc.get("rates_por_sucursal_orden") or []):
+            if r.cost_center == cc and flt(r.rate_percent):
+                return flt(r.rate_percent)
+    except Exception:
+        pass
+
+    # 3) a nivel de Orden
     if flt(getattr(opc, "comision_sobre_utilidad_", 0)):
         return flt(opc.comision_sobre_utilidad_)
-    return flt(frappe.db.get_single_value("Comisiones Settings", "porcentaje_sobre_utilidad") or 0)
+
+    # 4) Settings por sucursal
+    try:
+        ss = frappe.get_single("Comisiones Settings")
+        for r in (ss.get("rates_por_sucursal") or []):
+            if r.cost_center == cc and flt(r.rate_percent):
+                return flt(r.rate_percent)
+    except Exception:
+        pass
+
+    # 5) Settings global
+    try:
+        return flt(frappe.db.get_single_value("Comisiones Settings", "porcentaje_sobre_utilidad") or 0)
+    except Exception:
+        return 0.0

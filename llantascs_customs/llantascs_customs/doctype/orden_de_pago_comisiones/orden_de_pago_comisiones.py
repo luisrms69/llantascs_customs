@@ -5,7 +5,29 @@ import frappe
 from frappe.model.document import Document
 from llantascs_customs.llantascs_customs.api import *
 
-class OrdendePagoComisiones(Document):	
+class OrdendePagoComisiones(Document):
+	def before_insert(self):
+		self._ensure_branch_rates_snapshot()
+
+	def _ensure_branch_rates_snapshot(self):
+		"""Si no hay snapshot en la orden, copiar las tasas por sucursal desde Settings."""
+		if self.get("rates_por_sucursal_orden"):
+			return
+		ss = frappe.get_single("Comisiones Settings")
+		settings_rows = ss.get("rates_por_sucursal") or []
+		for r in settings_rows:
+			self.append("rates_por_sucursal_orden", {
+				"cost_center": r.cost_center,
+				"rate_percent": r.rate_percent,
+			})
+		# también puedes setear un % por defecto a nivel orden si aplica
+		if not getattr(self, "comision_sobre_utilidad_", None):
+			try:
+				default_rate = frappe.db.get_single_value("Comisiones Settings", "porcentaje_sobre_utilidad") or 0
+				self.comision_sobre_utilidad_ = default_rate
+			except Exception:
+				pass
+
 	def create_orden_pago_comision(self):
 		table = get_sales_invoices(self.sucursal,self.desde, self.hasta_fecha)
 		for invoice in table:
