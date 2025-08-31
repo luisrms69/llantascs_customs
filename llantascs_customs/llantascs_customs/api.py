@@ -46,26 +46,80 @@ def is_delivered(sales_invoice):
     return 1
 
 
-def get_costo_ventas_si(sales_invoice_id):
-    cogs = 0
-    cogs_accounts = get_cogs_account()
+def get_costo_ventas_si(sales_invoice: str) -> float:
+    """
+    Calcula el costo de ventas de una Sales Invoice con 4 casos:
+    1) update_stock = 1 → usa Stock Ledger Entry
+    2) sin update_stock con Delivery Notes vinculados → usa DN Items
+    3) devoluciones referenciadas → ajusta contra costo original
+    4) fallback: base_rate * qty
+       - si > 0 → retorna y avisa (warning)
+       - si = 0 → lanza error
+    """
+    si = frappe.get_doc("Sales Invoice", sales_invoice)
 
-    # GL entries for Sales Invoice, no delivery note
-    gl_entries_invoice = frappe.db.get_list(
-        "GL Entry",
-        filters={
-            "voucher_type": "Sales Invoice",
-            "voucher_no": sales_invoice_id,
-            "account": ["in", cogs_accounts],
-        },
-        pluck="name",
+    # Caso 1: con Update Stock
+    if getattr(si, "update_stock", 0):
+        sle_cost = frappe.db.sql("""
+            SELECT SUM(stock_value_difference) as total_cost
+            FROM `tabStock Ledger Entry`
+            WHERE voucher_type='Sales Invoice'
+              AND voucher_no=%s
+        """, (sales_invoice,), as_dict=True)[0].total_cost or 0
+        if sle_cost:
+            return abs(flt(sle_cost))
+
+    # Caso 2: con Delivery Notes vinculados
+    dn_items = frappe.get_all(
+        "Sales Invoice Item",
+        filters={"parent": sales_invoice, "delivery_note": ["!=", ""]},
+        fields=["delivery_note", "item_code", "qty"]
     )
+    if dn_items:
+        dn_cost = 0
+        for dn_row in dn_items:
+            cost = frappe.db.sql("""
+                SELECT SUM(base_net_rate * qty) as cost
+                FROM `tabDelivery Note Item`
+                WHERE parent=%s AND item_code=%s
+            """, (dn_row.delivery_note, dn_row.item_code), as_dict=True)[0].cost or 0
+            dn_cost += flt(cost)
+        if dn_cost:
+            return dn_cost
 
-    for entry in gl_entries_invoice:
-        cogs += frappe.db.get_value("GL Entry", entry, "debit")
-        cogs -= frappe.db.get_value("GL Entry", entry, "credit")
+    # Caso 3: devoluciones
+    return_si = frappe.get_all(
+        "Sales Invoice",
+        filters={"is_return": 1, "return_against": sales_invoice},
+        fields=["name"]
+    )
+    total_return_cost = 0
+    for r in return_si:
+        total_return_cost += get_costo_ventas_si(r.name)
 
-    return cogs
+    if total_return_cost:
+        original_cost = _costo_bruto_factura(sales_invoice)
+        return max(0, original_cost - total_return_cost)
+
+    # Caso 4: fallback
+    calculated = _costo_bruto_factura(sales_invoice)
+    if calculated:
+        msg = f"[OPC.COSTO] Fallback usado para {sales_invoice}. Costo estimado = {calculated}"
+        frappe.msgprint(msg, alert=True, indicator="orange")
+        frappe.log_error(title="CostoVentasFallback", message=msg)
+        return calculated
+    else:
+        msg = f"[OPC.COSTO] ERROR: fallback devolvió 0 para {sales_invoice}"
+        frappe.log_error(title="CostoVentasFallback", message=msg)
+        frappe.throw(msg)
+
+
+def _costo_bruto_factura(sales_invoice: str) -> float:
+    """Costo bruto: base_rate * qty de los items."""
+    rows = frappe.get_all("Sales Invoice Item",
+                          filters={"parent": sales_invoice},
+                          fields=["base_rate", "qty"])
+    return sum(flt(r.base_rate) * flt(r.qty) for r in rows)
 
 
 def get_costo_ventas_dn(sales_invoice_id: str) -> float:

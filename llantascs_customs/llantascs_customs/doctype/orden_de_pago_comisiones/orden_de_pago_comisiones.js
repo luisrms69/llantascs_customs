@@ -1,6 +1,12 @@
 // Copyright (c) 2024, Consultoria en Negocios y Aplicaciones and contributors
 // For license information, please see license.txt
 
+function selected_cost_centers(frm) {
+  return (frm.doc.sucursales_multi || [])
+    .map(r => r.cost_center)
+    .filter(Boolean);
+}
+
 frappe.ui.form.on('Orden de Pago Comisiones', {
     onload: function (frm) {
         frappe.call({
@@ -58,7 +64,7 @@ function generate_order(frm) {
     frappe.call({
         method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
         args: {
-            'sucursal': frm.doc.sucursal,
+            'sucursal': selected_cost_centers(frm),
             'fecha_inicial': frm.doc.desde,
             'fecha_final': frm.doc.hasta_fecha
         },
@@ -83,10 +89,10 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 )
 
 frappe.ui.form.on('Orden de Pago Comisiones', {
-    sucursal: function (frm) {
+    sucursales_multi: function (frm) {
         frm.refresh_field('comisiones_incluidas');
         monto_total = 0
-        if (frm.doc.sucursal) {
+        if (frm.doc.sucursales_multi && frm.doc.sucursales_multi.length > 0) {
             generate_order(frm)
         }
     }

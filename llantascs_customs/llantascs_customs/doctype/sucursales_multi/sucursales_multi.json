@@ -1,0 +1,19 @@
+{
+ "doctype": "DocType",
+ "name": "Sucursales Multi",
+ "module": "Llantascs Customs",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": ["cost_center"],
+ "fields": [
+   {
+     "fieldname": "cost_center",
+     "fieldtype": "Link",
+     "label": "Cost Center",
+     "options": "Cost Center",
+     "reqd": 1,
+     "in_list_view": 1
+   }
+ ],
+ "permissions": []
+}

@@ -8,6 +8,7 @@
  "field_order": [
   "section_break_6yse",
   "sucursal",
+  "sucursales_multi",
   "amended_from",
   "fecha_de_envio",
   "fecha_confirmacion_pago",
@@ -71,6 +72,13 @@
    "fieldtype": "Link",
    "label": "Sucursal",
    "options": "Cost Center",
+   "hidden": 1
+  },
+  {
+   "fieldname": "sucursales_multi",
+   "fieldtype": "Table MultiSelect",
+   "label": "Sucursales",
+   "options": "Sucursales Multi",
    "reqd": 1
   },
   {
