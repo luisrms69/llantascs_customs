@@ -126,7 +126,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
             });
 
             // Botón "Actualizar Comisiones" (Clear + Rebuild con confirmación)
-            frm.add_custom_button('Actualizar Comisiones', async () => {
+            frm.add_custom_button('Actualiza Listado', async () => {
                 const selected = (frm.doc.sucursales_multi || [])
                     .map(r => r.cost_center)
                     .filter(Boolean);
@@ -138,7 +138,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 
                 // ⚠️ Confirmación previa
                 frappe.confirm(
-                    'Cada vez que presiones "Actualizar Comisiones", <b>se perderán</b> los cambios manuales ' +
+                    'Cada vez que presiones "Actualiza Listado", <b>se perderán</b> los cambios manuales ' +
                     'en la <b>tabla de tasas</b> y en la <b>tabla de comisiones</b>. ¿Deseas continuar?',
                     async () => {
                         // Usuario CONFIRMÓ → proceder
@@ -187,7 +187,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                                 docname: frm.doc.name
                             },
                             freeze: true,
-                            freeze_message: 'Calculando comisiones…'
+                            freeze_message: 'Actualizando listado…'
                         });
 
                         const payload2 = r2.message || {};
@@ -210,7 +210,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                         frm.refresh_field('monto_total');
 
                         frappe.show_alert({
-                            message: `Tasas: ${rows.length} | Comisiones: ${rows2.length} | Total: ${format_currency(total2, frm.doc.currency || 'MXN')}`,
+                            message: `Listado actualizado → Tasas: ${rows.length}, Comisiones: ${rows2.length}, Total: ${format_currency(total2, frm.doc.currency || 'MXN')}`,
                             indicator: 'green'
                         });
                     },
