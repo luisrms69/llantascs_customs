@@ -24,8 +24,22 @@ The commission calculation workflow has been restructured to be fully manual, re
 - `desde`/`hasta_fecha`: Date fields without automatic triggers
 - `comisiones_incluidas`: Commission table updated only via manual actions
 
+### Commission Rate Synchronization
+The "Actualizar Comisiones" button (Part 1) handles:
+- **Confirmation Dialog**: Warns about data loss before proceeding
+- **Table Cleanup**: Clears both `comisiones_por_sucursal` and `comisiones_incluidas`
+- **Rate Sync**: Pulls global default from Comisiones Settings
+- **Rebuild**: Creates 1:1 mapping between selected branches and rates
+- **Total Reset**: Sets `monto_total = 0` for clean state
+
+### Button Behavior
+- **Visibility**: Only in Draft documents that are saved (`frm.doc.name && docstatus === 0`)
+- **Validation**: Requires at least one branch selected in `sucursales_multi`
+- **Clear+Rebuild**: Ensures perfect synchronization, no orphaned data
+- **User Control**: Confirmation required, cancellation supported
+
 ### Next Phase
-Upcoming "Actualizar Comisiones" button will handle:
-- Commission rate synchronization from Comisiones Settings
+Upcoming "Actualizar Comisiones" button Part 2 will handle:
+- Sales Invoice filtering by date range and selected branches
 - Commission table generation with COGS calculation using `get_costo_ventas_si`
-- Complete commission calculation workflow
+- Complete commission calculation workflow with totals

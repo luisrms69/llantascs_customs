@@ -29,7 +29,25 @@
 - `sucursales_multi` erroneous automatic event handler
 - Field-based auto-recalculation functionality
 
+### Added - Commission Rate Management
+- New "Actualizar Comisiones" button with Clear+Rebuild functionality
+- Pre-confirmation dialog to prevent accidental data loss
+- `OPC Comision Por Sucursal` child DocType for rates snapshot in OPC
+- `Comisiones Settings Sucursal` child DocType for future branch-specific rates
+- `comisiones_por_sucursal` Table field in OPC for rate tracking
+- `tasas_por_sucursal` Custom Field in Comisiones Settings
+- `sync_rates_from_settings()` API endpoint for rate synchronization
+
+### Enhanced - Rate Synchronization
+- 1:1 synchronization between `sucursales_multi` and `comisiones_por_sucursal`
+- Clear+Rebuild pattern ensures data consistency
+- Automatic cleanup of commission tables and totals on sync
+- Global default rate from Comisiones Settings as fallback
+- Foundation prepared for Part 2 commission calculation
+
 ### Technical
 - Enhanced COGS calculation with fallback mechanisms
 - Improved error handling and user notifications
 - Unit test coverage for commission calculation logic
+- Rate management infrastructure with snapshot pattern
+- Fixtures integration for Custom Fields deployment
