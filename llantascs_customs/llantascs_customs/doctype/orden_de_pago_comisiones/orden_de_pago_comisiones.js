@@ -114,6 +114,30 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 // Codigo que genera boton en la Factura para hacer el envio por correo y llama al método PY de envio
 frappe.ui.form.on('Orden de Pago Comisiones', {
     refresh: function (frm) {
+        // Botón "Todas las Sucursales" visible solo si el documento está en Draft y ya guardado
+        if (frm.doc.name && frm.doc.docstatus === 0) {
+            frm.add_custom_button('Todas las Sucursales', async () => {
+                const r = await frappe.call({
+                    method: 'llantascs_customs.llantascs_customs.api.get_all_cost_centers',
+                    freeze: true,
+                    freeze_message: 'Cargando sucursales...'
+                });
+                const centers = r.message || [];
+                if (!centers.length) {
+                    frappe.msgprint('No se encontraron Cost Centers activos.');
+                    return;
+                }
+                // Vacía y rellena la tabla de sucursales_multi
+                frm.clear_table('sucursales_multi');
+                centers.forEach(cc => frm.add_child('sucursales_multi', { cost_center: cc }));
+                frm.refresh_field('sucursales_multi');
+                frappe.show_alert({
+                    message: `Se agregaron ${centers.length} sucursales.`,
+                    indicator: 'green'
+                });
+            });
+        }
+        
         if (frm.doc.docstatus == 1 && frm.doc.confirmacion_de_pago != "Pagada") {
             frm.add_custom_button(__('Confirmacion de Pago'), function () {
                 let d = new frappe.ui.Dialog({

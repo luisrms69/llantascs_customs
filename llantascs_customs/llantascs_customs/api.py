@@ -209,6 +209,16 @@ def actualizar_status_orden_pago(orden_pago_id, status):
 
 
 @frappe.whitelist()
+def get_all_cost_centers():
+    """Devuelve todos los Cost Centers activos y no grupo."""
+    return frappe.get_all(
+        "Cost Center",
+        filters={"is_group": 0, "disabled": 0},
+        pluck="name"
+    )
+
+
+@frappe.whitelist()
 def get_commission_rate():
     commission_rate = frappe.db.get_single_value(
         "Comisiones Settings", "porcentaje_sobre_utilidad"
