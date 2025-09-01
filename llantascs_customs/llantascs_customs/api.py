@@ -344,6 +344,7 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
     # default global (fallback cuando no hay tasa por sucursal)
     settings = frappe.get_single("Comisiones Settings")
     default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad"))
+    negative_policy = (getattr(settings, "negative_commission_policy", "Contabilizar como cero") or "Contabilizar como cero").strip()
 
     # normalizar rates_by_cc si llega como JSON
     if isinstance(rates_by_cc, str):
@@ -359,19 +360,20 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
             return flt(val) if val is not None else default_rate
 
     # 2) si no, intentar leer tasas desde el documento guardado (docname)
-    elif docname:
-        doc = frappe.get_doc("Orden de Pago Comisiones", docname)
-        map_doc = {}
-        for r in (doc.comisiones_por_sucursal or []):
-            if r.cost_center:
-                map_doc[r.cost_center] = (flt(r.porcentaje_comision)
-                                          if r.porcentaje_comision is not None else None)
-        def _rate_for(cc):
-            val = map_doc.get(cc)
-            return (val if val is not None else default_rate)
-
-    # 3) si no hay docname, usar Settings por sucursal con fallback al default
     else:
+        rates_doc = {}
+        if docname:
+            try:
+                doc = frappe.get_doc("Orden de Pago Comisiones", docname)
+                for r in (doc.comisiones_por_sucursal or []):
+                    if r.cost_center:
+                        rates_doc[r.cost_center] = (flt(r.porcentaje_comision)
+                                                    if r.porcentaje_comision is not None else None)
+            except Exception:
+                # doc aún no existe (new-...): seguimos sin romper
+                pass
+
+        # completar con settings específicas
         specific = {}
         for row in (getattr(settings, "tasas_por_sucursal", None) or []):
             cc = (row.cost_center or "").strip()
@@ -379,11 +381,25 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
                 specific[cc] = (flt(row.porcentaje_comision)
                                 if row.porcentaje_comision is not None else None)
         def _rate_for(cc):
-            val = specific.get(cc)
+            val = rates_doc.get(cc) if rates_doc else None
+            if val is None:
+                val = specific.get(cc)
             return (val if val is not None else default_rate)
 
     # ===== resto de lógica actual (SIN tocar) =====
     rows, total_sum = [], 0
+    subtotal_negativas = 0.0   # NUEVO: informativo, suma de comisiones negativas brutas
+    
+    def _apply_policy(val: float) -> float:
+        nonlocal subtotal_negativas
+        # Registrar negativos brutos para el subtotal informativo
+        if val < 0:
+            subtotal_negativas += val
+        # Aplicar política
+        if negative_policy == "Contabilizar como cero":
+            return max(val, 0.0)
+        # Reduce del pago (default)
+        return val
     for si in invoices:
         si_doc = frappe.get_doc("Sales Invoice", si["name"])
 
@@ -401,7 +417,8 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         rate_cc = _rate_for(cc)
 
         if not si_doc.sales_team:
-            total_comision = utilidad * (rate_cc / 100.0)
+            bruto = utilidad * (rate_cc / 100.0)
+            total_comision = _apply_policy(bruto)
             rows.append({
                 "sales_invoice_id": si["name"],
                 "posting_date": si["posting_date"],
@@ -420,7 +437,8 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         for sp in si_doc.sales_team:
             alloc = flt(sp.allocated_percentage or 0)
             person_utilidad = utilidad * (alloc / 100.0) if alloc else utilidad
-            total_comision = person_utilidad * (rate_cc / 100.0)
+            bruto = person_utilidad * (rate_cc / 100.0)
+            total_comision = _apply_policy(bruto)
             rows.append({
                 "sales_invoice_id": si["name"],
                 "posting_date": si["posting_date"],
@@ -435,7 +453,7 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
             })
             total_sum += total_comision
 
-    return {"rows": rows, "total": total_sum, "count": len(rows)}
+    return {"rows": rows, "total": total_sum, "count": len(rows), "subtotal_negativas": subtotal_negativas}
 
 
 @frappe.whitelist()

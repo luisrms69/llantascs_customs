@@ -27,6 +27,7 @@ class OrdendePagoComisiones(Document):
 		for row in out.get("rows", []):
 			self.append("comisiones_incluidas", row)
 		self.monto_total = flt(out.get("total", 0))
+		self.subtotal_comisiones_negativas = flt(out.get("subtotal_negativas", 0))
 
 	def create_orden_pago_comision(self):
 		table = get_sales_invoices(self.sucursal,self.desde, self.hasta_fecha)

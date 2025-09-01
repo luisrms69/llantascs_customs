@@ -177,15 +177,31 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                             return;
                         }
 
+                        // construir mapa de tasas desde la tabla del DOC (en memoria)
+                        const ratesByCC = {};
+                        (frm.doc.comisiones_por_sucursal || []).forEach(r => {
+                            if (r.cost_center) ratesByCC[r.cost_center] = Number(r.porcentaje_comision);
+                        });
+
+                        // armar args base
+                        const args = {
+                            sucursal: selected,
+                            fecha_inicial: frm.doc.desde,
+                            fecha_final: frm.doc.hasta_fecha
+                        };
+
+                        // si el documento es nuevo, NO mandes docname (no existe en BD)
+                        const isNew = frm.is_new() || ((frm.doc.name || '').startsWith('new-'));
+                        if (isNew) {
+                            args.rates_by_cc = ratesByCC;     // ← usar tasas en memoria
+                        } else {
+                            args.docname = frm.doc.name;      // ← doc guardado: se puede usar docname
+                        }
+
                         // Pedir filas calculadas al backend usando función existente optimizada
                         const r2 = await frappe.call({
                             method: 'llantascs_customs.llantascs_customs.api.get_commission_rows',
-                            args: {
-                                sucursal: selected,
-                                fecha_inicial: frm.doc.desde,
-                                fecha_final: frm.doc.hasta_fecha,
-                                docname: frm.doc.name
-                            },
+                            args,
                             freeze: true,
                             freeze_message: 'Actualizando listado…'
                         });
@@ -193,6 +209,7 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                         const payload2 = r2.message || {};
                         const rows2 = payload2.rows || [];
                         const total2 = payload2.total || 0;
+                        const subtotal_negativas = payload2.subtotal_negativas || 0;
 
                         // === Nivel 1: Patrón ERPNext Puro ===
                         frm.clear_table('comisiones_incluidas');
@@ -207,7 +224,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                         frm.refresh_field('comisiones_incluidas');
 
                         frm.set_value('monto_total', total2 || 0);
-                        frm.refresh_field('monto_total');
+                        frm.set_value('subtotal_comisiones_negativas', subtotal_negativas);
+                        frm.refresh_fields(['monto_total', 'subtotal_comisiones_negativas']);
 
                         frappe.show_alert({
                             message: `Listado actualizado → Tasas: ${rows.length}, Comisiones: ${rows2.length}, Total: ${format_currency(total2, frm.doc.currency || 'MXN')}`,

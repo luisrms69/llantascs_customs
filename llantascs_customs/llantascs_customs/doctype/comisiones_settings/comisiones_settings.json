@@ -6,7 +6,8 @@
  "engine": "InnoDB",
  "field_order": [
   "calculo_de_comisiones_llantas_de_calidad_star_section",
-  "porcentaje_sobre_utilidad"
+  "porcentaje_sobre_utilidad",
+  "negative_commission_policy"
  ],
  "fields": [
   {
@@ -18,6 +19,15 @@
    "fieldname": "porcentaje_sobre_utilidad",
    "fieldtype": "Float",
    "label": "Porcentaje sobre utilidad"
+  },
+  {
+   "fieldname": "negative_commission_policy",
+   "fieldtype": "Select",
+   "label": "Política de Comisiones Negativas",
+   "options": "Reduce del pago\nContabilizar como cero",
+   "default": "Contabilizar como cero",
+   "reqd": 1,
+   "in_list_view": 0
   }
  ],
  "index_web_pages_for_search": 1,
