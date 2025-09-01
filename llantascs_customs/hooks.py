@@ -137,13 +137,11 @@ doctype_js = {"Sales Invoice" : "llantascs_customs/core_doctype.js"}
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Orden de Pago Comisiones": {
+		"before_cancel": "llantascs_customs.llantascs_customs.doctype.orden_de_pago_comisiones.orden_de_pago_comisiones.OrdenDePagoComisiones.before_cancel"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -245,9 +243,14 @@ override_whitelisted_methods = {
 # fixtures = ["Role"]
 
 fixtures = [
-    {"doctype": "Custom Field"},
+    {
+        "doctype": "Custom Field",
+        "filters": {
+            "module": "Llantascs Customs"
+        }
+    },
     {"doctype": "Property Setter"},
-    {"dt":"Custom Field",
-     "filters":{"module":"Llantascs Customs"}}
+    {"dt": "Custom Field",
+     "filters": {"module": "Llantascs Customs"}}
 ]
 

@@ -244,17 +244,18 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
     """
     import json as _json
 
-    # Normalizar sucursal a lista
+    # Normalizar sucursal a lista (acepta list o JSON str)
     if isinstance(sucursal, str):
         try:
             sucursal = _json.loads(sucursal or "[]")
         except Exception:
-            # Si no viene JSON, asumimos un único CC en string
             sucursal = [sucursal] if sucursal else []
     sucursal = [cc for cc in (sucursal or []) if cc]
 
-    if not fecha_inicial or not fecha_final or not sucursal:
-        frappe.throw("Faltan filtros obligatorios: sucursal(es), fecha_inicial y fecha_final.")
+    if not fecha_inicial or not fecha_final:
+        frappe.throw("Faltan filtros obligatorios: fecha inicial y fecha final.")
+    if not sucursal:
+        frappe.throw("Faltan filtros obligatorios: seleccionar al menos una sucursal (Cost Center).")
 
     # Filtros canónicos (no se replican en JS)
     filters = {
@@ -452,6 +453,17 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
                 "folio_fiscal": getattr(si_doc, "custom_folio_fiscal", "") or ""
             })
             total_sum += total_comision
+
+    # Normalizar sucursal a lista de CC
+    if isinstance(sucursal, str):
+        try:
+            import json
+            suc_list = json.loads(sucursal or "[]")
+        except Exception:
+            suc_list = [sucursal] if sucursal else []
+    else:
+        suc_list = sucursal or []
+    suc_list = [cc for cc in suc_list if cc]
 
     return {"rows": rows, "total": total_sum, "count": len(rows), "subtotal_negativas": subtotal_negativas}
 
