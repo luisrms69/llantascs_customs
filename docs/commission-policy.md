@@ -52,3 +52,32 @@ The `get_costo_ventas_si` function implements a hierarchical approach:
 - **Smart Rate Resolution**: Document rates override Settings; specific Settings override default
 - **Native Grid UX**: Standard ERPNext pagination and controls with protective restrictions
 - **Data Integrity**: Zero fallbacks eliminated; always uses valid commission rates from hierarchy
+- **Negative Commission Policy**: Configurable handling via Comisiones Settings with audit trail
+- **New Document Support**: Error-free creation and calculation for unsaved documents
+
+### Negative Commission Policy (v2.1+)
+
+#### Configuration
+**Location**: Comisiones Settings → "Política de Comisiones Negativas"
+
+**Options**:
+- **"Contabilizar como cero" (Default)**: Negative commissions are converted to 0 in calculations
+- **"Reduce del pago"**: Negative commissions reduce the total payment amount
+
+#### Implementation Logic
+1. **Brute Calculation**: `utilidad * (rate_cc / 100.0)` calculated first
+2. **Negative Accumulation**: All negative values accumulated in `subtotal_negativas` before policy
+3. **Policy Application**: `_apply_policy()` function applies configured policy:
+   - "Contabilizar como cero": `max(bruto, 0.0)`
+   - "Reduce del pago": `bruto` (unchanged)
+4. **Audit Trail**: `subtotal_comisiones_negativas` field always shows original negative sum
+
+#### Usage Scenarios
+- **Conservative Approach**: Use "Contabilizar como cero" to prevent negative payments
+- **Accurate Accounting**: Use "Reduce del pago" for precise profit/loss tracking
+- **Audit Compliance**: `subtotal_comisiones_negativas` provides transparency regardless of policy
+
+#### Data Flow
+- **Button Workflow**: Policy applied during "Actualiza Listado" execution
+- **Save Workflow**: Policy applied during before_save hook
+- **Consistency**: Both workflows use identical `get_commission_rows()` logic

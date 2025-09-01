@@ -1,5 +1,39 @@
 # Changelog
 
+## [v2.1.0] - 2025-09-01 - NEGATIVE COMMISSION POLICY & NEW DOCUMENT FIX
+
+### Added - Negative Commission Policy System
+- **Comisiones Settings**: Campo `negative_commission_policy` (Select) con opciones:
+  - "Reduce del pago": Comisiones negativas se restan del total (comportamiento original)
+  - "Contabilizar como cero": Comisiones negativas se convierten a 0 (DEFAULT)
+- **OPC Informativo**: Campo `subtotal_comisiones_negativas` (Currency, read-only) para auditoría
+- **Lógica Unificada**: Función `_apply_policy()` acumula negativos brutos antes de aplicar política
+- **Ambos Flujos**: Botón "Actualiza Listado" y before_save usan lógica idéntica
+
+### Fixed - New Document Error
+- **Root Cause**: Documentos nuevos ("new-xxx") no existen en BD, causaban error al buscar docname
+- **JS Solution**: Botón detecta `frm.is_new()` y usa `rates_by_cc` en lugar de `docname`
+- **API Tolerance**: `get_commission_rows()` maneja graceful docnames inexistentes con try/catch
+- **before_save Safe**: Siempre usa `rates_by_cc` para evitar problemas en primer guardado
+
+### Enhanced - Subtotal Assignment
+- **JS Button**: Extrae `subtotal_negativas` del API response y asigna al campo
+- **before_save**: Asigna `self.subtotal_comisiones_negativas` automáticamente
+- **API Return**: Incluye `subtotal_negativas` en response para ambos flujos
+
+### Status - Commission System v2.1 Complete
+- **✅ Part 1**: Rate synchronization from Comisiones Settings - WORKING
+- **✅ Part 2**: Commission calculation with COGS integration - WORKING  
+- **✅ Grid Pagination**: Native controls and navigation - WORKING
+- **✅ Live Updates**: Rate changes instantly reflected on save - WORKING
+- **✅ Data Protection**: User cannot break calculations accidentally - WORKING
+- **✅ UX Polish**: Clear, intuitive button naming and messaging - WORKING
+- **✅ Negative Policy**: Configurable handling of negative commissions - WORKING
+- **✅ New Documents**: Error-free creation and calculation - WORKING
+- **✅ Audit Trail**: Negative commissions always reported for transparency - WORKING
+
+---
+
 ## [v2.0.3] - 2025-09-01 - UX IMPROVEMENTS
 
 ### Enhanced - User Experience
@@ -7,14 +41,6 @@
 - **Improved Messaging**: "Listado actualizado → Tasas: X, Comisiones: Y, Total: Z" for better feedback
 - **Consistent Loading Text**: "Actualizando listado…" aligns with button name
 - **Confirmation Dialog**: Updated text references to match new button name
-
-### Status - Commission System Complete with Enhanced UX
-- **✅ Part 1**: Rate synchronization from Comisiones Settings - WORKING
-- **✅ Part 2**: Commission calculation with COGS integration - WORKING  
-- **✅ Grid Pagination**: Native controls and navigation - WORKING
-- **✅ Live Updates**: Rate changes instantly reflected on save - WORKING
-- **✅ Data Protection**: User cannot break calculations accidentally - WORKING
-- **✅ UX Polish**: Clear, intuitive button naming and messaging - WORKING
 
 ---
 

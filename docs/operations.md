@@ -76,3 +76,33 @@ The "Actualiza Listado" button handles the complete workflow in two integrated p
 - **Smart Rate Resolution**: DOC rates → Settings específico → Settings default (never 0)
 - **Data Protection**: Grid protections prevent accidental manual edits while preserving pagination
 - **User-Friendly Interface**: Clear button naming ("Actualiza Listado") with consistent messaging and loading states
+
+### Negative Commission Policy Operations (v2.1+)
+
+#### Configuration Steps
+1. **Access Settings**: Navigate to Comisiones Settings
+2. **Select Policy**: Choose "Política de Comisiones Negativas":
+   - "Contabilizar como cero" (Default): Prevents negative commission payments
+   - "Reduce del pago": Allows negative commissions to reduce total payment
+3. **Save Settings**: Policy applies immediately to new calculations
+
+#### New Document Workflow
+1. **Create New OPC**: Document starts with "new-" prefix
+2. **Select Branches**: Use "Todas las Sucursales" or manual selection
+3. **Set Date Range**: Configure fecha_inicial and hasta_fecha
+4. **Update Rates**: Modify commission rates in upper table if needed
+5. **Generate Listado**: Use "Actualiza Listado" button (works for new documents)
+6. **Review Results**: Check both `monto_total` and `subtotal_comisiones_negativas`
+7. **Save Document**: before_save hook recalculates with current rates
+
+#### Audit Trail Review
+- **Positive Commissions**: Appear in main commission table
+- **Negative Commissions**: 
+  - Policy "Contabilizar como cero": Show as 0 in table, reported in subtotal field
+  - Policy "Reduce del pago": Show actual negative values in table and subtotal
+- **Transparency**: `subtotal_comisiones_negativas` always shows true negative sum
+
+#### Troubleshooting
+- **New Document Errors**: Fixed in v2.1+ with graceful docname handling
+- **Missing Negative Subtotal**: Check if document was created before v2.1, use "Actualiza Listado" to refresh
+- **Policy Changes**: Apply immediately, use "Actualiza Listado" to recalculate existing documents
