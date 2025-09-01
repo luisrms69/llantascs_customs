@@ -77,38 +77,8 @@ function generate_order(frm) {
 }
 
 
-frappe.ui.form.on('Orden de Pago Comisiones', {
-    hasta_fecha: function (frm) {
-        frm.refresh_field('comisiones_incluidas');
-        monto_total = 0
-        if (frm.doc.hasta_fecha) {
-            generate_order(frm)
-        }
-    }
-}
-)
 
-frappe.ui.form.on('Orden de Pago Comisiones', {
-    sucursales_multi: function (frm) {
-        frm.refresh_field('comisiones_incluidas');
-        monto_total = 0
-        if (frm.doc.sucursales_multi && frm.doc.sucursales_multi.length > 0) {
-            generate_order(frm)
-        }
-    }
-}
-)
 
-frappe.ui.form.on('Orden de Pago Comisiones', {
-    desde: function (frm) {
-        frm.refresh_field('comisiones_incluidas');
-        monto_total = 0
-        if (frm.doc.desde) {
-            generate_order(frm)
-        }
-    }
-}
-)
 
 
 // Codigo que genera boton en la Factura para hacer el envio por correo y llama al método PY de envio
