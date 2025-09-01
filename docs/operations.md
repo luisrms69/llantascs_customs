@@ -25,7 +25,7 @@ The commission calculation workflow has been restructured to be fully manual, re
 - `comisiones_incluidas`: Commission table updated only via manual actions
 
 ### Complete Commission Calculation System
-The "Actualizar Comisiones" button handles the complete workflow in two integrated parts:
+The "Actualiza Listado" button handles the complete workflow in two integrated parts:
 
 #### Part 1: Rate Synchronization
 - **Confirmation Dialog**: Warns about data loss before proceeding
@@ -56,7 +56,8 @@ The "Actualizar Comisiones" button handles the complete workflow in two integrat
 - **Date Validation**: Requires both fecha_inicial and hasta_fecha to be set
 - **Clear+Rebuild**: Ensures perfect synchronization, no orphaned data
 - **User Control**: Confirmation required, cancellation supported
-- **Comprehensive Feedback**: Shows rates synced, commissions generated, and formatted total
+- **Comprehensive Feedback**: "Listado actualizado → Tasas: X, Comisiones: Y, Total: Z" format
+- **Clear UX Language**: Button named "Actualiza Listado" with consistent messaging throughout
 
 ### Current Implementation Status
 - **✅ Part 1**: Rate synchronization from Comisiones Settings working correctly
@@ -65,6 +66,7 @@ The "Actualizar Comisiones" button handles the complete workflow in two integrat
   - **Root Cause**: Field `comisiones_incluidas` had `read_only: 1`, preventing Add Row and pagination controls
   - **Solution**: Changed to `read_only: 0` in orden_de_pago_comisiones.json
   - **Result**: Native pagination now works correctly with ERPNext pure pattern
+- **✅ UX Polish**: Intuitive button naming and messaging for better user experience
 
 ### Final Implementation Details
 - **Clean ERPNext Pattern**: Uses standard `clear_table` → `frm.add_child` → `refresh_field` workflow
@@ -73,3 +75,4 @@ The "Actualizar Comisiones" button handles the complete workflow in two integrat
 - **Live Rate Updates**: Changes in commission rates reflect immediately when saving document
 - **Smart Rate Resolution**: DOC rates → Settings específico → Settings default (never 0)
 - **Data Protection**: Grid protections prevent accidental manual edits while preserving pagination
+- **User-Friendly Interface**: Clear button naming ("Actualiza Listado") with consistent messaging and loading states

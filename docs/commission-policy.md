@@ -7,11 +7,11 @@ The commission calculation system operates on a fully manual workflow:
 
 1. **Branch Selection**: Use "Todas las Sucursales" button or manually select branches
 2. **Date Range**: Set fecha_inicial and hasta_fecha (no automatic triggers)
-3. **Complete Calculation**: Use "Actualizar Comisiones" button with confirmation dialog
+3. **Complete Calculation**: Use "Actualiza Listado" button with confirmation dialog
    - **Part 1**: Synchronizes commission rates from Comisiones Settings
    - **Part 2**: Generates complete commission table with COGS calculations
 4. **Review & Adjust**: Manually edit rates or commission data if needed
-5. **Save Document**: Persist all changes to database
+5. **Save Document**: Persist all changes to database (triggers live rate updates)
 6. **Payment Processing**: Use "Confirmación de Pago" for submitted documents
 
 ### Commission Calculation Logic
@@ -35,7 +35,7 @@ The `get_costo_ventas_si` function implements a hierarchical approach:
 ### Rate Management System
 - **Source of Truth**: Comisiones Settings holds global default rate
 - **Rate Snapshot**: `comisiones_por_sucursal` table stores rates used per order
-- **Synchronization**: "Actualizar Comisiones" button syncs rates with confirmation
+- **Synchronization**: "Actualiza Listado" button syncs rates with confirmation
 - **Clear+Rebuild Pattern**: Ensures 1:1 consistency between branches and rates
 - **Data Protection**: User confirmation prevents accidental loss of manual changes
 

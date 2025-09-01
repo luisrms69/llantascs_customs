@@ -1,5 +1,23 @@
 # Changelog
 
+## [v2.0.3] - 2025-09-01 - UX IMPROVEMENTS
+
+### Enhanced - User Experience
+- **Button Rename**: "Actualizar Comisiones" → "Actualiza Listado" for clearer user intent
+- **Improved Messaging**: "Listado actualizado → Tasas: X, Comisiones: Y, Total: Z" for better feedback
+- **Consistent Loading Text**: "Actualizando listado…" aligns with button name
+- **Confirmation Dialog**: Updated text references to match new button name
+
+### Status - Commission System Complete with Enhanced UX
+- **✅ Part 1**: Rate synchronization from Comisiones Settings - WORKING
+- **✅ Part 2**: Commission calculation with COGS integration - WORKING  
+- **✅ Grid Pagination**: Native controls and navigation - WORKING
+- **✅ Live Updates**: Rate changes instantly reflected on save - WORKING
+- **✅ Data Protection**: User cannot break calculations accidentally - WORKING
+- **✅ UX Polish**: Clear, intuitive button naming and messaging - WORKING
+
+---
+
 ## [v2.0.2] - 2025-09-01 - COMPLETE WITH LIVE UPDATES
 
 ### Added - Live Rate Updates System
@@ -14,13 +32,6 @@
 - **Field-Level Controls**: Only `porcentaje_comision` editable in rates table
 - **UI Consistency**: Both button workflow and save workflow use identical calculation logic
 - **Error Prevention**: No zero fallbacks, always uses valid commission rates
-
-### Status - Commission System Complete
-- **✅ Part 1**: Rate synchronization from Comisiones Settings - WORKING
-- **✅ Part 2**: Commission calculation with COGS integration - WORKING  
-- **✅ Grid Pagination**: Native controls and navigation - WORKING
-- **✅ Live Updates**: Rate changes instantly reflected on save - WORKING
-- **✅ Data Protection**: User cannot break calculations accidentally - WORKING
 
 ---
 
