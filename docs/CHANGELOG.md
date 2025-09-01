@@ -1,5 +1,116 @@
 # Changelog
 
+## [v2.2.0] - 2025-09-01 - INVESTIGATION: NATIVE CANCEL DIALOG ISSUE
+
+### 🔍 Issue Investigation - Native "Cancel All Documents" Dialog
+**Problem**: Sales Invoice cancellation shows ERPNext native dialog "¿Desea cancelar todos los documentos vinculados?" causing user confusion and risk of accidental OPC cancellation.
+
+### ❌ Failed Implementation Attempts
+
+#### Attempt 1: Hybrid JavaScript + Server-Side Interceptor
+- **Approach**: Client Script to intercept `before_cancel` + server-side link breaking
+- **Implementation**: 
+  - Client Script "Sales Invoice Cancellation Guard" created
+  - `pre_cancel_break_opc_link()` server function implemented
+  - Hooks registered in `doc_events`
+- **Result**: ❌ **FAILED** - Native dialog still appeared
+- **Root Cause**: ERPNext executes `savecancel()` BEFORE any Client Script `before_cancel` hooks
+
+#### Attempt 2: Link → Data Field Conversion
+- **Approach**: Convert `custom_orden_de_pago_comision` from Link to Data field to eliminate automatic link detection
+- **Implementation**:
+  - Patch `convert_opc_link_to_data.py` created and executed successfully
+  - Field converted: `Fieldtype: Link → Data`, `Options: "Orden de Pago Comisiones" → ""`
+  - 4,458 Sales Invoices with preserved values
+- **Result**: ❌ **FAILED** - Native dialog still appeared
+- **Root Cause**: ERPNext detects links via **child table references** (`Comision LLCS.sales_invoice_id`), not just parent Link fields
+
+### 🔬 Technical Investigation Findings
+
+#### ERPNext Link Detection Mechanism
+ERPNext's `get_submitted_linked_docs()` function detects document relationships through:
+1. **Direct Link Fields** (successfully eliminated)
+2. **Child Table References** ← **This is the actual cause**
+3. **Dynamic Links** (not applicable in this case)
+
+#### Evidence
+```
+Sales Invoice ACC-SINV-2025-03089 is linked with 
+Orden de Pago Comisiones COMISIONES-2025-08-31-07064
+
+Child table references found:
+- 9 records in Comision LLCS.sales_invoice_id referencing the SI
+- 1 submitted OPC (COMISIONES-2025-08-31-07064) containing the SI
+```
+
+### ✅ Successfully Implemented (Partial)
+
+#### Adjustment System Components
+- **DocType Created**: `Ajuste Comision Pendiente` for tracking cancelled commission adjustments
+- **Server Hooks**: `on_sales_invoice_cancel`, `before_opc_cancel` functional
+- **Triple Fallback Search**: `_find_opc_by_sales_invoice()` working correctly
+- **OPC Protection**: Successfully blocks OPC cancellation when active SIs exist
+
+### 📊 Current System Status
+
+#### Working Components ✅
+- **v2.1 Features**: All negative commission policy and new document support functional
+- **Adjustment Creation**: Automatic adjustment records generated on SI cancellation
+- **Adjustment Consumption**: Pending adjustments integrated into next OPC generation  
+- **OPC Protection**: Cannot accidentally cancel OPCs with active invoices
+- **Legacy Field Fix**: OPC submission works correctly after `sucursal` migration
+
+#### Failing Components ❌
+- **Native Dialog Prevention**: Still shows "Cancel all documents" dialog
+- **User Experience**: Confusing dialog persists, risk of accidental OPC cancellation remains
+
+### 💭 Investigation Conclusion: Problem May Be Unsolvable
+
+#### Technical Constraints Identified
+1. **ERPNext Core Limitation**: Link detection via child tables cannot be easily overridden
+2. **Bidirectional References**: Eliminating child table references would break commission functionality
+3. **Framework Limitations**: Client-side interception occurs too late in cancellation flow
+
+#### Proposed Alternative Approaches (Not Yet Accepted)
+1. **Accept Native Dialog**: Improve user training and documentation
+2. **Server-Side Messaging**: Add informative messages before native dialog
+3. **Focus on Adjustment System**: Perfect the automatic adjustment workflow
+4. **Seek ERPNext Expert**: Consult framework specialists for advanced solutions
+
+### ✅ IMMEDIATE FIX IMPLEMENTED - OPC Protection Active
+
+**Current State**: OPC protection successfully implemented and tested ✅
+**Immediate Security**: OPCs cannot be cancelled if Sales Invoices are active
+**UX Issue**: Native dialog still appears but data is now protected
+**GitHub Issue**: Created for framework-level solution investigation
+
+### 🛡️ IMMEDIATE PROTECTION DETAILS
+
+#### Implementation (2025-09-01)
+- **OPC Class Method**: `before_cancel()` added to `OrdenDePagoComisiones`
+- **Protection Logic**: Counts active Sales Invoices from both child table and custom field
+- **Error Message**: Clear Spanish dialog explaining why cancellation is blocked
+- **Deployment**: Implemented via DocType method (no hooks.py changes needed)
+- **Testing**: ✅ Verified working on multiple OPCs with active SIs
+
+#### Protection Triggers
+1. **Child Table Check**: `Comision LLCS.sales_invoice_id` references with `docstatus = 1`
+2. **Custom Field Check**: `custom_orden_de_pago_comision` back-references with `docstatus = 1`
+3. **Combined Count**: Total active Sales Invoices linked to OPC
+
+#### User Experience
+- **Clear Message**: "Esta Orden de Pago de Comisiones tiene X factura(s) de venta vinculada(s) activas"
+- **Guidance**: "Para ajustar comisiones, cancele las facturas individuales"
+- **Process**: Automatic adjustment generation mentioned
+
+### ⚠️ REMAINING: Testing of Adjustment System
+Adjustment system components still require comprehensive testing:
+- User acceptance testing of adjustment creation/consumption workflow
+- Production data validation of automatic adjustment generation
+- Edge case testing for concurrent SI cancellation operations
+
+---
+
 ## [v2.1.0] - 2025-09-01 - NEGATIVE COMMISSION POLICY & NEW DOCUMENT FIX
 
 ### Added - Negative Commission Policy System

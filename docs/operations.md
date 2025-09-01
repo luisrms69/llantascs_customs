@@ -106,3 +106,154 @@ The "Actualiza Listado" button handles the complete workflow in two integrated p
 - **New Document Errors**: Fixed in v2.1+ with graceful docname handling
 - **Missing Negative Subtotal**: Check if document was created before v2.1, use "Actualiza Listado" to refresh
 - **Policy Changes**: Apply immediately, use "Actualiza Listado" to recalculate existing documents
+
+## Sales Invoice Cancellation Operations (v2.2.0) ⚠️ ISSUE UNRESOLVED
+
+### Overview
+**CRITICAL ISSUE**: The native ERPNext dialog "¿Desea cancelar todos los documentos vinculados?" still appears when cancelling Sales Invoices with commission payments. Multiple technical approaches have been attempted and failed.
+
+### ✅ IMMEDIATE FIX DEPLOYED - Current Problem Status
+- **Issue**: Native cancellation dialog causes user confusion (UX problem remains)
+- **PROTECTION**: OPCs now **CANNOT** be cancelled if Sales Invoices are active ✅
+- **Security**: Data loss risk **ELIMINATED** through before_cancel protection
+- **Status**: **SECURED** with immediate protection, GitHub issue created for UX improvement
+
+### 📋 Failed Technical Approaches
+
+#### Approach 1: JavaScript Interception (FAILED)
+**Goal**: Intercept cancellation before ERPNext shows native dialog
+**Implementation**: 
+- Client Script "Sales Invoice Cancellation Guard" created
+- `before_cancel` hook to show custom dialog
+- `pre_cancel_break_opc_link()` server function to break links
+**Result**: ❌ **Native dialog still appeared**
+**Cause**: ERPNext's `savecancel()` executes before Client Script hooks
+
+#### Approach 2: Field Type Conversion (FAILED)  
+**Goal**: Convert Link field to Data to eliminate automatic link detection
+**Implementation**:
+- Patch successfully converted `custom_orden_de_pago_comision` from Link to Data
+- Field type changed, options cleared, values preserved
+**Result**: ❌ **Native dialog still appeared**
+**Cause**: ERPNext detects links via child table references (`Comision LLCS.sales_invoice_id`), not just parent fields
+
+### 🔬 Root Cause Analysis
+
+#### ERPNext Link Detection Logic
+ERPNext's cancellation flow uses `get_submitted_linked_docs()` which finds relationships through:
+1. **Parent Link Fields** ← Successfully eliminated
+2. **Child Table References** ← **Cannot eliminate without breaking functionality**
+3. **Dynamic Links** ← Not applicable
+
+#### Specific Technical Evidence
+```
+Sales Invoice ACC-SINV-2025-03089 detected as linked because:
+- Child table Comision LLCS contains 9 records with sales_invoice_id = "ACC-SINV-2025-03089"  
+- Parent OPC COMISIONES-2025-08-31-07064 has docstatus = 1 (submitted)
+- ERPNext considers this a "submitted linked document"
+```
+
+### 🛡️ CURRENT PROTECTED OPERATIONS ✅ SECURED
+
+#### What Users Currently Experience (Protected)
+1. **User clicks Cancel** on Sales Invoice with commissions
+2. **Native Dialog Appears**: "¿Desea cancelar todos los documentos vinculados?"
+   - Lists: "Orden de Pago Comisiones: [OPC_NAME]"
+   - Asks: "¿Desea cancelar todos los documentos vinculados?"
+3. **User chooses**:
+   - **"Cancel All"**: 🛡️ **NOW BLOCKED** - OPC protection prevents cancellation, shows clear error
+   - **"No"**: Cancellation is aborted, SI remains active
+
+#### ✅ Protection System Active
+**OPC PROTECTION IMPLEMENTED**:
+- **Automatic Detection**: System counts active Sales Invoices linked to OPC
+- **Clear Error Message**: Spanish dialog explains why cancellation is blocked
+- **User Guidance**: "Para ajustar comisiones, cancele las facturas individuales"
+- **Data Safety**: **IMPOSSIBLE** to accidentally cancel OPC with active invoices
+
+### Adjustment Management
+
+#### Viewing Pending Adjustments
+**Location**: Ajuste Comision Pendiente DocType list
+**Filters**:
+- Status: "Pendiente" (shows active adjustments)
+- Status: "Aplicado" (shows consumed adjustments)
+- Cost Center: Filter by branch
+- Persona de Ventas: Filter by salesperson
+
+#### Next OPC Integration
+**Automatic Inclusion**: Pending adjustments appear in commission calculation
+- Show in commission table with `is_adjustment = 1` 
+- Display as negative amounts (always deduct)
+- NOT subject to negative commission policy
+- Automatically marked "Aplicado" when OPC is submitted
+
+### OPC Protection System
+
+#### Prevention Mechanism
+**Scenario**: User tries to cancel OPC with active Sales Invoices
+**System Response**: Error dialog blocks cancellation:
+- "Esta Orden de Pago de Comisiones tiene X factura(s) vinculada(s) activas"
+- "Para ajustar comisiones, cancele las facturas individuales"
+- Provides clear guidance on proper procedure
+
+#### Recommended Process
+1. **Never Cancel OPCs Directly**: Use SI cancellation instead
+2. **Individual SI Cancellation**: Cancel specific invoices as needed
+3. **Automatic Adjustment**: System handles commission recovery
+4. **Audit Trail**: Complete tracking maintained
+
+### Monitoring and Auditing
+
+#### Key Metrics to Track ⚠️ TESTING REQUIRED
+- **Pending Adjustments**: Count of unprocessed adjustments
+- **Applied Adjustments**: Historical adjustment consumption
+- **Cancelled SIs with Commissions**: Impact tracking
+- **OPC Protection Events**: Blocked cancellation attempts
+
+#### Data Integrity Checks
+- **SI Status Consistency**: Cancelled SIs should have status "Sin Enviar"
+- **OPC Link Status**: Cancelled SIs should have null OPC links  
+- **Adjustment Completeness**: Each cancelled commission should have corresponding adjustment
+- **No Orphaned OPCs**: No submitted OPCs should exist with all SIs cancelled
+
+### Error Handling and Recovery ⚠️ TESTING REQUIRED
+
+#### Potential Issues
+1. **JavaScript Disabled**: Fallback to server-side protection (less UX but functional)
+2. **Concurrent Cancellations**: Database transactions handle race conditions
+3. **Incomplete Adjustments**: Manual creation may be required in edge cases
+4. **Network Interruption**: Database rollback prevents partial states
+
+#### Recovery Procedures
+**Manual Adjustment Creation**:
+```sql
+-- If automatic adjustment fails, manual creation template:
+INSERT INTO `tabAjuste Comision Pendiente` 
+(name, sales_invoice_id, cost_center, persona_de_ventas, monto_ajuste, motivo, source_opc, status)
+VALUES ('AJC-XXXXX', 'SI-ID', 'Cost-Center', 'Salesperson', -Amount, 'Manual adjustment', 'OPC-ID', 'Pendiente');
+```
+
+#### Legacy Data Migration ⚠️ NOT IMPLEMENTED
+For existing cancelled SIs with orphaned commission data, consider implementing:
+- Identification script for historical cases
+- Bulk adjustment creation for pre-v2.2.0 cancellations
+- Audit report for data consistency validation
+
+### Testing Checklist ⚠️ REQUIRED BEFORE PRODUCTION
+
+#### Critical Test Scenarios
+1. **Happy Path**: Cancel SI with OPC link → verify adjustment creation
+2. **UI Flow**: Confirm custom dialog appears (not native ERPNext dialog)
+3. **OPC Protection**: Attempt OPC cancellation → verify blocking
+4. **Next OPC Integration**: Create new OPC → verify adjustment consumption
+5. **Edge Cases**: Network failures, concurrent operations, invalid data
+6. **Performance**: Large OPCs with many SIs
+7. **User Permissions**: Different user roles and access levels
+
+#### Success Criteria
+- **No Data Loss**: Original commissions recoverable through adjustments
+- **User Experience**: Clear, intuitive dialogs (no confusing native messages)
+- **System Integrity**: OPCs remain protected and functional
+- **Audit Trail**: Complete traceability from cancellation to recovery
+- **Error Resilience**: Graceful handling of edge cases and failures
