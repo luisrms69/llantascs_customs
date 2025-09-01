@@ -1,5 +1,22 @@
 # Changelog
 
+## [v2.0.1] - 2025-09-01 - COMPLETE
+
+### Fixed - Grid Pagination Issue (FINAL)
+- **Root Cause Identified**: `comisiones_incluidas` field had `read_only: 1` in DocType JSON
+- **Solution Applied**: Changed to `read_only: 0` in orden_de_pago_comisiones.json 
+- **Result**: Native ERPNext pagination now works perfectly without any workarounds
+- **Code Cleanup**: Removed all grid manipulation hacks, timeouts, and save+reload logic
+- **Final Pattern**: Clean ERPNext standard: `clear_table` → `frm.add_child` → `refresh_field`
+
+### Status - Commission System Complete
+- **✅ Part 1**: Rate synchronization from Comisiones Settings - WORKING
+- **✅ Part 2**: Commission calculation with COGS integration - WORKING  
+- **✅ Grid Pagination**: Native controls and navigation - WORKING
+- **✅ UX**: Identical experience to Purchase Invoice "Get Items from" - ACHIEVED
+
+---
+
 ## [v2.0] - 2025-09-01
 
 ### Added - Multisucursal Support
@@ -60,17 +77,18 @@
 - Removed manual field update triggers and automatic recalculations
 - Centralized all business logic to server-side for single source of truth
 
-### Known Issues - Under Investigation
-- **Child Table Pagination**: Pagination not updating after Clear+Rebuild operations (59 comisiones calculadas, solo 50 visibles)
-- **Research Conducted**: Analyzed ERPNext Purchase Invoice patterns, tested grid.refresh() and grid.reset_grid()
-- **Current Status**: Bug persists, investigating ERPNext core implementation patterns
-- **User Workaround**: Page refresh (F5) displays pagination correctly
+### Issues Resolved
+- **Child Table Pagination**: **FIXED** - Root cause identified and resolved
+  - **Issue**: `comisiones_incluidas` field had `read_only: 1` in DocType JSON, preventing Add Row and pagination
+  - **Solution**: Changed `read_only: 0` in orden_de_pago_comisiones.json and applied migrate
+  - **Result**: Native pagination now works correctly using pure ERPNext patterns
+  - **Code Cleanup**: Removed all grid hacks, timeouts, save+reload workarounds
 
-### Technical
-- Enhanced COGS calculation with fallback mechanisms
-- Improved error handling and user notifications
-- Unit test coverage for commission calculation logic
-- Rate management infrastructure with snapshot pattern
-- Fixtures integration for Custom Fields deployment
-- API endpoints follow single responsibility principle
-- Child table operations following ERPNext core patterns
+### Technical - Final Implementation
+- **Complete Commission System**: Part 1 (rates) + Part 2 (commissions) fully operational
+- **ERPNext Pure Pattern**: Standard `clear_table` → `frm.add_child` → `refresh_field` workflow
+- **Enhanced COGS calculation**: 4-case fallback system with comprehensive error handling
+- **Clean Architecture**: No grid hacks, internal APIs, or workarounds needed
+- **Native UX**: Pagination identical to Purchase Invoice "Get Items from" functionality
+- **API Design**: Single responsibility endpoints with server-side business logic centralization
+- **Configuration Fix**: `comisiones_incluidas` field properly configured as editable table

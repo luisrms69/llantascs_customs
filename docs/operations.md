@@ -60,15 +60,14 @@ The "Actualizar Comisiones" button handles the complete workflow in two integrat
 
 ### Current Implementation Status
 - **✅ Part 1**: Rate synchronization from Comisiones Settings working correctly
-- **✅ Part 2**: Complete commission calculation with COGS integration working correctly
-- **⚠️ Known Issue**: Child table pagination not updating after dynamic row generation
-  - **Symptom**: 59 commissions calculated but only 50 visible without navigation controls
-  - **Workaround**: Page refresh (F5) shows correct pagination
-  - **Investigation**: Tested grid.refresh(), grid.reset_grid() - both unsuccessful
-  - **Next Steps**: Research ERPNext core patterns for dynamic child table operations
+- **✅ Part 2**: Complete commission calculation with COGS integration working correctly  
+- **✅ Grid Pagination**: **RESOLVED** - Issue was `read_only: 1` configuration in DocType JSON
+  - **Root Cause**: Field `comisiones_incluidas` had `read_only: 1`, preventing Add Row and pagination controls
+  - **Solution**: Changed to `read_only: 0` in orden_de_pago_comisiones.json
+  - **Result**: Native pagination now works correctly with ERPNext pure pattern
 
-### Pagination Issue Details
-- **Root Cause**: Frappe Grid doesn't recalculate pagination after Clear+Rebuild operations
-- **Current Code**: Uses `grid.reset_grid()` after `refresh_field()` but pagination remains broken
-- **Research Phase**: Analyzing ERPNext Purchase Invoice "Get Items from" implementation
-- **Potential Solutions**: Direct array assignment pattern, frappe.model API usage
+### Final Implementation Details
+- **Clean ERPNext Pattern**: Uses standard `clear_table` → `frm.add_child` → `refresh_field` workflow
+- **No Grid Hacks**: Eliminated all `grid.refresh()`, `grid.reset_grid()`, timeouts, and internal APIs
+- **Native UX**: Pagination and controls work identically to Purchase Invoice "Get Items from" functionality
+- **Eliminated Code**: Removed save+reload dialogs, confirmation prompts, and debugging logic
