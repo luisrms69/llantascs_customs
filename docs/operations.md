@@ -70,4 +70,6 @@ The "Actualizar Comisiones" button handles the complete workflow in two integrat
 - **Clean ERPNext Pattern**: Uses standard `clear_table` → `frm.add_child` → `refresh_field` workflow
 - **No Grid Hacks**: Eliminated all `grid.refresh()`, `grid.reset_grid()`, timeouts, and internal APIs
 - **Native UX**: Pagination and controls work identically to Purchase Invoice "Get Items from" functionality
-- **Eliminated Code**: Removed save+reload dialogs, confirmation prompts, and debugging logic
+- **Live Rate Updates**: Changes in commission rates reflect immediately when saving document
+- **Smart Rate Resolution**: DOC rates → Settings específico → Settings default (never 0)
+- **Data Protection**: Grid protections prevent accidental manual edits while preserving pagination

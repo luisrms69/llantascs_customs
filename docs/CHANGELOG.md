@@ -1,19 +1,37 @@
 # Changelog
 
-## [v2.0.1] - 2025-09-01 - COMPLETE
+## [v2.0.2] - 2025-09-01 - COMPLETE WITH LIVE UPDATES
 
-### Fixed - Grid Pagination Issue (FINAL)
-- **Root Cause Identified**: `comisiones_incluidas` field had `read_only: 1` in DocType JSON
-- **Solution Applied**: Changed to `read_only: 0` in orden_de_pago_comisiones.json 
-- **Result**: Native ERPNext pagination now works perfectly without any workarounds
-- **Code Cleanup**: Removed all grid manipulation hacks, timeouts, and save+reload logic
-- **Final Pattern**: Clean ERPNext standard: `clear_table` → `frm.add_child` → `refresh_field`
+### Added - Live Rate Updates System
+- **before_save Hook**: Automatic commission recalculation using in-memory rates
+- **Smart Rate Resolution**: DOC → Settings específico → Settings default (eliminado fallback a 0)
+- **get_commission_rows Enhanced**: Now accepts `rates_by_cc` parameter for memory-based calculations
+- **sync_rates_from_settings Improved**: Proper handling of specific rates per branch
+- **Result**: Rate changes in upper table immediately reflect in commission calculations when saving
+
+### Enhanced - Data Protection & UX
+- **Grid Protections**: Prevent manual Add/Delete Row while preserving native pagination
+- **Field-Level Controls**: Only `porcentaje_comision` editable in rates table
+- **UI Consistency**: Both button workflow and save workflow use identical calculation logic
+- **Error Prevention**: No zero fallbacks, always uses valid commission rates
 
 ### Status - Commission System Complete
 - **✅ Part 1**: Rate synchronization from Comisiones Settings - WORKING
 - **✅ Part 2**: Commission calculation with COGS integration - WORKING  
 - **✅ Grid Pagination**: Native controls and navigation - WORKING
-- **✅ UX**: Identical experience to Purchase Invoice "Get Items from" - ACHIEVED
+- **✅ Live Updates**: Rate changes instantly reflected on save - WORKING
+- **✅ Data Protection**: User cannot break calculations accidentally - WORKING
+
+---
+
+## [v2.0.1] - 2025-09-01 - PAGINATION FIXED
+
+### Fixed - Grid Pagination Issue
+- **Root Cause Identified**: `comisiones_incluidas` field had `read_only: 1` in DocType JSON
+- **Solution Applied**: Changed to `read_only: 0` in orden_de_pago_comisiones.json 
+- **Result**: Native ERPNext pagination now works perfectly without any workarounds
+- **Code Cleanup**: Removed all grid manipulation hacks, timeouts, and save+reload logic
+- **Final Pattern**: Clean ERPNext standard: `clear_table` → `frm.add_child` → `refresh_field`
 
 ---
 
@@ -84,11 +102,13 @@
   - **Result**: Native pagination now works correctly using pure ERPNext patterns
   - **Code Cleanup**: Removed all grid hacks, timeouts, save+reload workarounds
 
-### Technical - Final Implementation
-- **Complete Commission System**: Part 1 (rates) + Part 2 (commissions) fully operational
+### Technical - Final Implementation v2.0.2
+- **Complete Commission System**: All parts operational with live updates
+- **Enhanced API**: `get_commission_rows` with `rates_by_cc` parameter for memory-based calculations  
+- **before_save Integration**: Automatic recalculation using in-memory rates before persistence
+- **Rate Hierarchy**: DOC → Settings específico → Settings default (no zero fallbacks)
 - **ERPNext Pure Pattern**: Standard `clear_table` → `frm.add_child` → `refresh_field` workflow
 - **Enhanced COGS calculation**: 4-case fallback system with comprehensive error handling
+- **Data Protection**: Grid restrictions prevent accidents while maintaining native pagination
 - **Clean Architecture**: No grid hacks, internal APIs, or workarounds needed
-- **Native UX**: Pagination identical to Purchase Invoice "Get Items from" functionality
-- **API Design**: Single responsibility endpoints with server-side business logic centralization
-- **Configuration Fix**: `comisiones_incluidas` field properly configured as editable table
+- **Single Source of Truth**: Both button and save workflows use identical calculation logic

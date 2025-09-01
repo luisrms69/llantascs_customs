@@ -48,5 +48,7 @@ The `get_costo_ventas_si` function implements a hierarchical approach:
 - **Backward Compatibility**: Original sucursal field preserved (hidden)
 - **Rate Tracking**: Each OPC maintains snapshot of rates used for audit trail
 - **Memory-First**: All changes stay in memory until user saves document
-- **Native Grid UX**: Standard ERPNext pagination and controls (Add Row, navigation)
-- **Configuration Requirement**: Child tables must have `read_only: 0` for full functionality
+- **Live Rate Updates**: Commission calculations automatically update when rates are modified and saved
+- **Smart Rate Resolution**: Document rates override Settings; specific Settings override default
+- **Native Grid UX**: Standard ERPNext pagination and controls with protective restrictions
+- **Data Integrity**: Zero fallbacks eliminated; always uses valid commission rates from hierarchy
