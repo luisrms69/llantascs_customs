@@ -86,7 +86,9 @@
    "fieldname": "comisiones_por_sucursal",
    "fieldtype": "Table",
    "label": "Comisiones por Sucursal",
-   "options": "OPC Comision Por Sucursal"
+   "options": "OPC Comision Por Sucursal",
+   "cannot_add_rows": 1,
+   "cannot_delete_rows": 1
   },
   {
    "fieldname": "fecha_confirmacion_pago",

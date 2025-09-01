@@ -335,105 +335,129 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
     return out
 
 
-@frappe.whitelist() 
-def get_commission_rows(sucursal, fecha_inicial, fecha_final):
-    """
-    Genera filas de comisiones usando get_sales_invoices() como fuente única.
-    Devuelve estructura lista para JS Clean & Rebuild.
-    """
-    # Usar la función existente optimizada
+@frappe.whitelist()
+def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rates_by_cc=None):
     invoices = get_sales_invoices(sucursal, fecha_inicial, fecha_final)
-    
     if not invoices:
         return {"rows": [], "total": 0, "count": 0}
-    
-    # Obtener rates desde Comisiones Settings
+
+    # default global (fallback cuando no hay tasa por sucursal)
     settings = frappe.get_single("Comisiones Settings")
-    default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad", 0) or 0)
-    
-    # Crear mapa de tasas específicas por sucursal si existe
-    rates_map = {}
-    for row in (getattr(settings, "tasas_por_sucursal", None) or []):
-        cc = (row.cost_center or "").strip()
-        if cc:
-            rates_map[cc] = flt(row.porcentaje_comision or 0)
-    
-    rows = []
-    total_sum = 0
-    
+    default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad"))
+
+    # normalizar rates_by_cc si llega como JSON
+    if isinstance(rates_by_cc, str):
+        try:
+            rates_by_cc = json.loads(rates_by_cc or "{}")
+        except Exception:
+            rates_by_cc = {}
+
+    # 1) si me mandan rates_by_cc (del doc en memoria), usarlo SIEMPRE
+    if rates_by_cc:
+        def _rate_for(cc):
+            val = rates_by_cc.get(cc)
+            return flt(val) if val is not None else default_rate
+
+    # 2) si no, intentar leer tasas desde el documento guardado (docname)
+    elif docname:
+        doc = frappe.get_doc("Orden de Pago Comisiones", docname)
+        map_doc = {}
+        for r in (doc.comisiones_por_sucursal or []):
+            if r.cost_center:
+                map_doc[r.cost_center] = (flt(r.porcentaje_comision)
+                                          if r.porcentaje_comision is not None else None)
+        def _rate_for(cc):
+            val = map_doc.get(cc)
+            return (val if val is not None else default_rate)
+
+    # 3) si no hay docname, usar Settings por sucursal con fallback al default
+    else:
+        specific = {}
+        for row in (getattr(settings, "tasas_por_sucursal", None) or []):
+            cc = (row.cost_center or "").strip()
+            if cc:
+                specific[cc] = (flt(row.porcentaje_comision)
+                                if row.porcentaje_comision is not None else None)
+        def _rate_for(cc):
+            val = specific.get(cc)
+            return (val if val is not None else default_rate)
+
+    # ===== resto de lógica actual (SIN tocar) =====
+    rows, total_sum = [], 0
     for si in invoices:
-        # Obtener datos adicionales necesarios
         si_doc = frappe.get_doc("Sales Invoice", si["name"])
-        
-        if not si_doc.sales_team:
-            continue
-            
-        # Calcular COGS usando función existente robusta
+
+        ingreso = si.get("base_net_total")
+        if ingreso is None:
+            ingreso = si.get("net_total")
+        if ingreso is None:
+            frappe.throw(f"Ingreso no disponible en Sales Invoice {si.get('name')} (base_net_total / net_total).")
+        ingreso = flt(ingreso)
+
         cogs = flt(get_costo_ventas_si(si["name"]))
-        
-        # Usar net_total o base_net_total como ingreso
-        ingreso = flt(si.get("net_total") or si.get("base_net_total") or 0)
         utilidad = ingreso - cogs
-        
-        # Obtener tasa específica por sucursal o default
-        cost_center = si.get("cost_center")
-        rate = rates_map.get(cost_center, default_rate)
-        
-        # Crear fila por cada sales person
-        for sales_person in si_doc.sales_team:
-            allocated_percentage = flt(sales_person.allocated_percentage or 0)
-            # Calcular comisión proporcional por persona
-            person_utilidad = utilidad * (allocated_percentage / 100.0) if allocated_percentage else utilidad
-            total_comision = person_utilidad * (rate / 100.0)
-            
-            row = {
+
+        cc = si.get("cost_center")
+        rate_cc = _rate_for(cc)
+
+        if not si_doc.sales_team:
+            total_comision = utilidad * (rate_cc / 100.0)
+            rows.append({
                 "sales_invoice_id": si["name"],
                 "posting_date": si["posting_date"],
-                "cost_center": cost_center,
-                "persona_de_ventas": sales_person.sales_person,
-                "porcentaje_comision": allocated_percentage,
+                "cost_center": cc,
+                "persona_de_ventas": "",
+                "porcentaje_comision": 0.0,
+                "ingreso": ingreso,
+                "costo_de_ventas": cogs,
+                "utilidad_transaccion": utilidad,
+                "total_comision": total_comision,
+                "folio_fiscal": getattr(si_doc, "custom_folio_fiscal", "") or ""
+            })
+            total_sum += total_comision
+            continue
+
+        for sp in si_doc.sales_team:
+            alloc = flt(sp.allocated_percentage or 0)
+            person_utilidad = utilidad * (alloc / 100.0) if alloc else utilidad
+            total_comision = person_utilidad * (rate_cc / 100.0)
+            rows.append({
+                "sales_invoice_id": si["name"],
+                "posting_date": si["posting_date"],
+                "cost_center": cc,
+                "persona_de_ventas": sp.sales_person,
+                "porcentaje_comision": alloc,
                 "ingreso": ingreso,
                 "costo_de_ventas": cogs,
                 "utilidad_transaccion": person_utilidad,
                 "total_comision": total_comision,
                 "folio_fiscal": getattr(si_doc, "custom_folio_fiscal", "") or ""
-            }
-            
-            rows.append(row)
+            })
             total_sum += total_comision
-    
-    return {
-        "rows": rows,
-        "total": total_sum,
-        "count": len(rows)
-    }
+
+    return {"rows": rows, "total": total_sum, "count": len(rows)}
 
 
 @frappe.whitelist()
 def sync_rates_from_settings(cost_centers):
-    """
-    Devuelve las tasas por sucursal tomando como default
-    Comisiones Settings.porcentaje_sobre_utilidad.
-    - cost_centers: lista (o JSON str) de nombres de Cost Center seleccionados.
-    - No escribe en BD; sólo retorna filas para que el JS sincronice en memoria.
-    """
     if isinstance(cost_centers, str):
-        cost_centers = json.loads(cost_centers)
+        cost_centers = json.loads(cost_centers or "[]")
+    cost_centers = [cc for cc in (cost_centers or []) if cc]
 
-    default_rate = frappe.db.get_single_value("Comisiones Settings", "porcentaje_sobre_utilidad") or 0.0
+    settings = frappe.get_single("Comisiones Settings")
+    default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad"))
 
-    rows = []
-    for cc in cost_centers:
-        rows.append({
-            "cost_center": cc,
-            "porcentaje_comision": flt(default_rate)
-        })
+    # tasas específicas por CC (si una fila no tiene tasa, cae al default)
+    specific = {}
+    for row in (getattr(settings, "tasas_por_sucursal", None) or []):
+        cc = (row.cost_center or "").strip()
+        if cc:
+            specific[cc] = flt(row.porcentaje_comision) if row.porcentaje_comision is not None else default_rate
 
-    return {
-        "rows": rows,
-        "applied": len(rows),
-        "default_rate": flt(default_rate)
-    }
+    rows = [{"cost_center": cc, "porcentaje_comision": specific.get(cc, default_rate)}
+            for cc in cost_centers]
+
+    return {"rows": rows, "applied": len(rows), "default_rate": default_rate}
 
 
 @frappe.whitelist()

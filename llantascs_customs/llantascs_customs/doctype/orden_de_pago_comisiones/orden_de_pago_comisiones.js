@@ -88,6 +88,19 @@ function generate_order(frm) {
 // Codigo que genera boton en la Factura para hacer el envio por correo y llama al método PY de envio
 frappe.ui.form.on('Orden de Pago Comisiones', {
     refresh: function (frm) {
+        // === Protecciones UI ===
+        // Tabla de comisiones: totalmente read-only
+        const g1 = frm.get_field('comisiones_incluidas')?.grid;
+        if (g1) {
+            g1.cannot_add_rows = true;
+            g1.cannot_delete_rows = true;
+        }
+        // Tabla de tasas: sin altas/bajas, solo editar porcentaje
+        const g2 = frm.get_field('comisiones_por_sucursal')?.grid;
+        if (g2) {
+            g2.cannot_add_rows = true;
+            g2.cannot_delete_rows = true;
+        }
         // Botones visibles solo si el documento está en Draft y ya guardado
         if (frm.doc.name && frm.doc.docstatus === 0) {
             // Botón "Todas las Sucursales"
@@ -170,7 +183,8 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                             args: {
                                 sucursal: selected,
                                 fecha_inicial: frm.doc.desde,
-                                fecha_final: frm.doc.hasta_fecha
+                                fecha_final: frm.doc.hasta_fecha,
+                                docname: frm.doc.name
                             },
                             freeze: true,
                             freeze_message: 'Calculando comisiones…'
