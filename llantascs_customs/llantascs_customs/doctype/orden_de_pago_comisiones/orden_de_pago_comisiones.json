@@ -9,6 +9,7 @@
   "section_break_6yse",
   "sucursal",
   "sucursales_multi",
+  "comisiones_por_sucursal",
   "amended_from",
   "fecha_de_envio",
   "fecha_confirmacion_pago",
@@ -80,6 +81,12 @@
    "label": "Sucursales",
    "options": "Sucursales Multi",
    "reqd": 1
+  },
+  {
+   "fieldname": "comisiones_por_sucursal",
+   "fieldtype": "Table",
+   "label": "Comisiones por Sucursal",
+   "options": "OPC Comision Por Sucursal"
   },
   {
    "fieldname": "fecha_confirmacion_pago",

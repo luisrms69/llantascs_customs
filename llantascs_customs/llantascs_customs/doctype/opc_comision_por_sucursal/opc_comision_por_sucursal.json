@@ -1,0 +1,14 @@
+{
+  "doctype": "DocType",
+  "name": "OPC Comision Por Sucursal",
+  "module": "Llantascs Customs",
+  "istable": 1,
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": ["cost_center", "porcentaje_comision"],
+  "fields": [
+    {"fieldname": "cost_center", "fieldtype": "Link", "label": "Cost Center", "options": "Cost Center", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "porcentaje_comision", "fieldtype": "Float", "label": "Porcentaje Comisión", "reqd": 1, "precision": "6", "in_list_view": 1}
+  ],
+  "permissions": []
+}

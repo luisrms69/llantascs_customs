@@ -397,5 +397,16 @@
   "translatable": 0,
   "unique": 0,
   "width": null
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Comisiones Settings-tasas_por_sucursal",
+  "dt": "Comisiones Settings",
+  "fieldname": "tasas_por_sucursal",
+  "label": "Tasas por Sucursal",
+  "fieldtype": "Table",
+  "options": "Comisiones Settings Sucursal",
+  "insert_after": "porcentaje_sobre_utilidad",
+  "module": "Llantascs Customs"
  }
 ]

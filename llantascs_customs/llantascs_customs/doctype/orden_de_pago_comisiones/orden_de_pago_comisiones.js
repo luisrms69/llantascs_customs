@@ -84,8 +84,9 @@ function generate_order(frm) {
 // Codigo que genera boton en la Factura para hacer el envio por correo y llama al método PY de envio
 frappe.ui.form.on('Orden de Pago Comisiones', {
     refresh: function (frm) {
-        // Botón "Todas las Sucursales" visible solo si el documento está en Draft y ya guardado
+        // Botones visibles solo si el documento está en Draft y ya guardado
         if (frm.doc.name && frm.doc.docstatus === 0) {
+            // Botón "Todas las Sucursales"
             frm.add_custom_button('Todas las Sucursales', async () => {
                 const r = await frappe.call({
                     method: 'llantascs_customs.llantascs_customs.api.get_all_cost_centers',
@@ -105,6 +106,61 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                     message: `Se agregaron ${centers.length} sucursales.`,
                     indicator: 'green'
                 });
+            });
+
+            // Botón "Actualizar Comisiones" (Clear + Rebuild con confirmación)
+            frm.add_custom_button('Actualizar Comisiones', async () => {
+                const selected = (frm.doc.sucursales_multi || [])
+                    .map(r => r.cost_center)
+                    .filter(Boolean);
+
+                if (!selected.length) {
+                    frappe.msgprint('Selecciona al menos una sucursal en "Sucursales".');
+                    return;
+                }
+
+                // ⚠️ Confirmación previa
+                frappe.confirm(
+                    'Cada vez que presiones "Actualizar Comisiones", <b>se perderán</b> los cambios manuales ' +
+                    'en la <b>tabla de tasas</b> y en la <b>tabla de comisiones</b>. ¿Deseas continuar?',
+                    async () => {
+                        // Usuario CONFIRMÓ → proceder
+
+                        // 1) Limpiar tablas (tasas y comisiones) y resetear total
+                        frm.clear_table('comisiones_por_sucursal');
+                        frm.clear_table('comisiones_incluidas'); // la llenarás en la Parte 2
+                        frm.set_value('monto_total', 0);
+                        frm.refresh_field('comisiones_por_sucursal');
+                        frm.refresh_field('comisiones_incluidas');
+
+                        // 2) Pedir tasas a Settings (específica por sucursal o default)
+                        const r = await frappe.call({
+                            method: 'llantascs_customs.llantascs_customs.api.sync_rates_from_settings',
+                            args: { cost_centers: selected },
+                            freeze: true,
+                            freeze_message: 'Sincronizando tasas desde Settings…'
+                        });
+
+                        const payload = r.message || {};
+                        const rows = payload.rows || [];
+
+                        // 3) Rebuild 1:1 con las sucursales seleccionadas
+                        rows.forEach(x => {
+                            frm.add_child('comisiones_por_sucursal', {
+                                cost_center: x.cost_center,
+                                porcentaje_comision: x.porcentaje_comision
+                            });
+                        });
+                        frm.refresh_field('comisiones_por_sucursal');
+
+                        // (Parte 2: aquí después agregaremos el llenado de comisiones_incluidas)
+
+                        frappe.show_alert({ message: `Tasas sincronizadas: ${rows.length}`, indicator: 'green' });
+                    },
+                    () => {
+                        // Usuario CANCELÓ → no hacer nada
+                    }
+                );
             });
         }
         

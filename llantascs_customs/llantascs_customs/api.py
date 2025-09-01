@@ -248,6 +248,33 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
 
 
 @frappe.whitelist()
+def sync_rates_from_settings(cost_centers):
+    """
+    Devuelve las tasas por sucursal tomando como default
+    Comisiones Settings.porcentaje_sobre_utilidad.
+    - cost_centers: lista (o JSON str) de nombres de Cost Center seleccionados.
+    - No escribe en BD; sólo retorna filas para que el JS sincronice en memoria.
+    """
+    if isinstance(cost_centers, str):
+        cost_centers = json.loads(cost_centers)
+
+    default_rate = frappe.db.get_single_value("Comisiones Settings", "porcentaje_sobre_utilidad") or 0.0
+
+    rows = []
+    for cc in cost_centers:
+        rows.append({
+            "cost_center": cc,
+            "porcentaje_comision": flt(default_rate)
+        })
+
+    return {
+        "rows": rows,
+        "applied": len(rows),
+        "default_rate": flt(default_rate)
+    }
+
+
+@frappe.whitelist()
 def get_costo_ventas_sales_invoice(sales_invoice_id):
 
     cogs = 0
