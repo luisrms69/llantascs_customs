@@ -229,22 +229,184 @@ def get_commission_rate():
 
 @frappe.whitelist()
 def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
-    sales_invoice_id_list = get_sales_invoices_id(sucursal, fecha_inicial, fecha_final)
-    sales_invoices = []
+    """
+    FUENTE ÚNICA DE FILTROS para poblar comisiones desde el servidor.
 
-    # frappe.msgprint("entro a get sales invoices")
+    Reglas:
+      - status = "Paid"
+      - posting_date BETWEEN [fecha_inicial, fecha_final]
+      - cost_center IN sucursal (acepta list o str)
+      - Entregada (para ítems stock). Si la factura es solo de servicios (no-stock), no exige entrega.
+      - (Opcional) custom_status_comisiones = "Sin Enviar" si el campo existe.
 
-    for sales_invoice in sales_invoice_id_list:
-        sinv = frappe.get_doc("Sales Invoice", sales_invoice)
-        # frappe.msgprint(str(sales_invoice))
-        # frappe.msgprint(str(is_delivered(sinv)))
-        if sinv.sales_team and is_delivered(sinv):
-            sales_invoices.append(sinv)
+    Devuelve la lista de Sales Invoice (dicts) ya consistente para que
+    tu función de poblado consuma sin recalcular filtros en el cliente.
+    """
+    import json as _json
 
-    # frappe.msgprint("estas son las invoices")
-    # frappe.msgprint(str(sales_invoices))
+    # Normalizar sucursal a lista
+    if isinstance(sucursal, str):
+        try:
+            sucursal = _json.loads(sucursal or "[]")
+        except Exception:
+            # Si no viene JSON, asumimos un único CC en string
+            sucursal = [sucursal] if sucursal else []
+    sucursal = [cc for cc in (sucursal or []) if cc]
 
-    return sales_invoices
+    if not fecha_inicial or not fecha_final or not sucursal:
+        frappe.throw("Faltan filtros obligatorios: sucursal(es), fecha_inicial y fecha_final.")
+
+    # Filtros canónicos (no se replican en JS)
+    filters = {
+        "status": "Paid",
+        "posting_date": ["between", [fecha_inicial, fecha_final]],
+        "cost_center": ["in", sucursal],
+    }
+    # Solo si existe el campo custom_status_comisiones
+    if frappe.get_meta("Sales Invoice").get_field("custom_status_comisiones"):
+        filters["custom_status_comisiones"] = "Sin Enviar"
+
+    # Consulta base (orden determinístico)
+    sinv = frappe.get_all(
+        "Sales Invoice",
+        filters=filters,
+        fields=[
+            "name", "posting_date", "customer", "cost_center",
+            "net_total", "base_net_total", "update_stock"
+        ],
+        order_by="posting_date asc, name asc",
+        limit=2000
+    )
+
+    if not sinv:
+        return []
+
+    # Determinar si la SI está "entregada" cuando hay ítems stock
+    # Regla: si TODOS los ítems son servicio (no stock)-> no exige entrega
+    #        si hay algún ítem stock -> exigir entregada
+    def _is_service_only(si_name: str) -> bool:
+        """
+        True si TODOS los items de la SI son no-stock (servicios).
+        Optimización: una sola consulta SQL con JOIN a Item.
+        """
+        items = frappe.db.sql("""
+            SELECT i.is_stock_item
+            FROM `tabSales Invoice Item` sii
+            JOIN `tabItem` i ON i.name = sii.item_code
+            WHERE sii.parent = %s
+        """, (si_name,), as_dict=True)
+
+        # Sin items: trátalo como servicio (no bloquea)
+        if not items:
+            return True
+
+        # Si existe al menos un item de inventario, NO es sólo servicio
+        return all(not (row.get("is_stock_item") or 0) for row in items)
+
+    def _delivered(si_name: str) -> bool:
+        """
+        Consideramos 'entregada' si:
+          - La factura hizo update_stock (ya descargó inventario), o
+          - Tiene Delivery Notes vinculados con qty entregada > 0
+        """
+        upd = frappe.db.get_value("Sales Invoice", si_name, "update_stock")
+        if upd:
+            return True
+
+        # ¿Tiene al menos un Delivery Note vinculado?
+        has_dn = frappe.db.sql("""
+            SELECT 1
+            FROM `tabSales Invoice Item`
+            WHERE parent = %s AND IFNULL(delivery_note, '') != ''
+            LIMIT 1
+        """, (si_name,))
+        return bool(has_dn)
+
+    # Post-filtrado por entrega según tipo de items
+    out = []
+    for si in sinv:
+        if _is_service_only(si["name"]):
+            out.append(si)  # servicios: no exige entrega
+        else:
+            if _delivered(si["name"]):
+                out.append(si)
+            # si no está entregada y tiene stock -> se excluye
+
+    return out
+
+
+@frappe.whitelist() 
+def get_commission_rows(sucursal, fecha_inicial, fecha_final):
+    """
+    Genera filas de comisiones usando get_sales_invoices() como fuente única.
+    Devuelve estructura lista para JS Clean & Rebuild.
+    """
+    # Usar la función existente optimizada
+    invoices = get_sales_invoices(sucursal, fecha_inicial, fecha_final)
+    
+    if not invoices:
+        return {"rows": [], "total": 0, "count": 0}
+    
+    # Obtener rates desde Comisiones Settings
+    settings = frappe.get_single("Comisiones Settings")
+    default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad", 0) or 0)
+    
+    # Crear mapa de tasas específicas por sucursal si existe
+    rates_map = {}
+    for row in (getattr(settings, "tasas_por_sucursal", None) or []):
+        cc = (row.cost_center or "").strip()
+        if cc:
+            rates_map[cc] = flt(row.porcentaje_comision or 0)
+    
+    rows = []
+    total_sum = 0
+    
+    for si in invoices:
+        # Obtener datos adicionales necesarios
+        si_doc = frappe.get_doc("Sales Invoice", si["name"])
+        
+        if not si_doc.sales_team:
+            continue
+            
+        # Calcular COGS usando función existente robusta
+        cogs = flt(get_costo_ventas_si(si["name"]))
+        
+        # Usar net_total o base_net_total como ingreso
+        ingreso = flt(si.get("net_total") or si.get("base_net_total") or 0)
+        utilidad = ingreso - cogs
+        
+        # Obtener tasa específica por sucursal o default
+        cost_center = si.get("cost_center")
+        rate = rates_map.get(cost_center, default_rate)
+        
+        # Crear fila por cada sales person
+        for sales_person in si_doc.sales_team:
+            allocated_percentage = flt(sales_person.allocated_percentage or 0)
+            # Calcular comisión proporcional por persona
+            person_utilidad = utilidad * (allocated_percentage / 100.0) if allocated_percentage else utilidad
+            total_comision = person_utilidad * (rate / 100.0)
+            
+            row = {
+                "sales_invoice_id": si["name"],
+                "posting_date": si["posting_date"],
+                "cost_center": cost_center,
+                "persona_de_ventas": sales_person.sales_person,
+                "porcentaje_comision": allocated_percentage,
+                "ingreso": ingreso,
+                "costo_de_ventas": cogs,
+                "utilidad_transaccion": person_utilidad,
+                "total_comision": total_comision,
+                "folio_fiscal": getattr(si_doc, "custom_folio_fiscal", "") or ""
+            }
+            
+            rows.append(row)
+            total_sum += total_comision
+    
+    return {
+        "rows": rows,
+        "total": total_sum,
+        "count": len(rows)
+    }
 
 
 @frappe.whitelist()

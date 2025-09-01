@@ -24,6 +24,10 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
 )
 
 
+// LEGACY FUNCTIONS - DEPRECATED (replaced by Actualizar Comisiones button)
+// Keeping for reference, will be removed in future version
+
+/*
 function populate_child_sales(frm, invoice, cogs) {
     var child = frm.add_child('comisiones_incluidas');
     child.sales_invoice_id = invoice.name;
@@ -59,7 +63,6 @@ function create_order(frm, message) {
     frm.doc.monto_total = monto_total
 }
 
-
 function generate_order(frm) {
     frappe.call({
         method: 'llantascs_customs.llantascs_customs.api.get_sales_invoices',
@@ -75,6 +78,7 @@ function generate_order(frm) {
         }
     })
 }
+*/
 
 
 
@@ -153,9 +157,48 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                         });
                         frm.refresh_field('comisiones_por_sucursal');
 
-                        // (Parte 2: aquí después agregaremos el llenado de comisiones_incluidas)
+                        // === Parte 2: construir tabla de comisiones (Clean & Rebuild) ===
+                        // Validar fechas
+                        if (!frm.doc.desde || !frm.doc.hasta_fecha) {
+                            frappe.msgprint('Define el rango de fechas: "Desde" y "Hasta".');
+                            return;
+                        }
 
-                        frappe.show_alert({ message: `Tasas sincronizadas: ${rows.length}`, indicator: 'green' });
+                        // Pedir filas calculadas al backend usando función existente optimizada
+                        const r2 = await frappe.call({
+                            method: 'llantascs_customs.llantascs_customs.api.get_commission_rows',
+                            args: {
+                                sucursal: selected,
+                                fecha_inicial: frm.doc.desde,
+                                fecha_final: frm.doc.hasta_fecha
+                            },
+                            freeze: true,
+                            freeze_message: 'Calculando comisiones…'
+                        });
+
+                        const payload2 = r2.message || {};
+                        const rows2 = payload2.rows || [];
+                        const total2 = payload2.total || 0;
+
+                        // === Nivel 1: Patrón ERPNext Puro ===
+                        frm.clear_table('comisiones_incluidas');
+                        (rows2 || []).forEach(row => {
+                            const d = frm.add_child('comisiones_incluidas');
+                            for (const key in row) {
+                                if (row[key] != null && key !== 'doctype' && key !== 'name') {
+                                    d[key] = row[key];
+                                }
+                            }
+                        });
+                        frm.refresh_field('comisiones_incluidas');
+
+                        frm.set_value('monto_total', total2 || 0);
+                        frm.refresh_field('monto_total');
+
+                        frappe.show_alert({
+                            message: `Tasas: ${rows.length} | Comisiones: ${rows2.length} | Total: ${format_currency(total2, frm.doc.currency || 'MXN')}`,
+                            indicator: 'green'
+                        });
                     },
                     () => {
                         // Usuario CANCELÓ → no hacer nada

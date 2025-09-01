@@ -47,7 +47,7 @@
    "fieldtype": "Table",
    "label": "Comisiones Incluidas",
    "options": "Comision LLCS",
-   "read_only": 1
+   "read_only": 0
   },
   {
    "default": "Today",

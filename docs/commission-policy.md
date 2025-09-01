@@ -7,9 +7,12 @@ The commission calculation system operates on a fully manual workflow:
 
 1. **Branch Selection**: Use "Todas las Sucursales" button or manually select branches
 2. **Date Range**: Set fecha_inicial and hasta_fecha (no automatic triggers)
-3. **Rate Synchronization**: Use "Actualizar Comisiones" button with confirmation dialog
-4. **Commission Calculation**: Will use "Actualizar Comisiones" button (Part 2 - upcoming)
-5. **Payment Processing**: Use "Confirmación de Pago" for submitted documents
+3. **Complete Calculation**: Use "Actualizar Comisiones" button with confirmation dialog
+   - **Part 1**: Synchronizes commission rates from Comisiones Settings
+   - **Part 2**: Generates complete commission table with COGS calculations
+4. **Review & Adjust**: Manually edit rates or commission data if needed
+5. **Save Document**: Persist all changes to database
+6. **Payment Processing**: Use "Confirmación de Pago" for submitted documents
 
 ### Commission Calculation Logic
 
@@ -21,11 +24,13 @@ The `get_costo_ventas_si` function implements a hierarchical approach:
 3. **Tertiary**: Return adjustment calculations
 4. **Fallback**: Item base_rate * qty (with warnings)
 
-#### Commission Calculation
-- Base commission rate from Comisiones Settings
-- Applied to: `(Ingreso - COGS) * Percentage * Rate / 10000`
-- Supports multiple sales persons per invoice
-- Handles allocated percentages properly
+#### Commission Calculation (Enhanced)
+- **Single Source**: All calculations performed server-side via `get_commission_rows()`
+- **Rate Resolution**: Specific branch rates or global default from Comisiones Settings
+- **Formula**: `(Ingreso - COGS) * Sales_Person_Percentage * Branch_Rate / 10000`
+- **Multi-Person Support**: Proportional calculation per `allocated_percentage`
+- **Service Logic**: Service-only invoices exempt from delivery requirement
+- **Stock Logic**: Stock items require delivery confirmation (update_stock or Delivery Note)
 
 ### Rate Management System
 - **Source of Truth**: Comisiones Settings holds global default rate
@@ -34,9 +39,12 @@ The `get_costo_ventas_si` function implements a hierarchical approach:
 - **Clear+Rebuild Pattern**: Ensures 1:1 consistency between branches and rates
 - **Data Protection**: User confirmation prevents accidental loss of manual changes
 
-### Field Behavior
+### Field Behavior & Data Flow
 - **No Automatic Recalculation**: Field changes don't trigger calculations
 - **Button-Driven**: All actions require explicit user interaction
+- **Server-Side Processing**: All business logic centralized in Python
+- **Clear+Rebuild Pattern**: Ensures data consistency and eliminates orphaned records
 - **Multi-Branch Support**: Select multiple cost centers simultaneously
 - **Backward Compatibility**: Original sucursal field preserved (hidden)
 - **Rate Tracking**: Each OPC maintains snapshot of rates used for audit trail
+- **Memory-First**: All changes stay in memory until user saves document

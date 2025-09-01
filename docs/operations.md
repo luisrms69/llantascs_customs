@@ -24,22 +24,51 @@ The commission calculation workflow has been restructured to be fully manual, re
 - `desde`/`hasta_fecha`: Date fields without automatic triggers
 - `comisiones_incluidas`: Commission table updated only via manual actions
 
-### Commission Rate Synchronization
-The "Actualizar Comisiones" button (Part 1) handles:
+### Complete Commission Calculation System
+The "Actualizar Comisiones" button handles the complete workflow in two integrated parts:
+
+#### Part 1: Rate Synchronization
 - **Confirmation Dialog**: Warns about data loss before proceeding
 - **Table Cleanup**: Clears both `comisiones_por_sucursal` and `comisiones_incluidas`
 - **Rate Sync**: Pulls global default from Comisiones Settings
 - **Rebuild**: Creates 1:1 mapping between selected branches and rates
 - **Total Reset**: Sets `monto_total = 0` for clean state
 
+#### Part 2: Commission Calculation
+- **Date Validation**: Ensures fecha_inicial and hasta_fecha are set
+- **Invoice Filtering**: Uses enhanced `get_sales_invoices()` with multisucursal support
+- **Business Rules**: Applies "Paid + Delivered (except services)" logic
+- **COGS Integration**: Uses robust 4-case `get_costo_ventas_si()` function
+- **Per-Person Calculation**: Handles multiple sales persons with allocated percentages
+- **Table Generation**: Populates `comisiones_incluidas` with complete commission data
+- **Total Calculation**: Updates `monto_total` with sum of all commissions
+
+### Enhanced Business Logic
+- **Service vs Stock**: Service-only invoices bypass delivery requirement
+- **Multisucursal**: Accepts array of cost centers, filters with SQL `IN` clause
+- **SQL Optimizations**: Single JOIN queries eliminate N+1 performance issues
+- **Deterministic Results**: Stable sorting ensures consistent output
+- **Server-Side Processing**: Eliminates client-server calculation divergence
+
 ### Button Behavior
 - **Visibility**: Only in Draft documents that are saved (`frm.doc.name && docstatus === 0`)
 - **Validation**: Requires at least one branch selected in `sucursales_multi`
+- **Date Validation**: Requires both fecha_inicial and hasta_fecha to be set
 - **Clear+Rebuild**: Ensures perfect synchronization, no orphaned data
 - **User Control**: Confirmation required, cancellation supported
+- **Comprehensive Feedback**: Shows rates synced, commissions generated, and formatted total
 
-### Next Phase
-Upcoming "Actualizar Comisiones" button Part 2 will handle:
-- Sales Invoice filtering by date range and selected branches
-- Commission table generation with COGS calculation using `get_costo_ventas_si`
-- Complete commission calculation workflow with totals
+### Current Implementation Status
+- **✅ Part 1**: Rate synchronization from Comisiones Settings working correctly
+- **✅ Part 2**: Complete commission calculation with COGS integration working correctly
+- **⚠️ Known Issue**: Child table pagination not updating after dynamic row generation
+  - **Symptom**: 59 commissions calculated but only 50 visible without navigation controls
+  - **Workaround**: Page refresh (F5) shows correct pagination
+  - **Investigation**: Tested grid.refresh(), grid.reset_grid() - both unsuccessful
+  - **Next Steps**: Research ERPNext core patterns for dynamic child table operations
+
+### Pagination Issue Details
+- **Root Cause**: Frappe Grid doesn't recalculate pagination after Clear+Rebuild operations
+- **Current Code**: Uses `grid.reset_grid()` after `refresh_field()` but pagination remains broken
+- **Research Phase**: Analyzing ERPNext Purchase Invoice "Get Items from" implementation
+- **Potential Solutions**: Direct array assignment pattern, frappe.model API usage
