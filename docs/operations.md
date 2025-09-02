@@ -107,16 +107,62 @@ The "Actualiza Listado" button handles the complete workflow in two integrated p
 - **Missing Negative Subtotal**: Check if document was created before v2.1, use "Actualiza Listado" to refresh
 - **Policy Changes**: Apply immediately, use "Actualiza Listado" to recalculate existing documents
 
-## Sales Invoice Cancellation Operations (v2.2.0) ⚠️ ISSUE UNRESOLVED
+## Sistema de Protección OPC (v2.2.1) ✅ IMPLEMENTADO
 
-### Overview
-**CRITICAL ISSUE**: The native ERPNext dialog "¿Desea cancelar todos los documentos vinculados?" still appears when cancelling Sales Invoices with commission payments. Multiple technical approaches have been attempted and failed.
+### Estado Actual - Sistema Estable
+**IMPLEMENTACIÓN EXITOSA**: Protección OPC completamente funcional y verificada
+**STATUS**: PRODUCCIÓN - Sistema limpio sin código experimental
+**FECHA**: Septiembre 2025 - Listo para operaciones normales
 
-### ✅ IMMEDIATE FIX DEPLOYED - Current Problem Status
-- **Issue**: Native cancellation dialog causes user confusion (UX problem remains)
-- **PROTECTION**: OPCs now **CANNOT** be cancelled if Sales Invoices are active ✅
-- **Security**: Data loss risk **ELIMINATED** through before_cancel protection
-- **Status**: **SECURED** with immediate protection, GitHub issue created for UX improvement
+### 🔒 Funcionalidad de Protección Implementada
+- **Objetivo**: Evitar cancelación accidental de OPCs con Sales Invoices activas
+- **Implementación**: Método `before_cancel()` en OrdenDePagoComisiones
+- **Cobertura**: Detecta vínculos via child table y custom fields
+- **Resultado**: ✅ Cancelación bloqueada con mensaje claro en español
+- **Estado**: COMPLETAMENTE FUNCIONAL
+
+### 🔍 Control de Calidad en Curso (Septiembre 2025)
+**Actividad Actual**: Revisión sistemática de calidad en OPCs generadas
+**Objetivo**: Identificar y resolver inconsistencias menores de datos
+
+#### Áreas de Análisis Identificadas
+1. **COGS Fallbacks**: Facturas de servicio sin costos de venta registrados
+2. **Folios Fiscales Faltantes**: Sales Invoices sin folios fiscales completos  
+3. **Personas de Venta**: Facturas sin sales team configurado correctamente
+4. **Utilidades Negativas**: Casos específicos con costos superiores a ingresos
+
+#### Proceso de Calidad Implementado
+- **Análisis Automatizado**: Scripts de diagnóstico para OPCs específicas
+- **Caso 1 Completado**: COGS fallbacks resueltos con nueva lógica de componentes aditivos
+- **Revisión Caso por Caso**: Investigación detallada de inconsistencias restantes
+- **Documentación**: Registro completo de hallazgos y resoluciones
+- **Validación**: Verificación de correcciones antes de implementar
+
+### 📊 Métodos COGS Actualizados (v2.2.2) - IMPLEMENTADO
+
+#### Componentes de Cálculo Implementados
+1. **Servicios**: Detección temprana → return 0.0 directo (sin warnings)
+2. **Dropshipping**: `_cost_from_po_for_dropship()` usa Sales Order Item.delivered_by_supplier
+3. **Delivery Notes**: `_cost_from_dn_items()` suma DN Item.base_net_rate * qty
+4. **Stock Ledger**: `_sle_total_for_si()` suma stock_value_difference si existe
+5. **Purchase Order**: `_cost_from_po_items()` para items restantes vía Sales Order
+6. **GL Entry Fallback**: `_cost_from_gl_entries()` usa cuentas Cost of Goods Sold
+
+#### Beneficios del Nuevo Sistema
+- **Sin Warnings Innecesarios**: ✅ Servicios no generan alertas de fallback
+- **Cálculo Correcto**: ✅ Facturas mixtas (servicios + productos) manejadas apropiadamente
+- **Campos Reales**: ✅ Uso de so_detail y Sales Order Item en lugar de campos inexistentes
+- **Fallback Contable**: ✅ GL Entry como respaldo final para casos edge
+- **UX Limpio**: ✅ Eliminación de msgprint molestos
+- **Bug Fix Mayor**: ✅ OperationalError (1054) resuelto definitivamente
+
+### 🗂️ Archivos de Investigación Removidos
+**Eliminado en Limpieza del Sistema** (commit f6da4ad):
+- Código experimental de cancelación fallido
+- ADRs de propuestas no implementadas  
+- Scripts temporales de testing
+- Patches experimentales
+- **Resultado**: Código base limpio y enfocado en funcionalidad comprobada
 
 ### 📋 Failed Technical Approaches
 

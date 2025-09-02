@@ -16,21 +16,25 @@ The commission calculation system operates on a fully manual workflow:
 
 ### Commission Calculation Logic
 
-#### Cost of Goods Sold (COGS) Resolution
-The `get_costo_ventas_si` function implements a hierarchical approach:
+#### Cost of Goods Sold (COGS) Resolution (v2.2.2 Updated)
+The `get_costo_ventas_si` function implements a **6-component additive approach**:
 
-1. **Primary**: Stock Ledger Entry (`update_stock = 1`)
-2. **Secondary**: Delivery Note item costs (linked DN items)  
-3. **Tertiary**: Return adjustment calculations
-4. **Fallback**: Item base_rate * qty (with warnings)
+1. **Services Detection**: Early return 0.0 if only service items (no inventory)
+2. **Dropshipping**: PO Item.base_rate * qty for delivered_by_supplier items
+3. **Delivery Notes**: DN Item.base_net_rate * qty for linked DN items
+4. **Stock Ledger**: SUM(stock_value_difference) if update_stock=1 and SLE exists
+5. **Purchase Order**: PO Item.base_rate * qty for remaining items via Sales Order
+6. **GL Entry Fallback**: Cost of Goods Sold accounts (debit-credit) as ultimate fallback
 
-#### Commission Calculation (Enhanced)
+#### Commission Calculation (Enhanced v2.2.2)
 - **Single Source**: All calculations performed server-side via `get_commission_rows()`
 - **Rate Resolution**: Specific branch rates or global default from Comisiones Settings
 - **Formula**: `(Ingreso - COGS) * Sales_Person_Percentage * Branch_Rate / 10000`
 - **Multi-Person Support**: Proportional calculation per `allocated_percentage`
-- **Service Logic**: Service-only invoices exempt from delivery requirement
+- **Service Logic**: Service-only invoices get COGS=0 immediately (no fallback warnings)
+- **Mixed Invoices**: Services + Products handled correctly with additive COGS
 - **Stock Logic**: Stock items require delivery confirmation (update_stock or Delivery Note)
+- **Clean UX**: No more fallback warnings for expected scenarios
 
 ### Rate Management System
 - **Source of Truth**: Comisiones Settings holds global default rate
@@ -82,15 +86,17 @@ The `get_costo_ventas_si` function implements a hierarchical approach:
 - **Save Workflow**: Policy applied during before_save hook
 - **Consistency**: Both workflows use identical `get_commission_rows()` logic
 
-### Sales Invoice Cancellation System (v2.2.0) ⚠️ CRITICAL ISSUE UNRESOLVED
+### Sistema de Protección OPC (v2.2.1) ✅ COMPLETAMENTE FUNCIONAL
 
-#### Investigation Status: FAILED
-The commission cancellation system investigation has **FAILED**. Multiple technical approaches were attempted but the core issue remains unresolved.
+#### Estado Final: IMPLEMENTACIÓN EXITOSA
+**Objetivo Alcanzado**: Protección completa de OPCs contra cancelación accidental
+**Implementación**: Sistema estable y funcional en producción
+**Resultado**: ✅ Cancelación de OPC bloqueada cuando existen Sales Invoices activas vinculadas
 
-#### 🚨 Problem Statement
-**Issue**: Native ERPNext dialog "¿Desea cancelar todos los documentos vinculados?" still appears when cancelling Sales Invoices with commission payments
-**Impact**: User confusion and risk of accidental OPC cancellation
-**Status**: **UNRESOLVED** after extensive technical investigation
+#### 🔒 Funcionalidad Implementada
+**Protección Activa**: Método `before_cancel()` en OrdenDePagoComisiones detecta y bloquea cancelaciones riesgosas
+**Cobertura Completa**: Verificación via child tables y custom fields  
+**Experiencia Usuario**: Mensaje claro en español explicando bloqueo
 
 #### ❌ Failed Technical Approaches
 

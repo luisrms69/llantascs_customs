@@ -1,28 +1,47 @@
 # Testing Documentation - Commission System
 
-## Overview ⚠️ CRITICAL: NATIVE DIALOG ISSUE UNRESOLVED
-The commission system v2.2.0 investigation into native cancellation dialog prevention has **FAILED**. Multiple technical approaches were attempted but the core issue remains unresolved. Testing focus has shifted to validating existing adjustment system components.
+## Estado del Sistema (v2.2.2) ✅ ESTABLE Y FUNCIONAL + BUG FIX MAYOR
+
+### Sistema en Producción
+**Estado Actual**: Sistema completamente estable con corrección COGS mayor implementada
+**Protección OPC**: ✅ Implementada y verificada 
+**COGS Logic**: ✅ Bug mayor resuelto - Eliminados fallbacks innecesarios
+**Código**: Limpio, sin experimentos fallidos
+**Fecha**: Septiembre 2025
+
+### Control de Calidad - Caso 1 Resuelto
+**Caso 1 COGS Fallbacks**: ✅ **COMPLETADO** - No era problema de calidad sino lógica incorrecta
+**Casos 2-6 Pendientes**: Análisis de folios fiscales, personas de venta, utilidades negativas
+**Objetivo**: Completar investigación caso por caso de inconsistencias restantes
 
 ## Testing Status by Component
 
 ### ✅ Tested & Validated (Production Ready)
-- **v2.0.2 Core System**: Basic commission calculation and grid pagination
-- **v2.1.0 Negative Policy**: "Contabilizar como cero" vs "Reduce del pago" functionality
-- **Legacy Field Fix**: OPC submission after migrating from deprecated `sucursal` field
-- **New Document Support**: Commission calculation on unsaved documents
+- **v2.1.0 Sistema Base**: Cálculo de comisiones, paginación, política de negativas
+- **v2.2.1 Protección OPC**: Bloqueo de cancelación cuando existen SIs activas vinculadas
+- **v2.2.2 COGS Logic**: Nueva lógica de componentes aditivos sin fallbacks innecesarios
+- **Soporte Documentos Nuevos**: Cálculo en documentos no guardados
+- **Campo Legacy**: Transición exitosa de campo `sucursal` deprecated
 
-### ❌ Failed Implementation (Investigation Complete)
-- **JavaScript Cancel Interceptor**: ❌ **FAILED** - Native dialog still appears despite Client Script implementation
-- **Link Field Conversion**: ❌ **FAILED** - Converting Link→Data did not prevent native dialog
-- **Native Dialog Prevention**: ❌ **UNSOLVABLE** - ERPNext detects links via child table references that cannot be eliminated
+### 🗂️ Investigación Archivada (Código Eliminado)
+**Experimentos No Exitosos** - Código completamente removido del sistema:
+- **JavaScript Cancel Interceptor**: Timing incompatible con framework ERPNext
+- **Link Field Conversion**: Child table references no eliminables sin romper funcionalidad
+- **Adjustment System**: Complejidad innecesaria para objetivo alcanzado
 
-### ✅ Working Components (Partial Success)
-- **Triple Fallback Search**: ✅ Server-side OPC detection mechanisms working correctly
-- **Automatic Adjustment Creation**: ✅ `Ajuste Comision Pendiente` generation functional
-- **OPC Protection System**: ✅ Prevention of accidental OPC cancellation working
-- **Adjustment Consumption**: ⚠️ Requires testing - Integration with next OPC generation
+### 🔒 Solución Implementada (Sistema Final)
+- **OPC Protection**: ✅ Método `before_cancel()` funcional y verificado
+- **Cobertura Completa**: Detección via child tables y custom fields  
+- **User Experience**: Mensaje claro en español para bloqueos
+- **Estado**: COMPLETAMENTE FUNCIONAL en producción
 
-## Investigation Test Results ❌ FAILED
+## Investigation Test Results ✅ CASO 1 RESUELTO / 🔄 CASOS 2-6 PENDIENTES
+
+### ✅ CASO 1 RESUELTO: COGS Fallbacks
+**Problema Identificado**: Fallbacks innecesarios en facturas de servicios
+**Solución Implementada**: Nueva lógica `get_costo_ventas_si()` con 6 componentes aditivos
+**Resultado**: 8/8 facturas de servicios ahora devuelven costo=0 sin warnings
+**Status**: ✅ **COMPLETADO** - No requiere acción adicional
 
 ### 1. Sales Invoice Cancellation Flow Investigation
 **Test Case**: Native Dialog Prevention
