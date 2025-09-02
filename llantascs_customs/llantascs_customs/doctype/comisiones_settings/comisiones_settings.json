@@ -7,7 +7,9 @@
  "field_order": [
   "calculo_de_comisiones_llantas_de_calidad_star_section",
   "porcentaje_sobre_utilidad",
-  "negative_commission_policy"
+  "negative_commission_policy",
+  "clientes_sin_comision_section",
+  "clientes_sin_comision"
  ],
  "fields": [
   {
@@ -28,6 +30,18 @@
    "default": "Contabilizar como cero",
    "reqd": 1,
    "in_list_view": 0
+  },
+  {
+   "fieldname": "clientes_sin_comision_section",
+   "fieldtype": "Section Break",
+   "label": "Clientes sin comisión"
+  },
+  {
+   "fieldname": "clientes_sin_comision",
+   "fieldtype": "Table",
+   "label": "Clientes sin comisión",
+   "options": "Clientes Sin Comision",
+   "reqd": 0
   }
  ],
  "index_web_pages_for_search": 1,

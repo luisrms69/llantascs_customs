@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe.utils import now
-from frappe.utils import flt
+from frappe.utils import flt, getdate
 
 # Variables globales llantas Customs
 estados_comisiones = ["Sin Enviar", "Enviado", "Pagada"]
@@ -490,11 +490,49 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
     return out
 
 
+def _build_blacklist_with_dates():
+    """Lee Comisiones Settings y construye un dict {customer: [(start,end), ...]}."""
+    out = {}
+    settings = frappe.get_single("Comisiones Settings")
+    for row in (getattr(settings, "clientes_sin_comision", None) or []):
+        cust = (row.customer or "").strip()
+        if not cust:
+            continue
+        start = getdate(row.start_date) if row.start_date else None
+        end   = getdate(row.end_date)   if row.end_date   else None
+        out.setdefault(cust, []).append((start, end))
+    return out
+
+
+def _is_blacklisted(customer: str, posting_date, bl_map: dict) -> bool:
+    """True si el cliente está en la lista y la fecha cae dentro de alguna vigencia.
+       Rango abierto permitido: start only (desde start en adelante), end only (hasta end inclusive)."""
+    if not customer or customer not in bl_map:
+        return False
+    pd = getdate(posting_date)
+    for (start, end) in bl_map[customer]:
+        if start and end:
+            if start <= pd <= end:
+                return True
+        elif start and not end:
+            if pd >= start:
+                return True
+        elif end and not start:
+            if pd <= end:
+                return True
+        else:
+            # sin fechas => siempre bloqueado
+            return True
+    return False
+
+
 @frappe.whitelist()
 def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rates_by_cc=None):
     invoices = get_sales_invoices(sucursal, fecha_inicial, fecha_final)
     if not invoices:
         return {"rows": [], "total": 0, "count": 0}
+
+    blacklist = _build_blacklist_with_dates()
 
     # default global (fallback cuando no hay tasa por sucursal)
     settings = frappe.get_single("Comisiones Settings")
@@ -556,6 +594,11 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         # Reduce del pago (default)
         return val
     for si in invoices:
+        # Excluir si el cliente está en blacklist vigente
+        customer = si.get("customer")
+        if _is_blacklisted(customer, si.get("posting_date"), blacklist):
+            continue
+
         si_doc = frappe.get_doc("Sales Invoice", si["name"])
 
         ingreso = si.get("base_net_total")
