@@ -9,6 +9,28 @@ The Comisiones Settings DocType serves as the central configuration point for th
 - **`porcentaje_comision`** (Float, %, Default: 0): Global default commission rate applied when no specific branch rate is configured
 - **`tasas_por_sucursal`** (Table): Branch-specific commission rates that override the global default
 
+### Client Exclusion Configuration (v2.3.0+)
+- **`clientes_sin_comision`** (Table): Clients excluded from commission calculations with date-based validity periods
+
+#### Client Exclusion Table Fields
+- **`customer`** (Link to Customer, Required): Client to be excluded from commission calculations
+- **`start_date`** (Date, Optional): Start date of exclusion period. If empty, exclusion applies from beginning of time
+- **`end_date`** (Date, Optional): End date of exclusion period. If empty, exclusion applies indefinitely
+- **`motivo`** (Small Text, Optional): Notes explaining the reason for exclusion
+
+#### Exclusion Logic and Behavior
+1. **Date Range Validation**: Client invoices are filtered by `posting_date` against configured validity periods
+2. **Flexible Ranges**: Supports start-only, end-only, both dates, or permanent exclusions (no dates)
+3. **Multiple Periods**: Same client can have multiple exclusion periods for different date ranges
+4. **Early Filtering**: Exclusions apply before COGS calculation for optimal performance
+5. **No Retroactive Changes**: Existing OPC documents are not automatically updated when exclusions change
+
+#### Exclusion Scenarios
+- **Permanent Exclusion**: Leave both dates empty - client never generates commissions
+- **Date-Bounded**: Set both start and end dates for specific period exclusions
+- **Open-Ended**: Set start date only - excludes from specific date forward
+- **Legacy Cutoff**: Set end date only - excludes all invoices up to specific date
+
 ### Negative Commission Policy (v2.1.0+)
 - **`negative_commission_policy`** (Select, Required, Default: "Contabilizar como cero"): Controls how negative commission values are handled in calculations
 
@@ -68,19 +90,28 @@ The system resolves commission rates in the following priority order:
 - Adjustment amounts NOT subject to negative commission policy (always deduct)
 - Settings provide consistent behavior across cancellation recovery scenarios
 
+### v2.3.0
+- Added `clientes_sin_comision` table for client exclusion management
+- Implemented date-based validity periods for flexible exclusion control
+- Early filtering optimization in `get_commission_rows()` for performance
+- Support for multiple exclusion periods per client
+
 ## Configuration Best Practices
 
 ### Initial Setup
 1. **Set Global Default**: Configure reasonable `porcentaje_comision` (e.g., 2.5%)
 2. **Configure Policy**: Choose appropriate `negative_commission_policy` based on business needs
 3. **Branch Rates**: Add specific rates in `tasas_por_sucursal` for branches requiring different rates
-4. **Test Calculations**: Verify policy behavior with test data before production use
+4. **Client Exclusions**: Set up `clientes_sin_comision` entries for clients that should never generate commissions
+5. **Test Calculations**: Verify policy behavior with test data before production use
 
 ### Ongoing Management
 - **Policy Changes**: Apply immediately but use "Actualiza Listado" to refresh existing documents
 - **Rate Updates**: Changes reflect in new calculations and when existing OPCs are recalculated
+- **Client Exclusion Updates**: Add/modify exclusion entries as business needs change (affects future calculations only)
 - **Audit Reviews**: Regularly review `subtotal_comisiones_negativas` reports to understand negative commission patterns
-- **Documentation**: Keep business rationale documented for policy choices
+- **Exclusion Monitoring**: Periodically review excluded clients to ensure validity periods remain appropriate
+- **Documentation**: Keep business rationale documented for policy and exclusion choices
 
 ### Migration Considerations ⚠️ NOT IMPLEMENTED
 For systems upgrading to v2.1+:

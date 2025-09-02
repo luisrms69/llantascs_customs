@@ -1,5 +1,33 @@
 # Changelog
 
+## [v2.3.0] - 2025-09-02 - SISTEMA DE BLOQUEO DE CLIENTES: Implementación completa con fechas de vigencia
+
+### 🚀 Nueva Funcionalidad - Client Exclusion System
+**Problema Resuelto**: Necesidad de excluir clientes específicos de cálculos de comisión
+**Implementación**: Sistema flexible con rangos de fechas configurables
+**Impacto**: Filtrado temprano optimizado, sin afectar lógica de comisión existente
+
+#### ✅ Componentes Implementados
+- **Child DocType**: `Clientes Sin Comision` con campos customer, start_date, end_date, motivo
+- **Comisiones Settings**: Nueva tabla `clientes_sin_comision` con sección dedicada
+- **API Enhancement**: Funciones `_build_blacklist_with_dates()` y `_is_blacklisted()` 
+- **Early Filtering**: Exclusiones aplicadas antes del cálculo de COGS para performance
+- **Flexible Ranges**: Soporte para fecha inicio, fecha fin, ambas, o exclusión permanente
+- **Multiple Periods**: Mismo cliente puede tener múltiples períodos de exclusión
+
+#### 💡 Características del Sistema
+- **Date Range Logic**: Validación por `posting_date` contra períodos configurados
+- **No Retroactive**: No afecta documentos OPC existentes automáticamente  
+- **Performance Optimized**: Filtrado temprano antes de procesamiento costoso
+- **Business Flexibility**: Configuración dinámica sin cambios de código
+
+#### 🎯 Caso de Uso Principal
+**Cliente Objetivo**: AUTOTRANSPORTES DE ORIENTE ESTRELLA AZUL
+**Configuración**: Vigencia desde 2025-01-01, sin fecha fin (bloqueo abierto)
+**Resultado**: Facturas de este cliente excluidas de futuros cálculos de comisión
+
+---
+
 ## [v2.2.2] - 2025-09-02 - CORRECCIÓN COGS: Eliminación Fallbacks + QC Caso 1 Completado
 
 ### 🚀 COGS Logic Overhaul - Bug Fix Mayor
