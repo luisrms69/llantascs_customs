@@ -48,78 +48,232 @@ def is_delivered(sales_invoice):
 
 def get_costo_ventas_si(sales_invoice: str) -> float:
     """
-    Calcula el costo de ventas de una Sales Invoice con 4 casos:
-    1) update_stock = 1 → usa Stock Ledger Entry
-    2) sin update_stock con Delivery Notes vinculados → usa DN Items
-    3) devoluciones referenciadas → ajusta contra costo original
-    4) fallback: base_rate * qty
-       - si > 0 → retorna y avisa (warning)
-       - si = 0 → lanza error
+    Costo de ventas para Sales Invoice sumando componentes, para cubrir MIXTOS:
+      - Servicios         → 0 (no aplica)
+      - Dropshipping      → PO Item.base_rate * delivered_by_supplier (por renglón DS)
+      - Delivery Notes    → DN Item.base_net_rate * qty (por renglón con DN)
+      - Update Stock=1    → SUM(stock_value_difference) del voucher (si existen SLE)
+      - Vía Purchase Order→ PO Item.base_rate * qty (solo si no hubo DN/DS/SLE para esos renglones)
+    Sin fallbacks a 0: cuando no aplica, aporta 0; si aplica y no hay datos, el componente no suma.
     """
     si = frappe.get_doc("Sales Invoice", sales_invoice)
 
-    # Caso 1: con Update Stock
-    if getattr(si, "update_stock", 0):
-        sle_cost = frappe.db.sql("""
-            SELECT SUM(stock_value_difference) as total_cost
-            FROM `tabStock Ledger Entry`
-            WHERE voucher_type='Sales Invoice'
-              AND voucher_no=%s
-        """, (sales_invoice,), as_dict=True)[0].total_cost or 0
-        if sle_cost:
-            return abs(flt(sle_cost))
+    # 1) Base: si todos los renglones son servicios, el costo es 0 (no aplica inventario)
+    if _is_service_only(si.name):
+        return 0.0
 
-    # Caso 2: con Delivery Notes vinculados
-    dn_items = frappe.get_all(
-        "Sales Invoice Item",
-        filters={"parent": sales_invoice, "delivery_note": ["!=", ""]},
-        fields=["delivery_note", "item_code", "qty"]
+    total = 0.0
+
+    # 2) Dropshipping (por renglón con delivered_by_supplier > 0)
+    total += _cost_from_po_for_dropship(si.name)
+
+    # 3) Delivery Notes (por renglón con DN)
+    total += _cost_from_dn_items(si.name)
+
+    # 4) Update Stock = 1 (SLE del voucher) — SOLO si existen SLE para este voucher
+    sle = _sle_total_for_si(si.name)
+    if sle is not None:  # no usamos "or 0": si no hay SLE, no suma
+        total += abs(flt(sle))
+
+    # 5) Vía Purchase Order (renglones sin DN ni DS ni SLE): PO Item.base_rate * qty
+    total += _cost_from_po_items(si.name)
+
+    # 6) Fallback ÚTIMO: GL Entry (contable) SOLO si hasta aquí no hubo costo
+    if not total:
+        total += _cost_from_gl_entries(si.name)
+
+    return flt(total)
+
+
+def _is_service_only(si_name: str) -> bool:
+    rows = frappe.db.sql("""
+        SELECT i.is_stock_item
+        FROM `tabSales Invoice Item` sii
+        JOIN `tabItem` i ON i.name = sii.item_code
+        WHERE sii.parent = %s
+    """, (si_name,), as_dict=True)
+    if not rows:
+        # sin renglones: tratamos como no inventario
+        return True
+    return all(not (r.get("is_stock_item") or 0) for r in rows)
+
+
+def _cost_from_po_for_dropship(si_name: str) -> float:
+    """
+    Costo para renglones dropshipping:
+    - Detecta DS por el flag delivered_by_supplier en el Sales Order Item (so_detail).
+    - Usa tarifa del Purchase Order Item (base_rate) localizado por (sales_order, item_code).
+    - Multiplica por la qty facturada del renglón.
+    - Excluye renglones que ya tienen Delivery Note (para no duplicar).
+    """
+    # Tomamos datos del renglón de la SI que nos permiten navegar a SO Item y PO Item
+    rows = frappe.db.sql(
+        """
+        SELECT
+            sii.item_code,
+            sii.qty,
+            sii.sales_order,
+            sii.so_detail,
+            IFNULL(sii.delivery_note, '') AS dn
+        FROM `tabSales Invoice Item` AS sii
+        WHERE sii.parent = %s
+          AND IFNULL(sii.so_detail, '') != ''
+        """,
+        (si_name,),
+        as_dict=True,
     )
-    if dn_items:
-        dn_cost = 0
-        for dn_row in dn_items:
-            cost = frappe.db.sql("""
-                SELECT SUM(base_net_rate * qty) as cost
-                FROM `tabDelivery Note Item`
-                WHERE parent=%s AND item_code=%s
-            """, (dn_row.delivery_note, dn_row.item_code), as_dict=True)[0].cost or 0
-            dn_cost += flt(cost)
-        if dn_cost:
-            return dn_cost
+    if not rows:
+        return 0.0
 
-    # Caso 3: devoluciones
-    return_si = frappe.get_all(
-        "Sales Invoice",
-        filters={"is_return": 1, "return_against": sales_invoice},
-        fields=["name"]
+    total = 0.0
+    for r in rows:
+        # Si ya tiene DN, ese renglón se costea por DN y no por DS
+        if r.dn:
+            continue
+
+        # delivered_by_supplier vive en el Sales Order Item (no en SI Item)
+        dbs = frappe.db.get_value("Sales Order Item", r.so_detail, "delivered_by_supplier")
+        if not dbs:
+            continue  # no es dropship
+
+        # Tomamos la tarifa del PO Item asociado al mismo Sales Order e item_code
+        po_rate_rec = frappe.db.sql(
+            """
+            SELECT base_rate
+            FROM `tabPurchase Order Item`
+            WHERE sales_order = %s
+              AND item_code   = %s
+            ORDER BY modified DESC
+            LIMIT 1
+            """,
+            (r.sales_order, r.item_code),
+            as_dict=True,
+        )
+        if po_rate_rec:
+            total += flt(po_rate_rec[0].base_rate) * flt(r.qty)
+
+    return total
+
+
+def _cost_from_dn_items(si_name: str) -> float:
+    """
+    Costo por renglones con Delivery Note:
+    suma DN Item.base_net_rate * qty por cada (delivery_note, item_code) vinculado.
+    Si algún renglón no encuentra su DN item, ese renglón no suma.
+    """
+    rows = frappe.db.sql("""
+        SELECT delivery_note, item_code, qty
+        FROM `tabSales Invoice Item`
+        WHERE parent=%s AND IFNULL(delivery_note,'')!=''
+    """, (si_name,), as_dict=True)
+    if not rows:
+        return 0.0
+
+    total = 0.0
+    for r in rows:
+        cost_row = frappe.db.sql("""
+            SELECT (base_net_rate * %s) AS cost
+            FROM `tabDelivery Note Item`
+            WHERE parent=%s AND item_code=%s
+            ORDER BY idx
+            LIMIT 1
+        """, (flt(r.qty), r.delivery_note, r.item_code), as_dict=True)
+        if cost_row and cost_row[0].get("cost") is not None:
+            total += flt(cost_row[0].cost)
+    return total
+
+
+def _sle_total_for_si(si_name: str):
+    """
+    Devuelve la suma de SLE (stock_value_difference) para el voucher SI si existen filas.
+    Si no existen SLE, retorna None (no "0 inventado").
+    """
+    row = frappe.db.sql("""
+        SELECT SUM(stock_value_difference) AS total_cost
+        FROM `tabStock Ledger Entry`
+        WHERE voucher_type='Sales Invoice' AND voucher_no=%s
+    """, (si_name,), as_dict=True)
+    # row siempre viene, pero SUM puede ser None si no hay filas; lo respetamos
+    return row[0].total_cost if row else None
+
+
+def _cost_from_po_items(si_name: str) -> float:
+    """
+    Costo por renglones ligados a Purchase Order (sin DN y sin dropship):
+    - Usa tarifa del Purchase Order Item (base_rate) por (sales_order, item_code).
+    - Se aplica solo a renglones sin DN y que no sean DS.
+    """
+    rows = frappe.db.sql(
+        """
+        SELECT
+            sii.item_code,
+            sii.qty,
+            sii.sales_order,
+            sii.so_detail,
+            IFNULL(sii.delivery_note, '') AS dn
+        FROM `tabSales Invoice Item` AS sii
+        WHERE sii.parent = %s
+        """,
+        (si_name,),
+        as_dict=True,
     )
-    total_return_cost = 0
-    for r in return_si:
-        total_return_cost += get_costo_ventas_si(r.name)
+    if not rows:
+        return 0.0
 
-    if total_return_cost:
-        original_cost = _costo_bruto_factura(sales_invoice)
-        return max(0, original_cost - total_return_cost)
+    total = 0.0
+    for r in rows:
+        # Si ya se costea por DN, no entra aquí
+        if r.dn:
+            continue
 
-    # Caso 4: fallback
-    calculated = _costo_bruto_factura(sales_invoice)
-    if calculated:
-        msg = f"[OPC.COSTO] Fallback usado para {sales_invoice}. Costo estimado = {calculated}"
-        frappe.msgprint(msg, alert=True, indicator="orange")
-        frappe.log_error(title="CostoVentasFallback", message=msg)
-        return calculated
-    else:
-        msg = f"[OPC.COSTO] ERROR: fallback devolvió 0 para {sales_invoice}"
-        frappe.log_error(title="CostoVentasFallback", message=msg)
-        frappe.throw(msg)
+        # Si es dropship (flag en SO Item), tampoco entra aquí (ya lo cubre _cost_from_po_for_dropship)
+        if r.so_detail:
+            dbs = frappe.db.get_value("Sales Order Item", r.so_detail, "delivered_by_supplier")
+            if dbs:
+                continue
+
+        # Necesitamos tener Sales Order para poder ubicar el PO Item
+        if not r.sales_order:
+            continue
+
+        po_rate_rec = frappe.db.sql(
+            """
+            SELECT base_rate
+            FROM `tabPurchase Order Item`
+            WHERE sales_order = %s
+              AND item_code   = %s
+            ORDER BY modified DESC
+            LIMIT 1
+            """,
+            (r.sales_order, r.item_code),
+            as_dict=True,
+        )
+        if po_rate_rec:
+            total += flt(po_rate_rec[0].base_rate) * flt(r.qty)
+
+    return total
 
 
-def _costo_bruto_factura(sales_invoice: str) -> float:
-    """Costo bruto: base_rate * qty de los items."""
-    rows = frappe.get_all("Sales Invoice Item",
-                          filters={"parent": sales_invoice},
-                          fields=["base_rate", "qty"])
-    return sum(flt(r.base_rate) * flt(r.qty) for r in rows)
+def _cost_from_gl_entries(si_name: str) -> float:
+    """
+    Fallback contable: suma el impacto en COGS desde GL Entry
+    para este Sales Invoice.
+    - Usa cuentas con account_type = 'Cost of Goods Sold'
+    - Suma (debit - credit) y devuelve valor absoluto
+    """
+    cogs_accounts = get_cogs_account()  # ya existe en tu archivo
+    if not cogs_accounts:
+        return 0.0
+
+    row = frappe.db.sql("""
+        SELECT SUM(debit - credit) AS cogs
+        FROM `tabGL Entry`
+        WHERE voucher_type = 'Sales Invoice'
+          AND voucher_no   = %s
+          AND account      IN %(accs)s
+    """, (si_name, {"accs": tuple(cogs_accounts)}), as_dict=True)
+
+    return abs(flt(row[0].cogs)) if row and row[0].cogs is not None else 0.0
 
 
 def get_costo_ventas_dn(sales_invoice_id: str) -> float:
