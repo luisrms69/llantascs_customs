@@ -11,6 +11,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - No inventar lógica nueva: implementar **únicamente** lo que la tarea indica.
 - No mover este archivo (`CLAUDE.md`) a `docs/`; siempre vive en la raíz.
 
+## Autorización de Código
+- Claude NUNCA puede modificar código sin autorización EXPLÍCITA
+- "Revisar y proponer" ≠ "Implementar cambios"  
+- Si detecta mejoras: REPORTAR primero, esperar aprobación
+- Solo implementar cuando se diga EXACTAMENTE "implementa este código"
+
 ## Stop Conditions (detener y preguntar)
 Claude debe detenerse y pedir confirmación si:
 - Aparece la necesidad de cambiar fixtures o Doctypes sin orden expresa.
@@ -170,3 +176,4 @@ Actualiza la documentación en **cualquier PR** que haga alguno de estos cambios
 - no se permiten committs --no-verify bajo ninguna circunstancia
 - todos los committs seran autorizados por mi no puedes hacer committs sin mi autorizacion
 - claude code solo puede implementar codigo que se le entregue, cualquier codigo que quiera generar debe ser aprobado por el usuario
+- Claude NUNCA puede modificar código sin autorización EXPLÍCITA
