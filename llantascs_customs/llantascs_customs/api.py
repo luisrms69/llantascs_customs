@@ -532,6 +532,18 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
     if not invoices:
         return {"rows": [], "total": 0, "count": 0}
 
+    # --- NUEVO: excluir facturas sin Sales Team ---
+    si_names = [si["name"] for si in invoices]
+    if si_names:
+        with_team = frappe.get_all(
+            "Sales Team",
+            filters={"parent": ["in", si_names]},
+            pluck="parent"
+        )
+        allowed = set(with_team)
+        invoices = [si for si in invoices if si["name"] in allowed]
+    # ----------------------------------------------
+
     blacklist = _build_blacklist_with_dates()
 
     # default global (fallback cuando no hay tasa por sucursal)
