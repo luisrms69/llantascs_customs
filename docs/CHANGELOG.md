@@ -1,5 +1,74 @@
 # Changelog
 
+## [v2.4.0] - 2025-09-02 - TESTING FRAMEWORK: Sistema de Pruebas Automatizadas Implementado
+
+### 🧪 Framework de Testing Automatizado - Primera Implementación
+**Objetivo**: Implementar sistema robusto de testing automatizado para validación continua del sistema de comisiones
+**Framework**: unittest + FrappeTestCase (nativo ERPNext) con helpers auto-contenidos
+**Cobertura**: 20 tests distribuidos en 2 paquetes funcionales
+
+#### ✅ Implementación Técnica
+- **Framework Nativo**: unittest + FrappeTestCase eliminando dependencias externas
+- **Helpers Robustos**: Creación automática de datos de prueba sin hardcoding
+- **Isolation Pattern**: Prefijo `TEST-LLCS-SET-` para aislamiento completo de datos
+- **Tree Auto-Creation**: Helpers para Customer Group, Territory, Item Group con auto-creación de jerarquías
+- **Account Management**: Helper contable para cuentas Receivable/Income en MXN
+- **Price List Integration**: Configuración automática de Price Lists para validación ERPNext
+
+#### 🎯 Paquete 1: Integridad Básica OPC (10 tests)
+**Status**: ✅ 7/10 EXITOSOS - Tests desbloqueados y funcionales
+- ✅ Creación OPC con tasas y comisiones automáticas
+- ✅ Recálculo automático en before_save sin botón
+- ✅ Validación de tasas por sucursal desde Settings
+- ✅ Exclusión correcta de SI sin Sales Team
+- ✅ Sistema de blacklist con fechas de vigencia
+- ✅ Cálculo de subtotales y políticas de negativas
+- ✅ Servicios-only devuelven COGS=0 correctamente
+- ⚠️ 3 tests fallan por lógica de negocio (no errores técnicos)
+
+#### 🎯 Paquete 2: COGS y Casos Avanzados (10 tests)
+**Status**: ⏳ Preparado - Framework aplicado, pending ejecución
+- 🔬 COGS vía Delivery Note con base_net_rate
+- 🔬 COGS por Purchase Order (dropship/PO)  
+- 🔬 Casos mixtos servicio+stock
+- 🔬 Split proporcional por Sales Team
+- 🔬 Política "Reducir del pago" vs "Cero"
+- 🔬 Tasas específicas por CC vs default
+- 🔬 Validación multisucursal
+- 🔬 Exclusión stock sin entrega
+- 🔬 Protección before_cancel OPC
+
+#### 💡 Arquitectura de Helpers
+```python
+# Pattern de auto-creación sin hardcoding
+_ensure_tree_leaf() -> Crea jerarquías automáticamente
+_ensure_accounts_for_si() -> Cuentas contables MXN válidas  
+_make_customer() -> Cliente con Territory/Group reales
+_ensure_item() -> Items con Item Group válido
+_make_si() -> Sales Invoice completa con validaciones ERPNext
+```
+
+#### 🚀 Beneficios del Framework
+- **Desbloqueado**: Sin errores técnicos de setup (currency, accounts, mandatory fields)
+- **Auto-Contenido**: No requiere datos pre-existentes en BD
+- **Cleanup Automático**: tearDownClass elimina datos de prueba por prefijo
+- **Frappe-Native**: Totalmente compatible con `bench run-tests`
+- **Escalable**: Fácil adición de nuevos paquetes de 10 tests
+
+#### ⚡ Comando de Ejecución
+```bash
+bench --site llantascs.dev run-tests --module llantascs_customs.tests.test_opc_package_1
+bench --site llantascs.dev run-tests --module llantascs_customs.tests.test_opc_package_2
+```
+
+#### 🎉 Hito Técnico Alcanzado
+- **Primer Framework**: Testing automatizado implementado desde cero
+- **ERPNext Integration**: Helpers robustos para validaciones nativas
+- **Business Logic**: Tests enfocados en lógica de negocio, no setup técnico
+- **Foundation**: Base sólida para expansión a 50+ tests adicionales
+
+---
+
 ## [v2.3.2] - 2025-09-02 - FIX CRÍTICO OPC: Sincronización automática de tablas en before_save
 
 ### 🔧 Bug Crítico Resuelto - OPC sin "Actualizar Listado"
