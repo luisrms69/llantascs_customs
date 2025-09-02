@@ -1,5 +1,32 @@
 # Changelog
 
+## [v2.3.2] - 2025-09-02 - FIX CRÍTICO OPC: Sincronización automática de tablas en before_save
+
+### 🔧 Bug Crítico Resuelto - OPC sin "Actualizar Listado"
+**Problema Identificado**: Usuario podía guardar/enviar OPC sin presionar "Actualizar Listado"
+**Impacto**: Tabla `comisiones_incluidas` se calculaba (before_save) pero `comisiones_por_sucursal` quedaba vacía
+**Riesgo**: Inconsistencia de datos, reportes fallidos, comisiones sin tasas de referencia
+
+#### ✅ Solución Implementada
+- **Método Centralizado**: `_force_update_comisiones()` reutiliza lógica del botón "Actualizar Listado"
+- **Doble Protección**: `before_save()` y `before_submit()` garantizan sincronización
+- **Orden Lógico**: Sync tasas primero → calcular comisiones con `rates_by_cc`
+- **Sin Dependencias BD**: Eliminado `docname` que causaba error "documento no encontrado"
+- **Reutilización**: Usa `sync_rates_from_settings()` + `get_commission_rows()` existentes
+
+#### 💡 Características Técnicas
+- **Flujo Garantizado**: Imposible guardar OPC sin ambas tablas pobladas
+- **Error Eliminado**: Sin mensaje falso en documentos nuevos
+- **UX Preservada**: Botón "Actualizar Listado" sigue como atajo visual
+- **Data Integrity**: Consistencia independiente del flujo de usuario
+
+#### 🎯 Beneficios
+- **Automatización**: Usuario no necesita recordar presionar botón
+- **Robustez**: Sistema tolera cualquier secuencia de acciones
+- **Mantenimiento**: Lógica centralizada, sin duplicación
+
+---
+
 ## [v2.3.1] - 2025-09-02 - QC CASO 3 RESUELTO: Exclusión automática SI sin Sales Team
 
 ### 🔧 Fix Crítico - Sales Invoices sin equipo de ventas

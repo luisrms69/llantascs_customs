@@ -26,7 +26,7 @@ The `get_costo_ventas_si` function implements a **6-component additive approach*
 5. **Purchase Order**: PO Item.base_rate * qty for remaining items via Sales Order
 6. **GL Entry Fallback**: Cost of Goods Sold accounts (debit-credit) as ultimate fallback
 
-#### Commission Calculation (Enhanced v2.3.1)
+#### Commission Calculation (Enhanced v2.3.2)
 - **Single Source**: All calculations performed server-side via `get_commission_rows()`
 - **Rate Resolution**: Specific branch rates or global default from Comisiones Settings
 - **Formula**: `(Ingreso - COGS) * Sales_Person_Percentage * Branch_Rate / 10000`
@@ -45,21 +45,20 @@ The `get_costo_ventas_si` function implements a **6-component additive approach*
 - **Clear+Rebuild Pattern**: Ensures 1:1 consistency between branches and rates
 - **Data Protection**: User confirmation prevents accidental loss of manual changes
 
-### Field Behavior & Data Flow
-- **No Automatic Recalculation**: Field changes don't trigger calculations
-- **Button-Driven**: All actions require explicit user interaction
-- **Server-Side Processing**: All business logic centralized in Python
+### Field Behavior & Data Flow (Updated v2.3.2)
+- **Automatic Synchronization**: Both tables (comisiones_incluidas + comisiones_por_sucursal) automatically populated on save/submit
+- **Button Optional**: "Actualizar Listado" button serves as visual preview, not required for data consistency
+- **Server-Side Processing**: All business logic centralized in Python with before_save/before_submit hooks
 - **Clear+Rebuild Pattern**: Ensures data consistency and eliminates orphaned records
 - **Multi-Branch Support**: Select multiple cost centers simultaneously
 - **Backward Compatibility**: Original sucursal field preserved (hidden)
 - **Rate Tracking**: Each OPC maintains snapshot of rates used for audit trail
-- **Memory-First**: All changes stay in memory until user saves document
-- **Live Rate Updates**: Commission calculations automatically update when rates are modified and saved
+- **Memory-First**: All changes stay in memory until user saves document, then auto-synchronized
 - **Smart Rate Resolution**: Document rates override Settings; specific Settings override default
 - **Native Grid UX**: Standard ERPNext pagination and controls with protective restrictions
 - **Data Integrity**: Zero fallbacks eliminated; always uses valid commission rates from hierarchy
 - **Negative Commission Policy**: Configurable handling via Comisiones Settings with audit trail
-- **New Document Support**: Error-free creation and calculation for unsaved documents
+- **Robust Document Handling**: Works correctly with new documents without BD dependencies
 
 ### Negative Commission Policy (v2.1+)
 

@@ -138,6 +138,13 @@ def _is_blacklisted(customer, posting_date, blacklist_map):
 **Impact**: Cleaner OPC reports, only invoices with assigned salespeople generate commissions  
 **Implementation**: Simple query to Sales Team table with set intersection filtering  
 
+### v2.3.2 - OPC Auto-Synchronization
+**Issue**: Users could save/submit OPC without pressing "Actualizar Listado" button  
+**Problem**: `comisiones_incluidas` calculated via before_save but `comisiones_por_sucursal` left empty  
+**Solution**: Centralized `_force_update_comisiones()` method in before_save/before_submit hooks  
+**Impact**: Guaranteed data integrity - impossible to save OPC without both tables synchronized  
+**Implementation**: Reuses existing `sync_rates_from_settings()` and `get_commission_rows()` with `rates_by_cc`  
+
 ## Related Documentation
 - `docs/settings.md`: Documentación detallada de configuración
 - `docs/CHANGELOG.md`: Historial de implementación
