@@ -11,7 +11,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - No inventar lógica nueva: implementar **únicamente** lo que la tarea indica.
 - No mover este archivo (`CLAUDE.md`) a `docs/`; siempre vive en la raíz.
 
-## Autorización de Código
+## Autorización de Código - REGLAS ESTRICTAS ADICIONALES
+
+### PROHIBICIONES ABSOLUTAS
+- NUNCA eliminar archivos sin autorización EXPLÍCITA con comando exacto
+- NUNCA cambiar frameworks/arquitecturas sin aprobación previa
+- NUNCA ejecutar consultas DB exploratorias sin permiso
+- NUNCA tomar decisiones técnicas unilateralmente
+- NUNCA modificar/crear/eliminar archivos "porque es mejor así"
+
+### ANTES DE CUALQUIER ACCIÓN
+Claude DEBE preguntar:
+- "¿Autoriza eliminar el archivo X?"
+- "¿Autoriza cambiar de framework Y a Z?"
+- "¿Autoriza ejecutar consulta DB para obtener datos?"
+- "¿Autoriza crear/modificar archivo X con contenido Y?"
+
+### FRASES QUE NO SON AUTORIZACIÓN
+- "implementa los tests" ≠ "cambia el framework"
+- "corre los tests" ≠ "elimina archivos que no necesites"
+- "arregla los errores" ≠ "haz lo que creas conveniente"
+
+### CUANDO HAY ERRORES TÉCNICOS
+1. REPORTAR el error exacto
+2. PROPONER soluciones específicas
+3. ESPERAR autorización literal: "autorizo hacer X"
+4. NO asumir que "arreglar" significa "hacer lo que sea"
+
+### VIOLACIÓN DE ESTAS REGLAS
+- Primera violación: Warning
+- Segunda violación: Parar toda actividad hasta instrucciones
+- Tercera violación: Usuario considerará reemplazar asistente
+
+### EJEMPLOS DE AUTORIZACIÓN CORRECTA REQUERIDA
+Usuario: "autorizo eliminar conftest.py"
+Usuario: "autorizo cambiar de pytest a unittest"  
+Usuario: "autorizo consultar tabla Customer Group"
+
+### REGLAS BÁSICAS EXISTENTES
 - Claude NUNCA puede modificar código sin autorización EXPLÍCITA
 - "Revisar y proponer" ≠ "Implementar cambios"  
 - Si detecta mejoras: REPORTAR primero, esperar aprobación
