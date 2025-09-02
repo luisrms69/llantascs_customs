@@ -26,7 +26,7 @@ The `get_costo_ventas_si` function implements a **6-component additive approach*
 5. **Purchase Order**: PO Item.base_rate * qty for remaining items via Sales Order
 6. **GL Entry Fallback**: Cost of Goods Sold accounts (debit-credit) as ultimate fallback
 
-#### Commission Calculation (Enhanced v2.2.2)
+#### Commission Calculation (Enhanced v2.3.1)
 - **Single Source**: All calculations performed server-side via `get_commission_rows()`
 - **Rate Resolution**: Specific branch rates or global default from Comisiones Settings
 - **Formula**: `(Ingreso - COGS) * Sales_Person_Percentage * Branch_Rate / 10000`
@@ -34,6 +34,8 @@ The `get_costo_ventas_si` function implements a **6-component additive approach*
 - **Service Logic**: Service-only invoices get COGS=0 immediately (no fallback warnings)
 - **Mixed Invoices**: Services + Products handled correctly with additive COGS
 - **Stock Logic**: Stock items require delivery confirmation (update_stock or Delivery Note)
+- **Sales Team Requirement**: Invoices without Sales Team automatically excluded from OPC calculations
+- **Client Exclusion**: Configurable client blacklist with date-based validity periods
 - **Clean UX**: No more fallback warnings for expected scenarios
 
 ### Rate Management System

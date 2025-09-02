@@ -1,5 +1,31 @@
 # Changelog
 
+## [v2.3.1] - 2025-09-02 - QC CASO 3 RESUELTO: Exclusión automática SI sin Sales Team
+
+### 🔧 Fix Crítico - Sales Invoices sin equipo de ventas
+**Problema Identificado**: SI sin Sales Team generaban filas de comisión vacías (persona_de_ventas="", comisión=0)
+**Implementación**: Filtro automático en `get_commission_rows()` para excluir SI sin Sales Team
+**Impacto**: Limpieza de reportes OPC, solo facturas con vendedores asignados generan comisiones
+
+#### ✅ Solución Implementada
+- **Early Filtering**: Consulta a Sales Team para identificar SI válidas antes del procesamiento
+- **Performance Optimized**: Filtrado usando set intersection, sin impacto en velocidad
+- **Non-Breaking**: Facturas pueden existir sin Sales Team, solo no generan comisiones
+- **Logic Preservation**: Mantiene intacta toda la lógica de COGS, políticas y blacklist
+
+#### 🎯 QC Caso 3 - Diagnóstico Final
+**Sales Invoice**: ACC-SINV-2025-01482 (folio fiscal 1411)  
+**Causa Raíz**: Sin Sales Team asignado + Utilidad negativa (-$1,251.75)
+**Resultado Esperado**: Comisión = 0 (correcto según reglas de negocio)
+**Status**: ✅ RESUELTO - Comportamiento correcto, no bug de código
+
+#### 💡 Lecciones Aprendidas
+- **Data Quality**: Importancia del Sales Team para generar comisiones
+- **System Integrity**: Filtrados preventivos mantienen limpieza de reportes
+- **Policy Application**: Utilidad negativa + política "Contabilizar como cero" = comisión 0
+
+---
+
 ## [v2.3.0] - 2025-09-02 - SISTEMA DE BLOQUEO DE CLIENTES: Implementación completa con fechas de vigencia
 
 ### 🚀 Nueva Funcionalidad - Client Exclusion System

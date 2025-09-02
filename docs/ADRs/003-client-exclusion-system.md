@@ -130,6 +130,14 @@ def _is_blacklisted(customer, posting_date, blacklist_map):
 - **Branch-Specific**: Exclusiones por sucursal específica
 - **Percentage Adjustments**: Reducción parcial en lugar de exclusión completa
 
+## Subsequent Changes
+
+### v2.3.1 - Sales Team Filtering
+**Issue**: QC Caso 3 revealed that Sales Invoices without Sales Team were generating empty commission rows  
+**Solution**: Added early filtering in `get_commission_rows()` to exclude SI without Sales Team  
+**Impact**: Cleaner OPC reports, only invoices with assigned salespeople generate commissions  
+**Implementation**: Simple query to Sales Team table with set intersection filtering  
+
 ## Related Documentation
 - `docs/settings.md`: Documentación detallada de configuración
 - `docs/CHANGELOG.md`: Historial de implementación
