@@ -1,5 +1,56 @@
 # Changelog
 
+## [v2.5.1] - 2025-09-03 - BUGS CRÍTICOS RESUELTOS: OPC Save Fix + Reporte Por Sucursal Funcional
+
+### 🔧 Bug Crítico Resuelto - TypeError en OPC.before_save()
+**Problema**: Error `TypeError: 'str' object does not support item assignment` al guardar OPC
+**Causa Raíz**: Iteración incorrecta del dict `data` devuelto por `get_commission_rows()` 
+**Fix Aplicado**: Usar `data.get("rows", [])` en lugar de iterar claves del dict
+**Impacto**: OPCs ahora se guardan correctamente sin errores de tipo
+
+#### ✅ Solución Implementada en `orden_de_pago_comisiones.py:10-84`
+- **`_ensure_rates_if_empty()`**: Solo pobla tasas si tabla vacía (respeta ediciones usuario)
+- **`_rebuild_commissions_using_current_rates()`**: Fix crítico - usa `rows = data.get("rows", [])` 
+- **Validaciones Tempranas**: Evita procesamiento si faltan filtros/sucursales requeridos
+- **Manejo Seguro de Tipos**: `isinstance(data, dict)` y `isinstance(row, dict)` 
+- **Settings Safe Access**: `getattr(settings, "porcentaje_sobre_utilidad", 0)` evita errores
+
+#### 💡 Características del Fix
+- **Preserva Ediciones**: No sobreescribe `comisiones_por_sucursal` si usuario ya editó tasas
+- **Recalculo Inteligente**: Usa exactamente las tasas del documento (no Settings)
+- **Tolerante a Errores**: Maneja graciosamente casos edge (docs nuevos, filtros faltantes)
+- **Data Integrity**: Asignación correcta de totales y subtotales negativos
+
+### 🚀 Reporte "Pagos OPC - Por Sucursal" REPARADO
+**Problema**: Reporte salía vacío con SQL placeholder inútil
+**Fix Implementado**: SQL tolerante a legacy con CTEs (Common Table Expressions)
+**Impacto**: Reporte ahora muestra datos tanto de OPCs actuales como históricas
+
+#### ✅ SQL Tolerante a Legacy Implementado
+```sql
+WITH detailed AS (
+    -- OPCs nuevas: agrupa por Sales Invoice.cost_center
+    SELECT si.cost_center, SUM(c.total_comision) AS total, c.parent AS opc_name
+    FROM `tabComision LLCS` c
+    INNER JOIN `tabSales Invoice` si ON si.name = c.sales_invoice_id
+    INNER JOIN `tabOrden de Pago Comisiones` opc ON opc.name = c.parent
+    WHERE opc.docstatus = 1
+),
+legacy AS (
+    -- OPCs legacy: usa opc.sucursal y opc.monto_total para OPCs sin detalle
+    SELECT opc.sucursal AS cost_center, opc.monto_total AS total, opc.name AS opc_name
+    FROM `tabOrden de Pago Comisiones` opc
+    WHERE opc.docstatus = 1 AND opc.sucursal IS NOT NULL 
+    AND NOT EXISTS (SELECT 1 FROM `tabComision LLCS` c WHERE c.parent = opc.name)
+)
+```
+
+#### 💡 Características del Reporte Reparado
+- **Sin Filtros Parametrizados**: Eliminados `%(company)s`, `%(from_date)s` que causaban `KeyError`
+- **Doble Fuente**: Combina datos de child table + campo legacy seamlessly
+- **Performance Optimizado**: CTEs con JOINs eficientes, sin N+1 queries
+- **Datos Completos**: Muestra Sucursal, Total Comisiones, # de OPCs por sucursal
+
 ## [v2.5.0] - 2025-09-03 - WORKSPACE COMISIONES: Sistema Completo con 2 Query Reports
 
 ### 🚀 Nueva Funcionalidad - Workspace "Comisiones" COMPLETO
