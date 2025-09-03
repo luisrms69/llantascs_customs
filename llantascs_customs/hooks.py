@@ -249,8 +249,21 @@ fixtures = [
             "module": "Llantascs Customs"
         }
     },
-    {"doctype": "Property Setter"},
     {"dt": "Custom Field",
-     "filters": {"module": "Llantascs Customs"}}
+     "filters": {"module": "Llantascs Customs"}},
+
+    # Reportes de Comisiones (SQL y roles incluidos)
+    {"doctype": "Report", "filters": [["name", "in", [
+        "Pagos OPC - Resumen",
+        "Pagos OPC - Por Sucursal"
+    ]]]},
+
+    # Workspace "Comisiones" (incluye el content JSON con los shortcuts funcionales)
+    {"doctype": "Workspace", "filters": [["name", "=", "Comisiones"]]},
+
+    # Roles custom para asegurar que existen en destino
+    {"doctype": "Role", "filters": [["role_name", "in", [
+        "Llantas CS Manager", "Llantas CS User"
+    ]]]},
 ]
 

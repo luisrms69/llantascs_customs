@@ -1,0 +1,63 @@
+[
+ {
+  "charts": [],
+  "content": "[{\"id\": \"YvLM-bzW7s\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">Panel de Comisiones</span>\", \"col\": 12}}, {\"id\": \"Oe3_Q13o4L\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\">Reportes</span>\", \"col\": 12}}, {\"id\": \"H3lrG9aR81\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Pagos OPC (Resumen)\", \"col\": 3}}, {\"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Pagos OPC (Por Sucursal)\", \"col\": 3}}]",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": "",
+  "hide_custom": 0,
+  "icon": null,
+  "indicator_color": "green",
+  "is_hidden": 0,
+  "label": "Comisiones",
+  "links": [],
+  "modified": "2025-09-03 11:39:29.157874",
+  "module": "",
+  "name": "Comisiones",
+  "number_cards": [],
+  "parent_page": null,
+  "public": 1,
+  "quick_lists": [],
+  "restrict_to_domain": null,
+  "roles": [],
+  "sequence_id": 99.0,
+  "shortcuts": [
+   {
+    "color": "Grey",
+    "doc_view": "List",
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Pagos OPC (Resumen)",
+    "link_to": "Pagos OPC - Resumen",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Orden de Pago Comisiones",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": "#3498DB",
+    "doc_view": "",
+    "format": "",
+    "icon": "fa fa-bar-chart",
+    "kanban_board": null,
+    "label": "Pagos OPC (Por Sucursal)",
+    "link_to": "Pagos OPC - Por Sucursal",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Orden de Pago Comisiones",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   }
+  ],
+  "title": "Comisiones"
+ }
+]

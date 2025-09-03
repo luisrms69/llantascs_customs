@@ -1,0 +1,90 @@
+[
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Letter head Llantascs",
+  "modified": "2025-09-02 13:35:42.124026",
+  "module": "Llantascs Customs",
+  "name": "Pagos OPC - Resumen",
+  "prepared_report": 0,
+  "query": "SELECT\n    opc.name                                   AS \"OPC:Link/Orden de Pago Comisiones:220\",\n    opc.desde                                  AS \"Desde:Date:110\",\n    opc.hasta_fecha                            AS \"Hasta:Date:110\",\n    opc.confirmacion_de_pago                   AS \"Estado:Data:140\",\n    COALESCE(opc.monto_total, 0)               AS \"Total:Currency:140\",\n    (SELECT COUNT(*) FROM `tabComision LLCS` c WHERE c.parent = opc.name)\n                                               AS \"Filas:Int:80\"\nFROM `tabOrden de Pago Comisiones` opc\nWHERE opc.docstatus = 1\nORDER BY opc.hasta_fecha DESC, opc.name DESC\nLIMIT 200",
+  "ref_doctype": "Orden de Pago Comisiones",
+  "reference_report": null,
+  "report_name": "Pagos OPC - Resumen",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Administrator"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Letter head Llantascs",
+  "modified": "2025-09-03 12:38:01.440420",
+  "module": "Llantascs Customs",
+  "name": "Pagos OPC - Por Sucursal",
+  "prepared_report": 0,
+  "query": "\nWITH detailed AS (\n    SELECT\n        si.cost_center                         AS cost_center,\n        SUM(c.total_comision)                  AS total,\n        COUNT(*)                               AS rows_cnt,\n        c.parent                               AS opc_name\n    FROM `tabComision LLCS` c\n    INNER JOIN `tabSales Invoice` si ON si.name = c.sales_invoice_id\n    INNER JOIN `tabOrden de Pago Comisiones` opc ON opc.name = c.parent\n    WHERE opc.docstatus = 1\n    GROUP BY si.cost_center, c.parent\n),\nlegacy AS (\n    SELECT\n        opc.sucursal                           AS cost_center,\n        opc.monto_total                        AS total,\n        1                                      AS rows_cnt,\n        opc.name                               AS opc_name\n    FROM `tabOrden de Pago Comisiones` opc\n    WHERE opc.docstatus = 1\n      AND opc.sucursal IS NOT NULL AND opc.sucursal != ''\n      AND NOT EXISTS (\n          SELECT 1 FROM `tabComision LLCS` c WHERE c.parent = opc.name\n      )\n)\nSELECT\n    x.cost_center                     AS `Sucursal (Cost Center)`,\n    SUM(x.total)                      AS `Total Comisiones`,\n    COUNT(DISTINCT x.opc_name)        AS `# OPCs`\nFROM (\n    SELECT * FROM detailed\n    UNION ALL\n    SELECT * FROM legacy\n) x\nGROUP BY x.cost_center\nORDER BY x.cost_center;\n",
+  "ref_doctype": "Orden de Pago Comisiones",
+  "reference_report": null,
+  "report_name": "Pagos OPC - Por Sucursal",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   }
+  ],
+  "timeout": 0
+ }
+]
