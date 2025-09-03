@@ -1,5 +1,75 @@
 # Changelog
 
+## [v2.6.0] - 2025-09-03 - FIXTURES MIGRATION + FRACASO Script Report Personal
+
+### 🚀 MIGRACIÓN A FIXTURES EXITOSA - Sistema de Reportes Portátil
+**Problema Resuelto**: Necesidad de despliegue idempotente de Workspace y Reports en múltiples entornos
+**Implementación**: Sistema completo exportado a fixtures seguros sin modificaciones riesgosas
+**Impacto**: Despliegue automático garantizado via `bench migrate` en producción
+
+#### ✅ Fixtures Exportados (Seguros y Mínimos)
+- **workspace.json**: Workspace "Comisiones" con content JSON y 2 shortcuts funcionales
+- **report.json**: 2 Query Reports con SQL validado y roles asignados (4.0KB)
+- **role.json**: Ambos roles Llantas CS (Manager + User) con desk_access (572B)
+- **custom_field.json**: Solo campos custom del módulo preservados (10.7KB)
+
+#### 🛡️ Seguridad: Property Setters Eliminados
+- **Riesgo Evitado**: 61.8KB de Property Setters modificando 30+ DocTypes core ERPNext
+- **Doctypes Protegidos**: Sales Invoice, Purchase Order, Customer, Employee, etc.
+- **Sin Modificaciones Core**: Eliminadas 138 modificaciones riesgosas a comportamiento nativo
+- **Resultado**: Solo fixtures necesarios para funcionalidad Comisiones
+
+#### 💡 Arquitectura de Fixtures Implementada
+- **hooks.py Limpio**: Filtros específicos sin Property Setters masivos
+- **Idempotente**: Mismo resultado en cualquier entorno de destino
+- **Roles Completos**: Manager + User garantizados en todos los entornos
+- **Backward Compatible**: Custom Fields y configuraciones existentes preservadas
+
+### ❌ FRACASO: Script Report "Mis Comisiones (Backlog)" - NO FUNCIONAL
+
+#### ❌ Implementación Fallida - Fase 5 Incompleta
+**Objetivo**: Reporte personal User → Employee → Sales Person con comisiones aproximadas
+**Status**: **FRACASO TOTAL** - Reporte no visible en UI ni funcional
+**Causa Raíz**: Report creado fuera del módulo correcto + problemas de linking
+
+#### 🔧 Componentes Implementados (Parcialmente)
+- ✅ **Archivos Python**: Script Report creado con lógica correcta (9 columnas)
+- ✅ **Database Entry**: Report existe en tabReport con roles correctos  
+- ✅ **Workspace JSON**: Shortcut agregado al content (3 shortcuts visibles)
+- ❌ **UI Linking**: Shortcut no enlaza correctamente con Report
+- ❌ **Module Location**: Report creado en erpnext/accounts en lugar de llantascs_customs
+
+#### 🚨 Desviaciones vs Instrucciones Originales
+**1. Corrección NO Autorizada - Campo user_id**
+- **Original**: `Sales Person.user_id = frappe.session.user`
+- **Implementado**: `User → Employee → Sales Person (via employee field)`
+- **Razón**: Campo `user_id` no existe en Sales Person DocType
+- **Justificación**: Corrección técnica obligatoria
+
+**2. Estructura de Directorios**
+- **Instrucción**: `/llantascs_customs/report/mis_comisiones_backlog/`
+- **Implementado**: `/llantascs_customs/llantascs_customs/report/mis_comisiones_backlog/`
+- **Impacto**: Posible inconsistencia en module paths
+
+**3. Report DocType Creation**
+- **Resultado**: Frappe escribió en `/erpnext/accounts/report/` (incorrecto)
+- **Esperado**: Report como parte del módulo llantascs_customs
+- **Problema**: Module assignment incorrecto
+
+#### 📊 Estado de Pruebas del Reporte Fallido
+- **Database**: ✅ Report "Mis Comisiones (Backlog)" existe
+- **Roles**: ✅ System Manager, Llantas CS Manager, Llantas CS User asignados
+- **Execution**: ✅ Script Python ejecuta sin errores (0 filas para Administrator)
+- **Workspace**: ✅ 3 shortcuts visibles en UI
+- **Linking**: ❌ Tercer shortcut no funcional (404/error)
+- **User Logic**: ✅ User → Employee → Sales Person implementado
+
+#### 🎯 Problemas Identificados del Fracaso
+1. **Report fuera de módulo**: No reconocido como parte de llantascs_customs
+2. **Child table shortcuts**: Content JSON existe pero falta child table row correspondiente
+3. **Fixtures incompletos**: No exportado en fixtures (hooks.py no actualizado)
+4. **Path inconsistency**: Diferencias entre ubicación física y module reference
+
 ## [v2.5.1] - 2025-09-03 - BUGS CRÍTICOS RESUELTOS: OPC Save Fix + Reporte Por Sucursal Funcional
 
 ### 🔧 Bug Crítico Resuelto - TypeError en OPC.before_save()
