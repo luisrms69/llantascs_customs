@@ -1,5 +1,55 @@
 # Changelog
 
+## [v2.5.0] - 2025-09-03 - WORKSPACE COMISIONES: Query Report y Shortcuts Implementados
+
+### 🚀 Nueva Funcionalidad - Workspace "Comisiones"
+**Problema Resuelto**: Necesidad de dashboard centralizado para reportes de comisiones
+**Implementación**: Workspace público con shortcuts funcionales a Query Reports
+**Impacto**: Acceso centralizado a reportes desde Desk principal
+
+#### ✅ Componentes Implementados
+- **Workspace "Comisiones"**: Creado con estructura funcional para Frappe 15
+- **Query Report**: "Pagos OPC - Resumen" con SQL corregido usando campo `monto_total`
+- **Shortcut Funcional**: Agregado por UI, usa patrón `shortcut_name` + child table
+- **Estructura JSON**: Identificada arquitectura correcta para shortcuts en Frappe 15
+
+#### 💡 Arquitectura de Workspace (Frappe 15)
+- **Content Structure**: JSON array con bloques que requieren `id` único y `data` wrapper
+- **Shortcuts Pattern**: NO usan `link_to` directo en content, sino referencia por `shortcut_name`
+- **Child Table**: Los shortcuts reales viven en `workspace.shortcuts` con `link_to: "query-report/Report Name"`
+- **Headers**: Bloques directos con `type: "header"` y `data: {"text": "...", "col": 12}`
+
+#### 🔧 Correcciones Críticas Aplicadas
+- **SQL Query**: Campo correcto `monto_total` en lugar de `total_comisiones` inexistente
+- **Report Roles**: Asignados "System Manager" y "Llantas CS Manager" para visibilidad
+- **Workspace Structure**: Eliminada estructura `"type": "section"` que causa error de renderizado
+- **Link Format**: Correcto `query-report/Pagos OPC - Resumen` en child table
+
+#### 📊 Query Report "Pagos OPC - Resumen"
+- **Columnas**: OPC, Desde, Hasta, Estado, Total, Filas (conteo comisiones)
+- **SQL Optimizado**: Usa `COALESCE(opc.monto_total, 0)` para totales
+- **Filtrado**: Solo OPCs con `docstatus = 1`, ordenados por fecha descendente
+- **Límite**: 200 registros más recientes para performance
+
+#### 🚨 Lecciones Críticas Aprendidas
+- **Estructura Funcional**: Crear child en `shortcuts` primero → referenciar en content por `shortcut_name`
+- **Patrones que NO Funcionan**: `link_to` directo en content, secciones con `items`, campos SQL inexistentes
+- **Patrones que SÍ Funcionan**: Child table + referencia, bloques directos, SQL con campos reales
+- **IDs Únicos**: Cada bloque requiere `id` generado con `frappe.generate_hash()`
+
+#### 🛠️ Scripts One-offs Creados
+- `reset_workspace_comisiones.py`: Resetea workspace a solo headers para debug
+- `export_workspace_content.py`: Exporta estructura JSON funcional para análisis
+- `fix_workspace_comisiones.py`: Múltiples iteraciones de corrección de estructura
+- `add_report_and_shortcut_opc_sucursal.py`: Segundo reporte (pendiente corrección)
+
+#### 🎯 Status Actual
+- **Workspace**: ✅ Funcional con 1 shortcut operativo
+- **Report**: ✅ "Pagos OPC - Resumen" accesible y ejecutándose correctamente
+- **Próximo**: Implementar segundo reporte "Pagos OPC - Por Sucursal" siguiendo patrón probado
+
+---
+
 ## [v2.4.0] - 2025-09-02 - ❌ TESTING FRAMEWORK: FRACASO TOTAL - Sistema Eliminado
 
 ### ❌ Framework de Testing Automatizado - FRACASO COMPLETO
