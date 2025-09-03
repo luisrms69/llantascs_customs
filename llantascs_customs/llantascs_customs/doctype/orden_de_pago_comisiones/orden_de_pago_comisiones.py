@@ -8,54 +8,80 @@ from llantascs_customs.llantascs_customs.api import *
 
 class OrdendePagoComisiones(Document):	
 	def before_save(self):
-		"""Siempre recalcular ambas tablas al guardar, aunque el usuario no presione 'Actualizar Listado'."""
-		self._force_update_comisiones()
+		"""Al guardar: asegurar tasas si están vacías y (si hay filtros) reconstruir comisiones."""
+		self._ensure_rates_if_empty()
+		self._rebuild_commissions_using_current_rates()
 
 	def before_submit(self):
 		"""Revalidar también al enviar, como doble capa de seguridad."""
-		self._force_update_comisiones()
+		self._ensure_rates_if_empty()
+		self._rebuild_commissions_using_current_rates()
 
-	def _force_update_comisiones(self):
-		"""Reusa la lógica del botón Actualizar Listado para poblar SIEMPRE ambas tablas."""
-		sucursales = []
-		if isinstance(self.sucursales_multi, list):
-			sucursales = [r.cost_center for r in self.sucursales_multi if r.cost_center]
-		elif self.sucursales_multi:
-			try:
-				import json
-				sucursales = json.loads(self.sucursales_multi)
-			except Exception:
-				pass
+	def _ensure_rates_if_empty(self):
+		"""Solo poblar comisiones_por_sucursal si está VACÍA; no tocar si el usuario ya editó."""
+		if self.comisiones_por_sucursal and len(self.comisiones_por_sucursal) > 0:
+			return  # respetar ediciones del usuario
 
-		if not sucursales:
-			frappe.throw("Debe seleccionar al menos una sucursal antes de guardar la OPC.")
+		# Construir desde sucursales_multi + Settings
+		settings = frappe.get_single("Comisiones Settings")
+		default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad", 0))  # o 0 si no hay
 
-		# === 1. Poblar tasas por sucursal ===
-		rates = sync_rates_from_settings(sucursales)
-		self.set("comisiones_por_sucursal", [])
-		for row in rates.get("rows", []):
-			self.append("comisiones_por_sucursal", row)
+		self.comisiones_por_sucursal = []
+		for row in (self.sucursales_multi or []):
+			if not row.cost_center:
+				continue
+			self.append("comisiones_por_sucursal", {
+				"cost_center": row.cost_center,
+				"porcentaje_comision": default_rate
+			})
 
-		# === 2. Poblar comisiones incluidas ===
-		rates_map = {
-			r.cost_center: flt(r.porcentaje_comision)
-			for r in self.comisiones_por_sucursal if r.cost_center
-		}
+	def _rebuild_commissions_using_current_rates(self):
+		"""Reconstruir comisiones_incluidas usando las tasas actuales del documento."""
+		# Validaciones mínimas: si faltan filtros o sucursales, no calcular
+		if not self.desde or not self.hasta_fecha:
+			return
+		suc_list = [r.cost_center for r in (self.sucursales_multi or []) if r.cost_center]
+		if not suc_list:
+			return
 
+		# Mapear tasas desde la tabla del documento
+		rates_map = {}
+		for r in (self.comisiones_por_sucursal or []):
+			if r.cost_center:
+				rates_map[r.cost_center] = flt(r.porcentaje_comision)
+
+		# Llamar API y manejar correctamente la estructura dict resultante
 		data = get_commission_rows(
-			sucursales,
+			suc_list,
 			self.desde,
 			self.hasta_fecha,
-			rates_by_cc=rates_map  # <-- ya no usamos docname
+			rates_by_cc=rates_map,
+			docname=None  # no pases self.name en documentos nuevos
 		)
 
-		self.set("comisiones_incluidas", [])
-		for row in data.get("rows", []):
-			self.append("comisiones_incluidas", row)
+		# Data puede ser None o dict; si es dict, esperamos keys: rows, total, etc.
+		rows = []
+		total = 0.0
+		subtotal_neg = 0.0
 
-		# Subtotales
-		self.subtotal_comisiones_negativas = data.get("subtotal_negativas", 0)
-		self.monto_total = data.get("total", 0)
+		if isinstance(data, dict):
+			rows = data.get("rows", []) or []
+			total = flt(data.get("total", 0))
+			# si tu API devuelve subtotal de negativas:
+			subtotal_neg = flt(data.get("subtotal_negativas", 0))
+
+		# Reemplazar tabla comisiones_incluidas con las filas calculadas
+		self.comisiones_incluidas = []
+		for row in rows:
+			# asegurar que row es dict
+			if isinstance(row, dict):
+				self.append("comisiones_incluidas", row)
+
+		# Asignar totales si tus campos existen
+		if hasattr(self, "monto_total"):
+			self.monto_total = total
+		if hasattr(self, "subtotal_comisiones_negativas"):
+			self.subtotal_comisiones_negativas = subtotal_neg
 
 	def create_orden_pago_comision(self):
 		# Multisucursal: normalizar desde la tabla sucursales_multi
