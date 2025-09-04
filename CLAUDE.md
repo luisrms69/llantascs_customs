@@ -20,12 +20,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - NUNCA tomar decisiones técnicas unilateralmente
 - NUNCA modificar/crear/eliminar archivos "porque es mejor así"
 
-### ANTES DE CUALQUIER ACCIÓN
-Claude DEBE preguntar:
-- "¿Autoriza eliminar el archivo X?"
-- "¿Autoriza cambiar de framework Y a Z?"
-- "¿Autoriza ejecutar consulta DB para obtener datos?"
-- "¿Autoriza crear/modificar archivo X con contenido Y?"
+## SISTEMA DE CONFIRMACIÓN OBLIGATORIA - VERSIÓN FINAL
+
+### REGLA ABSOLUTA
+Antes de CUALQUIER acción técnica (comando, edición, investigación), Claude DEBE:
+
+1. Describir específicamente qué hará
+2. Preguntar: "¿Proceder? (si/no)" 
+3. ESPERAR respuesta del usuario
+4. Solo proceder con "si"
+5. Con "no" o cualquier otra respuesta: DETENERSE
+
+### EXCEPCIÓN IMPORTANTE
+NO pedir confirmación para acciones que están EXPLÍCITAMENTE en las instrucciones del usuario.
+Solo pedir confirmación cuando Claude quiera hacer algo que NO está en las instrucciones.
+
+### VIOLACIÓN = FALLA CRÍTICA
+Ejecutar sin confirmación constituye violación grave de instrucciones.
+
+### FORMATO OBLIGATORIO:
+🔐 CONFIRMACIÓN REQUERIDA: [acción específica] ¿Proceder? (si/no)
 
 ### FRASES QUE NO SON AUTORIZACIÓN
 - "implementa los tests" ≠ "cambia el framework"

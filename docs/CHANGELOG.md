@@ -11,6 +11,43 @@
 
 ---
 
+## [v2.4.1] - 2025-09-03 - MIGRACIÓN LEGACY CRÍTICA: Sistema Dual Operando
+
+### ⚠️ ESTADO CRÍTICO: Patch Ejecutado pero NO Efectivo
+**Problema Principal**: 302 documentos legacy NO migrados al nuevo sistema de tasas
+**Impacto**: Reportes muestran tasas default en lugar de tasas específicas para documentos legacy
+
+#### ✅ Logros Completados
+- **Campo utilidad_transaccion**: CORREGIDO - Backfill completo de 4,627 registros (era virtual)
+- **Patch de migración**: EJECUTADO correctamente en Patch Log
+- **Reporte "Mis Comisiones Backlog"**: FUNCIONAL con lógica de tasa mejorada (COALESCE)
+- **Índice performance**: `idx_cps_parent_cc` creado en `OPC Comision Por Sucursal`
+- **Tests integridad**: `test_schema_integrity.py` implementado para prevención futura
+
+#### ❌ Problema No Resuelto
+- **0% migración efectiva**: Los 302 documentos legacy siguen sin `sucursales_multi` ni `comisiones_por_sucursal`
+- **Sistema dual**: Legacy (enero-agosto 2025) vs Nuevo (septiembre 2025) coexistiendo
+- **Reportes inconsistentes**: Tasas legacy vs tasas específicas por sucursal
+
+#### 🔧 Componentes Implementados
+- **Patch**: `llantascs_customs.patches.v2_4_1.migrate_legacy_commission_system`
+- **Reporte**: `mis_comisiones_backlog.py` con lógica `COALESCE(tabla_tasas, legacy_rate)`
+- **Scripts diagnóstico**: Smoke tests y validación de migración
+- **Estructura patches**: `patches.txt` configurado correctamente (no hooks.py)
+
+#### 📋 Estado Técnico Detallado
+- **Documentos legacy**: 302 (con campo `sucursal` poblado)
+- **Documentos nuevos**: 4 (con `sucursales_multi` + `comisiones_por_sucursal`)
+- **Patch ejecutado**: 2025-09-03 22:49:26 (registrado en Patch Log)
+- **Migración real**: 0 documentos (fallo silencioso)
+
+#### 🚨 Próximos Pasos Críticos
+1. **Investigar fallo del patch**: Por qué el loop no migró documentos
+2. **Reparar migración**: Debug proceso de guardado de documentos
+3. **Validar reportes**: Confirmar tasas correctas post-migración
+
+---
+
 ## [v2.7.0] - 2025-09-03 - Script Report "Mis Comisiones Backlog" IMPLEMENTADO
 
 ### 🔧 IMPLEMENTACIÓN: Reporte Personal de Comisiones
