@@ -1,5 +1,73 @@
 # Changelog
 
+## ⚠️ NOTA PARA EVITAR QUE CLAUDE VUELVA A ARRUINAR LA DOCUMENTACIÓN
+
+**NO DEBES ELIMINAR SECCIONES DE ESTE DOCUMENTO QUE YA SE CERRARON. ESTE ARCHIVO ES PRECISAMENTE PARA TENER REGISTRO DE TODO LO HECHO.**
+
+- Solo se AGREGAN nuevas versiones al inicio
+- NUNCA se elimina documentación de versiones anteriores
+- NUNCA se modifica contenido de versiones cerradas
+- El historial completo debe preservarse intacto
+
+---
+
+## [v2.7.0] - 2025-09-03 - Script Report "Mis Comisiones Backlog" IMPLEMENTADO
+
+### 🔧 IMPLEMENTACIÓN: Reporte Personal de Comisiones
+**Problema Abordado**: Reporte personal funcional que lea datos reales de OPC sin recálculos incorrectos
+**Implementación**: Script Report creado en módulo correcto con lógica de datos reales
+**Estado**: IMPLEMENTADO - Pendiente testing y validación
+
+#### ✅ Componentes Implementados
+- **Script Report**: "Mis Comisiones Backlog" con 12 columnas funcionales
+- **Módulo Correcto**: Implementado en `/llantascs_customs/llantascs_customs/report/`
+- **Datos Reales**: Lee exclusivamente de `Comision LLCS` sin recálculos
+- **User Mapping**: Doble ruta Usuario → Sales Person (directo + vía Employee)
+
+#### 🔧 Arquitectura de Datos Implementada
+- **Fuente de Datos**: `tabComision LLCS` + `tabOrden de Pago Comisiones` (docstatus=1)
+- **Campos Mapeados Correctos**: 
+  - Costos: `costo_de_ventas` (no `costo`)
+  - Utilidad: `utilidad_transaccion` (no `utilidad`)
+  - Ingreso: `ingreso`, Comisión: `total_comision`
+  - Sales Person: `persona_de_ventas`
+- **Sin Recálculos**: Muestra valores exactos almacenados en OPC
+
+#### 💡 Mapeo Usuario → Sales Person Implementado
+- **Ruta 1**: Nombre exacto (user "Administrator" → Sales Person "Administrator")
+- **Ruta 2**: Via Employee (`User.user_id` → `Employee.user_id` → `Sales Person.employee`)
+- **Resultado**: Funciona para usuarios con y sin Employee asociado
+
+#### 🎯 12 Columnas del Reporte Implementadas
+1. Sales Person - Persona de ventas de la comisión
+2. Sales Invoice - Factura origen
+3. Fecha - posting_date de la factura
+4. Cliente - Customer
+5. Sucursal - Cost Center
+6. Ingreso - Monto de ingreso real
+7. Costo - Costo de ventas real
+8. Utilidad - Utilidad transacción real
+9. % Tasa - Porcentaje de comisión aplicado
+10. Comisión - Comisión total calculada
+11. Estado - Estado de la comisión
+12. OPC - Orden de Pago de Comisiones origen
+
+#### 🛠️ Correcciones Técnicas Implementadas
+- **Eliminados Recálculos**: Script NO calcula comisiones, solo lee datos existentes
+- **Detección Dinámica de Campos**: Sistema detecta campos disponibles usando `has_column()`
+- **Campo Mapping Fix**: Usa nombres correctos de campos reales en schema
+- **Filtrado por Usuario**: Solo muestra comisiones del Sales Person del usuario
+
+#### ⚠️ PENDIENTE: Testing y Validación
+**Requerido antes de marcar como exitoso**:
+- Verificar que reporte aparece en UI
+- Validar filtrado por usuario funciona
+- Confirmar datos mostrados son correctos vs OPC
+- Testing de workspace shortcut functionality
+- Validación de 12 columnas con datos reales
+
+---
+
 ## [v2.6.0] - 2025-09-03 - FIXTURES MIGRATION + FRACASO Script Report Personal
 
 ### 🚀 MIGRACIÓN A FIXTURES EXITOSA - Sistema de Reportes Portátil
