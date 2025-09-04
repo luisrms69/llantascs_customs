@@ -11,6 +11,61 @@
 
 ---
 
+## [v2.4.3] - 2025-09-04 - WORKSPACE PROFESIONAL Y SISTEMA DE PATCHES INVESTIGADO
+
+### 🔧 TRABAJO DE SESIÓN: Fixtures Definitivos y Diagnóstico de Patches
+
+**Problema Abordado**: Workspace funcional permanente y migración legacy pendiente
+**Implementación**: Fixture completo workspace + patches v2.4.2 + sistema diagnóstico
+**Estado**: WORKSPACE COMPLETADO ✅ | MIGRACIÓN LEGACY PENDIENTE ❌
+
+#### ✅ Workspace "Comisiones" - VERSIÓN PROFESIONAL FINAL
+- **🔧 Fixture workspace.json**: Estructura completa de 6 secciones profesionales
+- **📋 6 Shortcuts Organizados**:
+  1. **Pagos OPC (Resumen)** - Query Report resumen por OPC
+  2. **Pagos OPC (Por Sucursal)** - Análisis por sucursal  
+  3. **Mis Comisiones Backlog** - Backlog del vendedor actual
+  4. **Detalle OPC (Por Documento)** - Detalle por documento (pendiente crear)
+  5. **Comisiones por Vendedor (Periodo)** - Análisis por vendedor (pendiente crear)
+  6. **Auditoría OPC Legacy Pendientes** - Migración legacy (pendiente crear)
+- **✅ Headers Profesionales**: Cada sección con título nivel 2
+- **✅ Content JSON Serializado**: Formato fixture estándar ERPNext
+- **🔐 Single Source of Truth**: Fixture único previene sobreescritura
+
+#### 🧪 Sistema Diagnóstico de Patches - INVESTIGACIÓN COMPLETA
+- **✅ diagnostico_patches_v2.py**: Script corregido con lógica de rutas múltiples
+- **🐛 Bug Original Identificado**: Script v1 buscaba `/patches/patches.txt` (incorrecto)  
+- **✅ Fix Implementado**: Búsqueda en `/patches.txt` Y `/patches/patches.txt`
+- **📊 Resultados Confirmados**: 722 patches sistema funcional, 0 patches app detectados
+- **🔍 Scripts de Validación**: OPC legacy, schema, migración implementados
+
+#### ❌ Migración Legacy OPC - PROBLEMA PERSISTENTE NO RESUELTO
+- **📋 Patch v2.4.2 Creado**: `migrate_commission_legacy_to_v2` con inserción directa
+- **✅ Estructura Correcta**: `/patches/v2_4_2/` + `patches.txt` actualizado  
+- **✅ Patch Registrado**: Ejecutado en Patch Log (2025-09-04 01:14:02)
+- **❌ FALLO SILENCIOSO**: 302 documentos OPC legacy siguen SIN MIGRAR
+- **🔍 Causa**: Patch se ejecuta sin errores pero no persiste cambios en BD
+- **💡 Teoría**: Problema con condición `__unsaved` o lógica de documento save
+
+#### 🔄 Demarking System - HERRAMIENTA IMPLEMENTADA
+- **Script de Demarking**: Permite re-ejecución de patches fallidos
+- **SQL Direct**: `DELETE FROM tabPatch Log WHERE patch = 'patch_name'`
+- **Validación**: Sistema permite rollback y retry de patches problemáticos
+
+#### 📋 Archivos Implementados/Modificados en Sesión
+- **✅ llantascs_customs/fixtures/workspace.json**: Fixture completo 6 secciones
+- **✅ llantascs_customs/patches.txt**: Actualizado con patch v2.4.2
+- **✅ llantascs_customs/patches/v2_4_2/**: Estructura y patch nuevo
+- **✅ llantascs_customs/one_offs/**: 8+ scripts diagnósticos y utilidades
+
+#### 🎯 Estado Final Sesión v2.4.3
+- **✅ Workspace Profesional**: Despliegue inmediato disponible
+- **✅ Sistema Diagnóstico**: Tooling completo para troubleshooting  
+- **❌ 302 Documentos Legacy**: Requieren investigación adicional lógica patch
+- **🔧 Fixtures vs Standard**: Arquitectura clarificada (fixtures siempre ganan)
+
+---
+
 ## [v2.4.2] - 2025-09-04 - REPORTES DE COMISIONES Y WORKSPACE COMPLETADOS
 
 ### ✅ IMPLEMENTACIÓN COMPLETADA: Sistema de Reportes de Comisiones
