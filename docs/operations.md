@@ -427,6 +427,102 @@ module has no attribute 'rv___*'
 - **Use git mv for renames:** Maintains history continuity
 - **Test imports before committing:** Verify module resolution works
 
+## Dashboard Charts Testing (v2.6.1) ❌ MULTIPLE FAILURES
+
+### Implementation Status
+**FECHA**: Septiembre 2025 - Sesión de testing intensivo  
+**STATUS**: Múltiples configuraciones probadas, todas fallando en rendering
+
+### 🔄 Testing Approach - Iterative Chart Configuration
+
+#### Multiple Chart Types Attempted
+1. **Custom Charts** - con custom_options JSON embedding chart configuration
+2. **Report Charts** - con x_axis/y_axis field mapping a script reports  
+3. **Bar Charts** - con type specification y field mapping
+4. **Simple Test Charts** - configuración mínima para aislamiento
+
+#### Test Workspace Created
+- **Name**: "Z - Demo Charts"
+- **Purpose**: Isolate Dashboard Chart testing from main workspace
+- **Parent**: "Comisiones" 
+- **Structure**: Single chart block referencing "CH - OPC por Vendedor"
+
+### ❌ Systematic Failures Documented
+
+#### Backend vs Frontend Split
+- **✅ Backend Functionality**: 
+  - Script reports execute correctly (`RV - OPC por Vendedor` returns 22 rows)
+  - Dashboard Charts created successfully in database
+  - All required fields populated (chart_name, filters_json, x_axis, y_axis)
+  - Migration completes without errors
+  
+- **❌ Frontend Rendering**:
+  - Charts don't display in workspace interface
+  - Chart blocks show as empty/placeholder
+  - No data visualization despite valid backend configuration
+
+#### Final Configuration Attempted (Report-Based)
+```json
+{
+  "doctype": "Dashboard Chart",
+  "name": "CH - OPC por Vendedor",
+  "chart_name": "CH - OPC por Vendedor",
+  "chart_type": "Report", 
+  "report_name": "RV - OPC por Vendedor",
+  "x_axis": "sales_person",
+  "y_axis": [{"fieldname": "opc_count", "label": "OPC", "fieldtype": "Int"}],
+  "filters_json": "{\"from_date\":\"2025-01-01\"}"
+}
+```
+
+### 🔧 Technical Analysis
+
+#### What Works (Backend)
+- **Script Report Execution**: Reports function independently via bench console
+- **Database Storage**: Charts stored correctly with all metadata
+- **Fixture Management**: dashboard_chart.json updates deploy successfully
+- **Workspace Configuration**: Chart blocks configured with correct chart_name references
+
+#### What Fails (Frontend)
+- **Chart Rendering Engine**: ERPNext/Frappe Dashboard Chart rendering system
+- **Data Binding**: Connection between chart configuration and actual data display
+- **UI Integration**: Charts don't appear in workspace despite valid configuration
+
+#### Potential Root Causes
+- **ERPNext Version Compatibility**: Dashboard Chart implementation may have changed in v15
+- **Frontend JavaScript**: Chart rendering library or implementation issues
+- **Configuration Format**: Subtle format differences in fixture vs manual creation
+- **Permission Issues**: Chart visibility despite public=1 configuration
+
+### 📋 Lessons Learned
+
+#### Fixture Deployment Success
+- **Database Population**: Fixtures consistently deploy chart metadata correctly
+- **Migration Reliability**: All chart configurations pass migration validation
+- **Schema Correctness**: Required fields identified and satisfied
+
+#### Rendering System Limitations
+- **Black Box Failure**: Frontend chart rendering fails without clear error messages
+- **Configuration Gap**: Disconnect between working backend and failing frontend
+- **Testing Challenges**: Difficult to debug when backend validates but frontend fails
+
+### 💡 Recommendations for Future Attempts
+
+#### Alternative Approaches
+1. **Manual Chart Creation**: Create charts via UI instead of fixtures
+2. **Different Chart Types**: Try line charts, pie charts, or other chart_type values
+3. **Version Research**: Investigate ERPNext v15 Dashboard Chart examples
+4. **Community Resources**: Check Frappe community for v15 Dashboard Chart patterns
+
+#### Investigation Areas  
+- **JavaScript Console**: Check browser console for client-side errors
+- **Network Requests**: Monitor API calls when workspace loads
+- **Chart Library**: Identify which charting library ERPNext v15 uses (Chart.js, Plotly, etc.)
+- **Working Examples**: Find existing functional Dashboard Charts in system for comparison
+
+### Status: SUSPENDED ⚠️
+Dashboard Chart implementation suspended pending alternative approach or technical resolution of frontend rendering issues.
+
 ### ⚠️ Current Status Summary
 **Configuration:** 95% complete and correct
 **Execution:** 0% functional due to import issues
