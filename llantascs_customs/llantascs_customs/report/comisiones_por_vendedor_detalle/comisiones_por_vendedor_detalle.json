@@ -1,0 +1,40 @@
+{
+  "doctype": "Report",
+  "is_standard": "Yes",
+  "name": "Comisiones por Vendedor Detalle",
+  "module": "Llantascs Customs",
+  "ref_doctype": "Sales Invoice",
+  "report_type": "Script Report",
+  "disabled": 0,
+  "add_total_row": 1,
+  "prepared_report": 0,
+  "roles": [
+    { "role": "System Manager" },
+    { "role": "Llantas CS Manager" },
+    { "role": "Llantas CS User" }
+  ],
+  "filters": [
+    {
+      "fieldname": "sales_person",
+      "label": "Vendedor",
+      "fieldtype": "Link",
+      "options": "Sales Person"
+    },
+    {
+      "fieldname": "cost_center",
+      "label": "Sucursal",
+      "fieldtype": "Link",
+      "options": "Cost Center"
+    },
+    {
+      "fieldname": "from_date",
+      "label": "Fecha Inicio",
+      "fieldtype": "Date"
+    },
+    {
+      "fieldname": "to_date",
+      "label": "Fecha Término",
+      "fieldtype": "Date"
+    }
+  ]
+}
