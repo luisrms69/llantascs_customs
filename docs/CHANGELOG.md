@@ -11,6 +11,60 @@
 
 ---
 
+## [v2.6.0] - 2025-09-05 - WORKSPACE VENDEDORES ANIDADO ⚠️ IMPLEMENTACIÓN PARCIAL
+
+### 🎯 TRABAJO DE SESIÓN: Workspace Analytics de Vendedores + Dashboard Charts
+
+**Problema Abordado**: Necesidad de workspace anidado para análisis de vendedores con gráficos
+**Implementación**: Workspace anidado + 3 Dashboard Charts + 3 Script Reports
+**Estado**: CONFIGURACIÓN COMPLETA ✅ | EJECUCIÓN FALLIDA ❌
+
+#### ✅ Arquitectura Implementada Correctamente
+- **🏗️ Nested Workspace**: "Vendedores" anidado dentro de "Comisiones" usando `parent_page`
+- **📊 3 Dashboard Charts**: Configurados vía fixtures para análisis de vendedores
+  - CH - OPC por Vendedor (count)
+  - CH - Comisión Total por Vendedor (sum)  
+  - CH - Margen Promedio por Vendedor (average)
+- **📈 3 Script Reports**: Implementados con lógica SQL de comisiones
+  - RV - OPC por Vendedor
+  - RV - Comisión Total por Vendedor
+  - RV - Margen Promedio por Vendedor
+- **🎨 Workspace Layout**: 3 chart blocks + 2 number card placeholders + 1 shortcut existente
+
+#### ✅ Fixtures y Base de Datos
+- **Workspace fixture**: Estructura anidada deployada correctamente
+- **Dashboard Charts**: 3 charts existen en BD con referencias correctas
+- **Script Reports**: 3 reports registrados en BD con configuración apropiada
+- **UI Rendering**: Workspace visible con estructura de chart blocks
+
+#### ❌ Falla Crítica en Ejecución
+- **Import Path Mismatch**: Archivos físicos no coinciden con expectativas de Frappe
+- **Git Tracking Roto**: Renombramiento de archivos rompió continuity
+- **Charts No Funcionales**: Placeholders visibles pero sin datos por import failures
+- **Module Resolution Error**: 
+  ```
+  No module named 'llantascs_customs.llantascs_customs.report.rv_*'
+  module has no attribute 'rv___*'
+  ```
+
+#### 📋 Commits Realizados
+- `46e130e`: feat: Add nested Vendedores workspace within Comisiones
+- `16380f6`: feat: Add 3 Script Reports for vendor commission analytics  
+- `d622356`: feat: Include existing Comisiones por Vendedor Detalle report
+
+#### 🔧 Lecciones Aprendidas
+- **Fixtures Work**: Workspace nesting y chart configuration via fixtures es efectivo
+- **Script Reports Need Files**: Requieren archivos físicos Python en ubicaciones exactas
+- **Naming Convention Critical**: Alineación entre DB names y file paths es fundamental
+- **Git Management**: Avoid renaming committed files, use git mv instead
+
+#### ⚠️ Estado Actual
+**User Experience**: Workspace visible con gráficos vacíos/con error
+**Technical Status**: 95% configurado correctamente, 0% funcional
+**Next Steps**: Resolver Script Report import issues para functionality completa
+
+---
+
 ## [v2.5.0] - 2025-09-05 - MIGRACIÓN LEGACY COMPLETADA Y SISTEMA LIMPIO
 
 ### 🎯 TRABAJO DE SESIÓN: Migración Completa + Limpieza de Sistema + Documentación One-offs

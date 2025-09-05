@@ -346,3 +346,90 @@ For existing cancelled SIs with orphaned commission data, consider implementing:
 - **System Integrity**: OPCs remain protected and functional
 - **Audit Trail**: Complete traceability from cancellation to recovery
 - **Error Resilience**: Graceful handling of edge cases and failures
+
+## Workspace Vendedores Implementation (v2.6.0) ⚠️ PARCIAL
+
+### Implementation Status
+**FECHA**: Septiembre 2025 - En desarrollo
+**STATUS**: Workspace configurado, reports con problemas de import
+
+### 🏗️ Arquitectura Implementada
+
+#### Nested Workspace Structure
+- **Parent Workspace:** "Comisiones"
+- **Child Workspace:** "Vendedores" 
+- **Nesting Method:** `parent_page: "Comisiones"` en fixture
+- **Result:** ✅ Workspace anidado correctamente visible en UI
+
+#### Dashboard Components Created
+1. **3 Dashboard Charts** (fixtures):
+   - `CH - OPC por Vendedor`: Count of OPCs by salesperson
+   - `CH - Comisión Total por Vendedor`: Sum of commissions by salesperson  
+   - `CH - Margen Promedio por Vendedor`: Average profit margin by salesperson
+
+2. **3 Script Reports** (physical files):
+   - `RV - OPC por Vendedor`: Counts OPCs per vendor
+   - `RV - Comisión Total por Vendedor`: Sums commission amounts
+   - `RV - Margen Promedio por Vendedor`: Calculates average margins
+
+3. **Workspace Layout** (fixture):
+   - 3 chart blocks referencing Dashboard Charts
+   - 2 number card placeholders for future KPIs
+   - 1 shortcut to existing detailed report
+
+### ✅ Successfully Implemented
+- **Workspace Nesting:** Parent-child relationship working
+- **Database Configuration:** All reports and charts exist in database
+- **Fixture Management:** Workspace and Dashboard Charts deployed via fixtures
+- **UI Structure:** Charts blocks properly configured in workspace content
+
+### ❌ Current Issues (Critical)
+
+#### Script Report Import Failures
+**Problem:** Physical files cannot be imported by Frappe framework
+**Symptoms:**
+```
+No module named 'llantascs_customs.llantascs_customs.report.rv_*'
+module has no attribute 'rv___*'
+```
+
+**Root Cause:** Mismatch between report names in database and physical file structure
+- **Database Names:** "RV - OPC por Vendedor" (with hyphens)
+- **File Names:** `rv_opc_por_vendedor` → `rv___opc_por_vendedor` (attempted fix failed)
+- **Git Status:** Original committed files marked as deleted, renamed files untracked
+
+#### Impact
+- **Workspace renders:** ✅ Visible with chart placeholders
+- **Charts display:** ❌ Empty/error due to failed report execution
+- **User Experience:** ❌ Broken functionality despite correct configuration
+
+### 🔧 Implementation Pattern Learned
+
+#### What Works with Fixtures
+- **Workspaces:** Complete definition via JSON fixtures
+- **Dashboard Charts:** Configuration and references via fixtures
+- **Nested Structure:** parent_page field creates hierarchy correctly
+
+#### What Requires Physical Files
+- **Script Reports:** Must have `.py` files with `execute()` functions
+- **Module Structure:** Requires correct directory structure with `__init__.py`
+- **Import Path:** File names must match what Frappe's `scrub()` generates from report names
+
+### 📋 Technical Lessons
+
+#### Fixture vs File Approach
+- **Database metadata:** Use fixtures for workspace, charts, report definitions
+- **Executable code:** Requires physical Python files in correct locations
+- **Naming convention:** Critical alignment between DB names and file paths
+
+#### Git Management
+- **Avoid renaming committed files:** Breaks git tracking
+- **Use git mv for renames:** Maintains history continuity
+- **Test imports before committing:** Verify module resolution works
+
+### ⚠️ Current Status Summary
+**Configuration:** 95% complete and correct
+**Execution:** 0% functional due to import issues
+**User Visible:** Broken charts in otherwise functional workspace
+
+**REQUIRES:** Resolution of Script Report import path issues for full functionality.
