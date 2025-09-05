@@ -1,63 +1,76 @@
 [
- {
-  "charts": [],
-  "content": "[{\"id\": \"YvLM-bzW7s\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">Panel de Comisiones</span>\", \"col\": 12}}, {\"id\": \"Oe3_Q13o4L\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\">Reportes</span>\", \"col\": 12}}, {\"id\": \"H3lrG9aR81\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Pagos OPC (Resumen)\", \"col\": 3}}, {\"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Pagos OPC (Por Sucursal)\", \"col\": 3}}]",
-  "custom_blocks": [],
-  "docstatus": 0,
-  "doctype": "Workspace",
-  "for_user": "",
-  "hide_custom": 0,
-  "icon": null,
-  "indicator_color": "green",
-  "is_hidden": 0,
-  "label": "Comisiones",
-  "links": [],
-  "modified": "2025-09-03 11:39:29.157874",
-  "module": "",
-  "name": "Comisiones",
-  "number_cards": [],
-  "parent_page": null,
-  "public": 1,
-  "quick_lists": [],
-  "restrict_to_domain": null,
-  "roles": [],
-  "sequence_id": 99.0,
-  "shortcuts": [
-   {
-    "color": "Grey",
-    "doc_view": "List",
-    "format": null,
-    "icon": null,
-    "kanban_board": null,
-    "label": "Pagos OPC (Resumen)",
-    "link_to": "Pagos OPC - Resumen",
-    "parent": "Comisiones",
-    "parentfield": "shortcuts",
-    "parenttype": "Workspace",
-    "report_ref_doctype": "Orden de Pago Comisiones",
-    "restrict_to_domain": null,
-    "stats_filter": null,
-    "type": "Report",
-    "url": null
-   },
-   {
-    "color": "#3498DB",
-    "doc_view": "",
-    "format": "",
-    "icon": "fa fa-bar-chart",
-    "kanban_board": null,
-    "label": "Pagos OPC (Por Sucursal)",
-    "link_to": "Pagos OPC - Por Sucursal",
-    "parent": "Comisiones",
-    "parentfield": "shortcuts",
-    "parenttype": "Workspace",
-    "report_ref_doctype": "Orden de Pago Comisiones",
-    "restrict_to_domain": null,
-    "stats_filter": null,
-    "type": "Report",
-    "url": null
-   }
-  ],
-  "title": "Comisiones"
- }
+  {
+    "doctype": "Workspace",
+    "name": "Comisiones",
+    "title": "Comisiones",
+    "label": "Comisiones",
+    "public": 1,
+    "is_default": 0,
+    "category": "",
+    "module": "",
+    "sequence_id": 1,
+    "roles": [
+      {"role": "System Manager"},
+      {"role": "Llantas CS Manager"},
+      {"role": "Llantas CS User"}
+    ],
+    "shortcuts": [
+      {
+        "label": "Pagos OPC (Resumen)",
+        "type": "Report",
+        "link_to": "Pagos OPC - Resumen"
+      },
+      {
+        "label": "Pagos OPC (Por Sucursal)",
+        "type": "Report",
+        "link_to": "Pagos OPC - Por Sucursal"
+      },
+      {
+        "label": "Mis Comisiones Backlog",
+        "type": "Report",
+        "link_to": "Mis Comisiones Backlog"
+      },
+      {
+        "label": "Detalle OPC (Por Documento)",
+        "type": "Report",
+        "link_to": "Detalle OPC - Por Documento"
+      },
+      {
+        "label": "Comisiones por Vendedor (Periodo)",
+        "type": "Report",
+        "link_to": "Comisiones por Vendedor (Periodo)"
+      },
+      {
+        "label": "Auditoría OPC Legacy Pendientes",
+        "type": "Report",
+        "link_to": "Auditoría OPC Legacy Pendientes"
+      }
+    ],
+    "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Res\u00famenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"An\u00e1lisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Backlog del Vendedor\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones Backlog\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}},\n  \n  {\"id\":\"h-5\",\"type\":\"header\",\"data\":{\"text\":\"An\u00e1lisis por Vendedor\",\"level\":2}},\n  {\"id\":\"sc-5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor (Periodo)\",\"col\":2}},\n  \n  {\"id\":\"h-6\",\"type\":\"header\",\"data\":{\"text\":\"Auditor\u00eda y Migraci\u00f3n Legacy\",\"level\":2}},\n  {\"id\":\"sc-6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Auditor\u00eda OPC Legacy Pendientes\",\"col\":3}}\n]"
+  },
+  {
+    "doctype": "Workspace",
+    "name": "Vendedores",
+    "title": "Vendedores",
+    "label": "Vendedores",
+    "public": 1,
+    "is_default": 0,
+    "category": "",
+    "module": "",
+    "parent_page": "Comisiones",
+    "sequence_id": 1,
+    "roles": [
+      { "role": "System Manager" },
+      { "role": "Llantas CS Manager" },
+      { "role": "Llantas CS User" }
+    ],
+    "shortcuts": [
+      {
+        "label": "Comisiones por Vendedor Detalle",
+        "type": "Report",
+        "link_to": "Comisiones por Vendedor Detalle"
+      }
+    ],
+    "content": "[\n  {\"id\":\"h-top\",\"type\":\"header\",\"data\":{\"text\":\"An\\u00e1lisis por vendedor\",\"level\":2}},\n\n  {\"id\":\"row-graphs\",\"type\":\"header\",\"data\":{\"text\":\"Gr\\u00e1ficos comparativos\",\"level\":3}},\n  {\"id\":\"ch-opc\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":1}},\n  {\"id\":\"ch-monto\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Comisi\\u00f3n Total por Vendedor\",\"col\":2}},\n  {\"id\":\"ch-margen\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Margen Promedio por Vendedor\",\"col\":3}},\n\n  {\"id\":\"row-kpis\",\"type\":\"header\",\"data\":{\"text\":\"Indicadores (rango de fechas)\",\"level\":3}},\n  {\"id\":\"nc-count\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"NC - # OPC\",\"col\":1}},\n  {\"id\":\"nc-sum\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"NC - Monto Comisi\\u00f3n\",\"col\":2}},\n\n  {\"id\":\"row-detalle\",\"type\":\"header\",\"data\":{\"text\":\"Detalle de comisiones cobradas\",\"level\":3}},\n  {\"id\":\"sc-detalle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor Detalle\",\"col\":1}}\n]"
+  }
 ]
