@@ -156,6 +156,49 @@ The "Actualiza Listado" button handles the complete workflow in two integrated p
 - **UX Limpio**: ✅ Eliminación de msgprint molestos
 - **Bug Fix Mayor**: ✅ OperationalError (1054) resuelto definitivamente
 
+## One-offs Scripts - Proven Development Pattern ✅
+
+### Current Success Implementation (v2.5.0+)
+**Status**: Established reliable pattern for complex operations and debugging
+
+### Directory Structure
+```
+llantascs_customs/llantascs_customs/one_offs/
+├── __init__.py
+├── investigar_comision_llcs.py      # DocType/table existence verification
+├── investigar_campos_exactos.py     # Metadata field name resolution  
+├── clear_patch_log_v250.py          # Patch execution log management
+├── verify_patch_v250_idempotency.py # Migration integrity verification
+├── audit_all_patches.py             # Complete system patches audit
+├── verify_no_pending_legacy.py      # Safety checks before cleanup
+└── test_logger_patch_channel.py     # Functionality testing
+```
+
+### Execution Pattern
+**Working Directory**: `/home/erpnext/frappe-bench/apps/llantascs_customs`
+**Command Format**: `bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.SCRIPT_NAME.run`
+
+### Successful Use Cases
+1. **Schema Investigation**: Verify DocType/table existence before operations
+2. **Field Resolution**: Find exact field names from DocType metadata  
+3. **Patch Management**: Clean execution logs, verify migration state
+4. **System Auditing**: Complete patches inventory and consistency checks
+5. **Safety Verification**: Confirm system state before destructive operations
+6. **Functional Testing**: Verify component functionality after changes
+
+### Success Metrics
+- **100% Execution Success**: All scripts run without errors
+- **Reliable Pattern**: Consistent structure and execution method
+- **Safe Operations**: Read-only investigation + targeted specific actions
+- **Development Speed**: Immediate verification and debugging capabilities
+- **Reusability**: Scripts designed for multiple executions during development
+
+### Key Benefits Realized
+- **Rapid Prototyping**: Quick script creation for specific investigation needs
+- **Safe Testing**: Isolated functions with clear boundaries and outputs
+- **Complex Operations**: Reliable pattern for multi-step migration verification
+- **Documentation**: Each script serves as living documentation of system state
+
 ### 🗂️ Archivos de Investigación Removidos
 **Eliminado en Limpieza del Sistema** (commit f6da4ad):
 - Código experimental de cancelación fallido

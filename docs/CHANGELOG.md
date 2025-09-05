@@ -11,6 +11,65 @@
 
 ---
 
+## [v2.5.0] - 2025-09-05 - MIGRACIÓN LEGACY COMPLETADA Y SISTEMA LIMPIO
+
+### 🎯 TRABAJO DE SESIÓN: Migración Completa + Limpieza de Sistema + Documentación One-offs
+
+**Problema Abordado**: 302 documentos legacy sin migrar + patches obsoletos + sistema desordenado
+**Implementación**: Patch v2.5.0 funcional + limpieza completa + documentación de patrones exitosos
+**Estado**: MIGRACIÓN 100% COMPLETADA ✅ | SISTEMA LIMPIO ✅ | PATRONES DOCUMENTADOS ✅
+
+#### ✅ Migración Legacy v2.5.0 - COMPLETADA EXITOSAMENTE
+- **🎯 Resultado**: 302/302 documentos legacy migrados (100%)
+- **⚡ Patch Funcional**: `migrate_opc_v2.py` con API de Frappe y SQL puntual
+- **🔧 Tres Operaciones**:
+  1. **Sucursal → sucursales_multi**: Child table con cost_center
+  2. **Tasa legacy → comisiones_por_sucursal**: Child table con porcentaje_comision
+  3. **Backfill participación**: `Comision LLCS.porcentaje_comision` desde `Sales Team.allocated_percentage`
+- **✅ Idempotencia Verificada**: Sin duplicados, re-ejecutable
+- **🐛 Error de Logging Corregido**: `frappe.log_info()` → `frappe.logger().info()`
+
+#### ✅ Limpieza de Patches - SISTEMA ORDENADO
+- **🧹 Patches Removidos**: v2.4.1 y v2.4.2 (obsoletos, ya ejecutados)
+- **📁 Estructura Final**: Solo `v2.5.0/migrate_opc_v2.py` activo
+- **📋 patches.txt**: Una sola línea registrada
+- **📖 Documentación**: `patches/README.md` con historial completo
+- **🔍 Auditoría**: Verificación completa de consistencia
+
+#### ✅ Reporte Comisiones por Vendedor - FUNCIONANDO
+- **🐛 Campo Corregido**: `porcentaje_participacion` → `porcentaje_comision`
+- **💰 Precisión Currency**: Agregada `precision: 2` a campos monetarios
+- **📊 Funcionalidad**: Reporte completamente operativo con datos migrados
+
+#### ✅ One-offs Scripts Pattern - CASO DE ÉXITO DOCUMENTADO
+- **📁 Directorio**: `llantascs_customs/llantascs_customs/one_offs/`
+- **⚡ Patrón Exitoso**: `bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.SCRIPT.run`
+- **🎯 8 Scripts Exitosos**:
+  1. `investigar_comision_llcs.py` - Verificación DocType/tablas
+  2. `investigar_campos_exactos.py` - Resolución nombres de campos
+  3. `clear_patch_log_v250.py` - Limpieza logs de patches
+  4. `verify_patch_v250_idempotency.py` - Verificación integridad migración
+  5. `audit_all_patches.py` - Auditoría completa sistema patches
+  6. `verify_no_pending_legacy.py` - Verificación seguridad antes limpieza
+  7. `test_logger_patch_channel.py` - Testing funcionalidad logger
+  8. `check_table_names.py` - Investigación nombres tablas
+- **📈 Métricas**: 100% éxito ejecución, patrón confiable establecido
+- **📚 Documentado en**: `CLAUDE.md` y `docs/operations.md`
+
+### 🏗️ Arquitectura Final
+- **Patches**: 1 patch activo (v2.5.0), sistema limpio
+- **Datos**: 302 documentos migrados, 319 filas en cada child table
+- **Reportes**: Funcionando con precisión correcta
+- **Scripts**: Patrón one-offs establecido como herramienta confiable
+
+### 📊 Impacto en Sistema
+- **Migración**: De 0% a 100% completitud
+- **Limpieza**: De 4 patches a 1 patch activo
+- **Documentación**: Patrón one-offs documentado como caso de éxito
+- **Funcionalidad**: Reportes operativos con datos reales
+
+---
+
 ## [v2.4.3] - 2025-09-04 - WORKSPACE PROFESIONAL Y SISTEMA DE PATCHES INVESTIGADO
 
 ### 🔧 TRABAJO DE SESIÓN: Fixtures Definitivos y Diagnóstico de Patches

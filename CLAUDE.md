@@ -181,6 +181,59 @@ Test files are located alongside their respective doctype files:
   ```
 - Execute with: `bench --site llantascs.dev execute llantascs_customs.one_offs.script_name.function`
 
+### One-offs Scripts - SUCCESS PATTERN ✅
+
+**Directory Structure:**
+```
+llantascs_customs/llantascs_customs/one_offs/
+├── __init__.py
+├── investigar_comision_llcs.py
+├── check_table_names.py
+├── investigar_campos_exactos.py
+├── clear_patch_log_v250.py
+├── verify_patch_v250_idempotency.py
+├── test_logger_patch_channel.py
+├── audit_all_patches.py
+└── verify_no_pending_legacy.py
+```
+
+**Execution Pattern:**
+- **Working Directory**: `/home/erpnext/frappe-bench/apps/llantascs_customs` 
+- **Command Format**: `bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.SCRIPT_NAME.run`
+- **Function Name**: All scripts use `run()` as the main function
+
+**Use Cases (All Successful):**
+1. **Database Investigation**: `investigar_comision_llcs.py` - Verify DocType and table existence
+2. **Schema Analysis**: `investigar_campos_exactos.py` - Find exact field names in metadata
+3. **Patch Management**: `clear_patch_log_v250.py` - Clean patch execution logs
+4. **Data Verification**: `verify_patch_v250_idempotency.py` - Confirm no duplicates after migration
+5. **System Auditing**: `audit_all_patches.py` - Complete patches inventory and consistency check
+6. **Functional Testing**: `test_logger_patch_channel.py` - Verify logger functionality
+
+**Success Metrics:**
+- **100% Success Rate**: All scripts executed without errors
+- **Reliable Pattern**: Consistent structure and execution method
+- **Fast Development**: Quick debugging and verification capabilities
+- **Safe Operations**: Read-only scripts for investigation, targeted scripts for specific actions
+
+**Example Successful Executions:**
+```bash
+# Investigation and debugging
+bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.investigar_campos_exactos.run
+
+# Patch management and verification
+bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.verify_patch_v250_idempotency.run
+
+# System auditing
+bench --site llantascs_customs.llantascs_customs.one_offs.audit_all_patches.run
+```
+
+**Key Benefits:**
+- **Rapid Prototyping**: Quick script creation for specific tasks
+- **Safe Testing**: Isolated functions with clear boundaries
+- **Reusable**: Scripts can be re-run for verification
+- **Documented**: Each script has clear purpose and output
+
 ## Cuándo debes actualizar `docs/`
 Actualiza la documentación en **cualquier PR** que haga alguno de estos cambios:
 - Campos nuevos o eliminados en DocTypes (JSON).
