@@ -1,0 +1,19 @@
+{
+  "doctype": "Report",
+  "is_standard": "Yes",
+  "report_type": "Script Report",
+  "name": "RV - OPC por Vendedor",
+  "ref_doctype": "Sales Invoice",
+  "module": "Llantascs Customs",
+  "roles": [
+    {"role": "System Manager"},
+    {"role": "Llantas CS Manager"},
+    {"role": "Llantas CS User"}
+  ],
+  "filters": [
+    {"fieldname": "vendedor", "label": "Vendedor", "fieldtype": "Link", "options": "Sales Person"},
+    {"fieldname": "sucursal", "label": "Sucursal", "fieldtype": "Link", "options": "Cost Center"},
+    {"fieldname": "from_date","label": "Desde",    "fieldtype": "Date", "default": "2025-01-01"},
+    {"fieldname": "to_date",  "label": "Hasta",    "fieldtype": "Date"}
+  ]
+}
