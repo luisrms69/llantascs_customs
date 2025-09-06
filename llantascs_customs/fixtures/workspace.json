@@ -9,6 +9,7 @@
     "category": "",
     "module": "",
     "sequence_id": 1,
+    "public_dashboard": 1,
     "roles": [
       {"role": "System Manager"},
       {"role": "Llantas CS Manager"},
@@ -64,6 +65,12 @@
       { "role": "Llantas CS Manager" },
       { "role": "Llantas CS User" }
     ],
+    "charts": [
+      {
+        "chart_name": "CH - OPC por Vendedor",
+        "label": "CH - OPC por Vendedor"
+      }
+    ],
     "shortcuts": [
       {
         "label": "Comisiones por Vendedor Detalle",
@@ -71,6 +78,45 @@
         "link_to": "Comisiones por Vendedor Detalle"
       }
     ],
-    "content": "[\n  {\"id\":\"h-top\",\"type\":\"header\",\"data\":{\"text\":\"An\\u00e1lisis por vendedor\",\"level\":2}},\n\n  {\"id\":\"row-graphs\",\"type\":\"header\",\"data\":{\"text\":\"Gr\\u00e1ficos comparativos\",\"level\":3}},\n  {\"id\":\"ch-opc\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":1}},\n  {\"id\":\"ch-monto\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Comisi\\u00f3n Total por Vendedor\",\"col\":2}},\n  {\"id\":\"ch-margen\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Margen Promedio por Vendedor\",\"col\":3}},\n\n  {\"id\":\"row-kpis\",\"type\":\"header\",\"data\":{\"text\":\"Indicadores (rango de fechas)\",\"level\":3}},\n  {\"id\":\"nc-count\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"NC - # OPC\",\"col\":1}},\n  {\"id\":\"nc-sum\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"NC - Monto Comisi\\u00f3n\",\"col\":2}},\n\n  {\"id\":\"row-detalle\",\"type\":\"header\",\"data\":{\"text\":\"Detalle de comisiones cobradas\",\"level\":3}},\n  {\"id\":\"sc-detalle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor Detalle\",\"col\":1}}\n]"
+    "content": "[{\"id\":\"h-top\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis por vendedor</span>\",\"col\":12}},{\"id\":\"row-graphs\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Gráficos comparativos</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":12}},{\"id\":\"row-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Indicadores (rango de fechas)</span>\",\"col\":12}},{\"id\":\"row-detalle\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Detalle de comisiones cobradas</span>\",\"col\":12}},{\"id\":\"sc-detalle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor Detalle\",\"col\":12}}]"
+  },
+  {
+    "doctype": "Workspace",
+    "name": "Z - Demo Charts",
+    "title": "Z - Demo Charts",
+    "label": "Z - Demo Charts",
+    "public": 1,
+    "sequence_id": 1,
+    "parent_page": "Comisiones",
+    "content": "[{\"id\":\"HDR1\",\"type\":\"header\",\"data\":{\"text\":\"Demo Report Chart\",\"level\":2}},{\"id\":\"CH_OPC_VEN\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":1}}]",
+    "roles": [
+      { "role": "System Manager" }
+    ]
+  },
+  {
+    "doctype": "Workspace",
+    "name": "Mi Workspace de Prueba",
+    "title": "Mi Workspace de Prueba", 
+    "label": "Prueba Gráficos",
+    "public": 1,
+    "sequence_id": 1,
+    "parent_page": null,
+    "content": "[{\"id\":\"HDR1\",\"type\":\"header\",\"data\":{\"text\":\"Mi Primer Gráfico en Frappe\",\"level\":2}},{\"id\":\"CH1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Test Grafico Simple\",\"col\":1}}]",
+    "roles": [
+      { "role": "System Manager" }
+    ]
+  },
+  {
+    "doctype": "Workspace",
+    "name": "DUMMY Test Charts",
+    "title": "DUMMY Test Charts",
+    "label": "DUMMY Test Charts", 
+    "public": 1,
+    "sequence_id": 1,
+    "parent_page": null,
+    "content": "[{\"id\":\"HDR1\",\"type\":\"header\",\"data\":{\"text\":\"Dummy Chart Test\",\"level\":2}},{\"id\":\"CH1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"DUMMY - Chart Test Fixed\",\"col\":1}}]",
+    "roles": [
+      { "role": "System Manager" }
+    ]
   }
 ]
