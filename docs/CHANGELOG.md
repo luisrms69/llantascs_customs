@@ -11,6 +11,134 @@
 
 ---
 
+## [v2.7.2] - 2025-09-06 - DASHBOARD CHARTS ENHANCEMENT ✅ FILTROS Y PRECISIÓN
+
+### 🎯 TRABAJO DE SESIÓN: Mejoras semicosméticas y funcionales en Dashboard Charts
+
+**Problema Abordado**: Dashboard Charts funcionaban pero necesitaban filtros por fecha, formatos decimales correctos y métricas más precisas (facturas vs OPCs)
+**Implementación**: Scripts completamente reescritos con filtros robustos y precisión decimal
+**Estado**: SISTEMA MEJORADO ✅ | FILTROS FUNCIONALES ✅ | FORMATOS CORRECTOS ✅
+
+#### ✅ CAMBIOS IMPLEMENTADOS - Mejoras Funcionales y Cosméticas
+
+**MEJORAS DE FUNCIONALIDAD:**
+1. **OPC → Facturas**: Chart "OPC por Vendedor" ahora cuenta Sales Invoices únicas en lugar de OPCs
+   - Field name: `opc_count` → `invoice_count`
+   - SQL: `COUNT(DISTINCT c.sales_invoice_id)` 
+   - Label UI: "# OPC" → "# Facturas"
+
+2. **Filtros por Fecha**: Todos los charts ahora tienen filtros interactivos
+   - `filters_json`: 4 filtros disponibles (from_date, to_date, sales_person, cost_center)
+   - UI Dashboard Charts con controles de filtrado
+   - Scripts con lógica condicional robusta para parámetros NULL
+
+3. **Precisión Decimal Correcta**:
+   - **Comisión Total**: 2 decimales - `ROUND(SUM(c.total_comision), 2) + precision: 2`
+   - **Margen Promedio**: 1 decimal - `ROUND(..., 1) + precision: 1`
+
+**MEJORAS TÉCNICAS:**
+- **SQL Robusto**: LEFT JOIN y manejo condicional de filtros NULL
+- **División Segura**: `CASE WHEN COALESCE(SUM(c.ingreso), 0) = 0` para evitar errores
+- **Filtros Opcionales**: Lógica `(%(param)s IS NULL OR field = %(param)s)`
+- **Performance**: WHERE clauses optimizados con validaciones apropiadas
+
+#### 🔧 ARQUITECTURA TÉCNICA ACTUALIZADA
+
+**Scripts Reports Reescritos (3 archivos):**
+
+```python
+# Patrón común en todos los scripts:
+def execute(filters=None):
+    f = frappe._dict(filters or {})
+    from_date = f.get("from_date") or "2025-01-01"
+    to_date = f.get("to_date")          # Permite NULL
+    sales_person = f.get("sales_person") # Permite NULL
+    cost_center = f.get("cost_center")   # Permite NULL
+    
+    # SQL con filtros condicionales:
+    WHERE si.docstatus = 1
+      AND si.posting_date >= %(from_date)s
+      AND (%(to_date)s IS NULL OR si.posting_date <= %(to_date)s)
+      AND (%(sales_person)s IS NULL OR c.persona_de_ventas = %(sales_person)s)
+      AND (%(cost_center)s IS NULL OR c.cost_center = %(cost_center)s)
+```
+
+**1. RV - OPC por Vendedor** → **RV - Facturas por Vendedor**:
+```python
+# CAMBIO PRINCIPAL:
+COUNT(DISTINCT c.sales_invoice_id) AS invoice_count  # Era: COUNT(DISTINCT c.parent)
+WHERE c.sales_invoice_id IS NOT NULL                 # Nueva validación
+
+# UI:
+{"label": "# Facturas", "fieldname": "invoice_count", "fieldtype": "Int"}
+```
+
+**2. RV - Comision Total por Vendedor** (Precisión 2 decimales):
+```python
+# CAMBIO:
+ROUND(SUM(c.total_comision), 2) AS commission_total
+
+# UI:
+{"fieldtype": "Currency", "precision": 2}  # Formato moneda exacto
+```
+
+**3. RV - Margen Promedio por Vendedor** (Precisión 1 decimal):
+```python
+# CAMBIO:
+ROUND(
+    CASE WHEN COALESCE(SUM(c.ingreso), 0) = 0 THEN 0
+         ELSE (SUM(c.utilidad_transaccion) / SUM(c.ingreso)) * 100.0
+    END, 1) AS avg_margin
+
+# UI:
+{"fieldtype": "Percent", "precision": 1}  # Formato % exacto
+```
+
+**Dashboard Charts Fixture Actualizado:**
+```json
+// Filtros habilitados en todos los charts:
+"filters_json": "{\"from_date\": \"\", \"to_date\": \"\", \"sales_person\": \"\", \"cost_center\": \"\"}"
+
+// Chart OPC actualizado:
+"y_axis": [{
+  "y_field": "invoice_count",  // Era: opc_count
+  "label": "Facturas"          // Era: OPC
+}]
+```
+
+#### 📊 RESULTADO FUNCIONAL
+
+**ANTES DE MEJORAS:**
+- ❌ Sin filtros de fecha en Dashboard Charts (solo defaults hardcoded)
+- ❌ Conteo de OPCs en lugar de facturas reales
+- ❌ Decimales inconsistentes en formatos
+- ❌ Filtros no expuestos en UI
+
+**DESPUÉS DE MEJORAS:**
+- ✅ **Filtros interactivos** por fecha, vendedor y centro de costo
+- ✅ **Métricas precisas**: Conteo de Sales Invoices únicas
+- ✅ **Formatos decimales**: 2 decimales moneda, 1 decimal porcentaje
+- ✅ **UI mejorada**: Controles de filtrado visibles en cada chart
+- ✅ **Performance**: SQL optimizado con WHERE clauses apropiados
+
+#### 🎯 COMPATIBILIDAD Y CONSISTENCIA
+
+**Field Names Mantenidos**:
+- ✅ `sales_person` (X-axis consistente)
+- ✅ `commission_total` (inglés técnico)
+- ✅ `avg_margin` (inglés técnico)
+- ✅ `invoice_count` (nuevo, inglés técnico)
+
+**UI Labels Español**:
+- ✅ "Vendedor", "Comisión Total", "% Margen Promedio", "# Facturas"
+
+**Arquitectura Establecida**:
+- ✅ Filtros robustos reutilizables para futuros reports
+- ✅ Precisión decimal configurable por field type
+- ✅ Dashboard Charts completamente funcionales con filtrado
+
+---
+
 ## [v2.7.1] - 2025-09-06 - DASHBOARD CHARTS SOLUTION ✅ ÉXITO TOTAL
 
 ### 🎯 TRABAJO DE SESIÓN: Dashboard Charts funcionales en ERPNext v15 - PROBLEMA RESUELTO DEFINITIVAMENTE

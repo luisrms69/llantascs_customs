@@ -173,6 +173,57 @@ Para agregar charts adicionales:
 4. **Incluir roles apropiados** para cada chart
 5. **Validar con migrate** que chart persiste
 
+## v2.7.2 Update - Filtros y Precisión
+
+### Filtros Interactivos Implementados
+
+**Todos los Dashboard Charts ahora incluyen:**
+```json
+"filters_json": "{\"from_date\": \"\", \"to_date\": \"\", \"sales_person\": \"\", \"cost_center\": \"\"}"
+```
+
+**Scripts Reports con Filtros Robustos:**
+- Lógica condicional: `(%(param)s IS NULL OR field = %(param)s)`
+- Parámetros opcionales sin errores KeyError
+- FROM_DATE default: "2025-01-01" si no se especifica
+- TO_DATE, SALES_PERSON, COST_CENTER: completamente opcionales
+
+### Mejoras de Precisión Decimal
+
+**Comisión Total (2 decimales):**
+```python
+# SQL:
+ROUND(SUM(c.total_comision), 2) AS commission_total
+
+# Column:
+{"fieldtype": "Currency", "precision": 2}
+```
+
+**Margen Promedio (1 decimal):**
+```python
+# SQL con división segura:
+ROUND(
+    CASE WHEN COALESCE(SUM(c.ingreso), 0) = 0 THEN 0
+         ELSE (SUM(c.utilidad_transaccion) / SUM(c.ingreso)) * 100.0
+    END, 1) AS avg_margin
+
+# Column:
+{"fieldtype": "Percent", "precision": 1}
+```
+
+### Cambio OPC → Facturas
+
+**Chart "OPC por Vendedor" ahora muestra facturas únicas:**
+```python
+# SQL:
+COUNT(DISTINCT c.sales_invoice_id) AS invoice_count
+WHERE c.sales_invoice_id IS NOT NULL
+
+# Y-field actualizado:
+"y_field": "invoice_count"  # Era: opc_count
+"label": "Facturas"        # Era: OPC
+```
+
 ## Troubleshooting
 
 ### Debug Migration Issues
@@ -191,8 +242,24 @@ Si chart no es visible para usuarios:
 3. Incluir `idx` en roles para ordering
 4. Validar que usuario tiene rol asignado
 
+### Filtros No Funcionan
+Si filtros no aparecen en UI:
+
+1. Verificar `filters_json` en Dashboard Chart fixture
+2. Confirmar sintaxis JSON correcta con escaping
+3. Ejecutar migrate para aplicar cambios
+4. Clear cache: `bench --site SITENAME clear-cache`
+
+### Field Names Incorrectos
+Si gráficos muestran ceros después de v2.7.2:
+
+1. Verificar field names en scripts: `invoice_count`, `commission_total`, `avg_margin`
+2. Confirmar y_field en Dashboard Chart fixture coincide
+3. Verificar SQL alias en script reports
+4. Validar que scripts retornan data con field names correctos
+
 ## Referencias
 
 - **Fixtures**: `/llantascs_customs/fixtures/`
 - **Workspace Analysis**: `/llantascs_customs/one_offs/complete_workspace_analysis.py`
-- **Documentation**: `docs/CHANGELOG.md` v2.7.1 para detalles completos de implementación
+- **Documentation**: `docs/CHANGELOG.md` v2.7.2 para detalles completos de mejoras
