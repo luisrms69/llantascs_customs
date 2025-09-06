@@ -32,11 +32,13 @@ def execute(filters=None):
     sql = f"""
         SELECT
             c.persona_de_ventas AS sales_person,
-            CASE
-                WHEN SUM(c.ingreso) > 0
-                THEN (SUM(c.utilidad_transaccion) / SUM(c.ingreso)) * 100.0
-                ELSE NULL
-            END AS avg_margin
+            ROUND(
+                CASE
+                    WHEN SUM(c.ingreso) > 0
+                    THEN (SUM(c.utilidad_transaccion) / SUM(c.ingreso)) * 100.0
+                    ELSE NULL
+                END, 1
+            ) AS avg_margin
         FROM `tabComision LLCS` c
         INNER JOIN `tabOrden de Pago Comisiones` opc
             ON opc.name = c.parent
@@ -54,6 +56,6 @@ def execute(filters=None):
 
     columns = [
         {"label": _("Vendedor"), "fieldname": "sales_person", "fieldtype": "Data", "width": 220},
-        {"label": _("% Margen Promedio"), "fieldname": "avg_margin", "fieldtype": "Percent", "width": 160},
+        {"label": _("% Margen Promedio"), "fieldname": "avg_margin", "fieldtype": "Percent", "precision": 1, "width": 160},
     ]
     return columns, data

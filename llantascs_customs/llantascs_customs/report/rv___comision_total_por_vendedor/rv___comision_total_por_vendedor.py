@@ -29,7 +29,7 @@ def execute(filters=None):
     sql = f"""
         SELECT
             c.persona_de_ventas AS sales_person,
-            SUM(c.total_comision) AS commission_total
+            ROUND(SUM(c.total_comision), 0) AS commission_total
         FROM `tabComision LLCS` c
         INNER JOIN `tabOrden de Pago Comisiones` opc
             ON opc.name = c.parent
@@ -44,6 +44,6 @@ def execute(filters=None):
 
     columns = [
         {"label": _("Vendedor"), "fieldname": "sales_person", "fieldtype": "Data", "width": 220},
-        {"label": _("Comisión Total"), "fieldname": "commission_total", "fieldtype": "Currency", "width": 160},
+        {"label": _("Comisión Total"), "fieldname": "commission_total", "fieldtype": "Currency", "precision": 0, "width": 160},
     ]
     return columns, data
