@@ -9,7 +9,8 @@
     "report_name": "RV - OPC por Vendedor",
     "is_public": 1,
     "x_field": "sales_person",
-    "filters_json": "{}",
+    "filters_json": "{\"from_date\":\"\",\"to_date\":\"\"}",
+    "use_report_chart": 1,
     "y_axis": [
       {
         "y_field": "opc_count",
@@ -53,7 +54,8 @@
     "report_name": "RV - Comision Total por Vendedor",
     "is_public": 1,
     "x_field": "sales_person",
-    "filters_json": "{}",
+    "filters_json": "{\"from_date\":\"\",\"to_date\":\"\"}",
+    "use_report_chart": 1,
     "y_axis": [
       {
         "y_field": "commission_total",
@@ -80,7 +82,8 @@
     "report_name": "RV - Margen Promedio por Vendedor",
     "is_public": 1,
     "x_field": "sales_person",
-    "filters_json": "{}",
+    "filters_json": "{\"from_date\":\"\",\"to_date\":\"\"}",
+    "use_report_chart": 1,
     "y_axis": [
       {
         "y_field": "avg_margin",

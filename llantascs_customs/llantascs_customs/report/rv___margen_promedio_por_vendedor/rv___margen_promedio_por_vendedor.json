@@ -9,7 +9,10 @@
   "prepared_report": 0,
   "add_total_row": 0,
   "timeout": 0,
-  "filters": [],
+  "filters": [
+    { "fieldname": "from_date", "label": "From Date", "fieldtype": "Date", "mandatory": 0, "default": null },
+    { "fieldname": "to_date",   "label": "To Date",   "fieldtype": "Date", "mandatory": 0, "default": null }
+  ],
   "roles": [
     { "role": "System Manager" },
     { "role": "Llantas CS Manager" },
