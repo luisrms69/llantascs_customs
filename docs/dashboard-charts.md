@@ -173,6 +173,58 @@ Para agregar charts adicionales:
 4. **Incluir roles apropiados** para cada chart
 5. **Validar con migrate** que chart persiste
 
+## v2.7.4 Update - Modificación Reporte OPC por Vendedor 
+
+### Cambio de Conteo: OPCs → Facturas Únicas por Vendedor
+
+**PROBLEMA ABORDADO**: RV - OPC por Vendedor contaba número de OPCs, se necesitaba contar facturas con comisión
+
+#### Modificaciones Implementadas
+
+**1. Script Report Changes (`rv___opc_por_vendedor.py`):**
+```sql
+-- ANTES:
+COUNT(DISTINCT c.parent) AS opc_count
+
+-- DESPUÉS: 
+COUNT(DISTINCT c.sales_invoice_id) AS invoice_count
+```
+
+**2. Dashboard Chart Update (`dashboard_chart.json`):**
+```json
+{
+  "y_axis": [{
+    "y_field": "invoice_count",  // era "opc_count"
+    "label": "Facturas"          // era "OPC"
+  }]
+}
+```
+
+**3. Column Definition:**
+```python
+{"label": _("# Facturas"), "fieldname": "invoice_count", "fieldtype": "Int", "width": 120}
+```
+
+#### Lógica de Filtrado Mejorada
+
+**Joins con Validación de Estado:**
+```sql
+INNER JOIN `tabOrden de Pago Comisiones` opc 
+  ON opc.name = c.parent AND opc.docstatus = 1
+LEFT JOIN `tabSales Invoice` si 
+  ON si.name = c.sales_invoice_id AND si.docstatus = 1
+WHERE c.sales_invoice_id IS NOT NULL
+```
+
+**Resultado**: Solo considera OPCs confirmadas y facturas sometidas, contando facturas únicas por vendedor.
+
+#### Datos de Validación
+- **22 vendedores** con datos válidos
+- **724 facturas** máximo (Jose Luis Messner)
+- **Protección DISTINCT** contra duplicados
+
+---
+
 ## v2.7.3 Update - Filtros de Dashboard Charts Funcionales
 
 ### Implementación Completa de Filtros de Fecha

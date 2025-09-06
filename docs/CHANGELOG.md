@@ -11,6 +11,48 @@
 
 ---
 
+## [v2.7.4] - 2025-09-06 - MODIFICACIÓN REPORTE OPC POR VENDEDOR ✅ CONTEO DE FACTURAS
+
+### 🎯 TRABAJO DE SESIÓN: Cambio de conteo de OPCs a facturas únicas por vendedor
+
+**Problema Abordado**: RV - OPC por Vendedor contaba número de OPCs, se necesitaba contar facturas con comisión
+**Implementación**: Modificación SQL para contar `DISTINCT sales_invoice_id` en lugar de `DISTINCT parent`
+**Estado**: REPORTE MODIFICADO ✅ | DASHBOARD CHART SINCRONIZADO ✅
+
+#### ✅ CAMBIOS IMPLEMENTADOS - Conteo de Facturas por Vendedor
+
+**SCRIPT REPORT MODIFICADO:**
+- **Archivo**: `rv___opc_por_vendedor.py`
+- **Cambio SQL**: `COUNT(DISTINCT c.parent)` → `COUNT(DISTINCT c.sales_invoice_id)`
+- **Field name**: `opc_count` → `invoice_count`
+- **Label**: `"# OPC"` → `"# Facturas"`
+- **ORDER BY**: Actualizado a `invoice_count DESC`
+
+**DASHBOARD CHART ACTUALIZADO:**
+- **Archivo**: `dashboard_chart.json` (fixture)
+- **y_field**: `"opc_count"` → `"invoice_count"`
+- **label**: `"OPC"` → `"Facturas"`
+
+#### 🔧 LÓGICA IMPLEMENTADA
+
+**Filtros de Calidad de Datos:**
+```sql
+INNER JOIN `tabOrden de Pago Comisiones` opc 
+  ON opc.name = c.parent AND opc.docstatus = 1
+LEFT JOIN `tabSales Invoice` si 
+  ON si.name = c.sales_invoice_id AND si.docstatus = 1
+WHERE c.sales_invoice_id IS NOT NULL
+```
+
+**Resultado**: Cuenta facturas únicas por vendedor, solo considerando OPCs confirmadas y facturas sometidas.
+
+#### 📊 DATOS DE VALIDACIÓN
+- **Vendedores con datos**: 22 registros
+- **Facturas líder**: Jose Luis Messner (724), Eduardo Gutierrez Marrufo (497), Karla Nayeli Valenzuela Piquet (490)
+- **Protección contra duplicados**: `DISTINCT` evita contar la misma factura múltiples veces por vendedor
+
+---
+
 ## [v2.7.3] - 2025-09-06 - DASHBOARD CHARTS FILTROS FUNCIONALES ✅ IMPLEMENTACIÓN COMPLETA
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación exitosa de filtros de fecha en Dashboard Charts
