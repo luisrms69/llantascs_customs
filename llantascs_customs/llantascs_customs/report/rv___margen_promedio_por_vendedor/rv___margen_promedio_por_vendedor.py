@@ -36,7 +36,7 @@ def execute(filters=None):
                 WHEN SUM(c.ingreso) > 0
                 THEN (SUM(c.utilidad_transaccion) / SUM(c.ingreso)) * 100.0
                 ELSE NULL
-            END AS margen_promedio
+            END AS avg_margin
         FROM `tabComision LLCS` c
         INNER JOIN `tabOrden de Pago Comisiones` opc
             ON opc.name = c.parent
@@ -44,7 +44,7 @@ def execute(filters=None):
             ON si.name = c.sales_invoice_id
         WHERE {" AND ".join(where)}
         GROUP BY c.persona_de_ventas
-        ORDER BY margen_promedio DESC, c.persona_de_ventas ASC
+        ORDER BY avg_margin DESC, c.persona_de_ventas ASC
     """
 
     data = frappe.db.sql(sql, params, as_dict=True)
@@ -54,6 +54,6 @@ def execute(filters=None):
 
     columns = [
         {"label": _("Vendedor"), "fieldname": "sales_person", "fieldtype": "Data", "width": 220},
-        {"label": _("% Margen Promedio"), "fieldname": "margen_promedio", "fieldtype": "Percent", "width": 160},
+        {"label": _("% Margen Promedio"), "fieldname": "avg_margin", "fieldtype": "Percent", "width": 160},
     ]
     return columns, data

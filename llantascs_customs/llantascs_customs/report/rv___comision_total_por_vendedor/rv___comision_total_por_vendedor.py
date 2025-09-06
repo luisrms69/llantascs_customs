@@ -29,7 +29,7 @@ def execute(filters=None):
     sql = f"""
         SELECT
             c.persona_de_ventas AS sales_person,
-            SUM(c.total_comision) AS comision_total
+            SUM(c.total_comision) AS commission_total
         FROM `tabComision LLCS` c
         INNER JOIN `tabOrden de Pago Comisiones` opc
             ON opc.name = c.parent
@@ -37,13 +37,13 @@ def execute(filters=None):
             ON si.name = c.sales_invoice_id
         WHERE {" AND ".join(where)}
         GROUP BY c.persona_de_ventas
-        ORDER BY comision_total DESC, c.persona_de_ventas ASC
+        ORDER BY commission_total DESC, c.persona_de_ventas ASC
     """
 
     data = frappe.db.sql(sql, params, as_dict=True)
 
     columns = [
         {"label": _("Vendedor"), "fieldname": "sales_person", "fieldtype": "Data", "width": 220},
-        {"label": _("Comisión Total"), "fieldname": "comision_total", "fieldtype": "Currency", "width": 160},
+        {"label": _("Comisión Total"), "fieldname": "commission_total", "fieldtype": "Currency", "width": 160},
     ]
     return columns, data

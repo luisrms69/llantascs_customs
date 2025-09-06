@@ -42,5 +42,59 @@
         "idx": 3
       }
     ]
+  },
+  {
+    "doctype": "Dashboard Chart",
+    "name": "CH - Comisión Total por Vendedor",
+    "chart_name": "CH - Comisión Total por Vendedor",
+    "title": "Comisión Total por Vendedor",
+    "chart_type": "Report",
+    "type": "Bar",
+    "report_name": "RV - Comision Total por Vendedor",
+    "is_public": 1,
+    "x_field": "sales_person",
+    "filters_json": "{}",
+    "y_axis": [
+      {
+        "y_field": "commission_total",
+        "label": "Comisión",
+        "parent": "CH - Comisión Total por Vendedor",
+        "parentfield": "y_axis",
+        "parenttype": "Dashboard Chart",
+        "idx": 1
+      }
+    ],
+    "roles": [
+      { "role": "System Manager", "parent": "CH - Comisión Total por Vendedor", "parentfield": "roles", "parenttype": "Dashboard Chart", "idx": 1 },
+      { "role": "Llantas CS User", "parent": "CH - Comisión Total por Vendedor", "parentfield": "roles", "parenttype": "Dashboard Chart", "idx": 2 },
+      { "role": "Llantas CS Manager", "parent": "CH - Comisión Total por Vendedor", "parentfield": "roles", "parenttype": "Dashboard Chart", "idx": 3 }
+    ]
+  },
+  {
+    "doctype": "Dashboard Chart",
+    "name": "CH - Margen Promedio por Vendedor",
+    "chart_name": "CH - Margen Promedio por Vendedor",
+    "title": "Margen Promedio por Vendedor",
+    "chart_type": "Report",
+    "type": "Bar",
+    "report_name": "RV - Margen Promedio por Vendedor",
+    "is_public": 1,
+    "x_field": "sales_person",
+    "filters_json": "{}",
+    "y_axis": [
+      {
+        "y_field": "avg_margin",
+        "label": "Margen %",
+        "parent": "CH - Margen Promedio por Vendedor",
+        "parentfield": "y_axis",
+        "parenttype": "Dashboard Chart",
+        "idx": 1
+      }
+    ],
+    "roles": [
+      { "role": "System Manager", "parent": "CH - Margen Promedio por Vendedor", "parentfield": "roles", "parenttype": "Dashboard Chart", "idx": 1 },
+      { "role": "Llantas CS User", "parent": "CH - Margen Promedio por Vendedor", "parentfield": "roles", "parenttype": "Dashboard Chart", "idx": 2 },
+      { "role": "Llantas CS Manager", "parent": "CH - Margen Promedio por Vendedor", "parentfield": "roles", "parenttype": "Dashboard Chart", "idx": 3 }
+    ]
   }
 ]

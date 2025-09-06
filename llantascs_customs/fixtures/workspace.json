@@ -69,6 +69,14 @@
       {
         "chart_name": "CH - OPC por Vendedor",
         "label": "CH - OPC por Vendedor"
+      },
+      {
+        "chart_name": "CH - Comisión Total por Vendedor",
+        "label": "CH - Comisión Total por Vendedor"
+      },
+      {
+        "chart_name": "CH - Margen Promedio por Vendedor",
+        "label": "CH - Margen Promedio por Vendedor"
       }
     ],
     "shortcuts": [
@@ -78,7 +86,7 @@
         "link_to": "Comisiones por Vendedor Detalle"
       }
     ],
-    "content": "[{\"id\":\"h-top\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis por vendedor</span>\",\"col\":12}},{\"id\":\"row-graphs\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Gráficos comparativos</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":12}},{\"id\":\"row-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Indicadores (rango de fechas)</span>\",\"col\":12}},{\"id\":\"row-detalle\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Detalle de comisiones cobradas</span>\",\"col\":12}},{\"id\":\"sc-detalle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor Detalle\",\"col\":12}}]"
+    "content": "[{\"id\":\"h-top\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis por vendedor</span>\",\"col\":12}},{\"id\":\"row-graphs\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Gráficos comparativos</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Comisión Total por Vendedor\",\"col\":12}},{\"id\":\"chart-3\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Margen Promedio por Vendedor\",\"col\":12}},{\"id\":\"row-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Indicadores (rango de fechas)</span>\",\"col\":12}},{\"id\":\"row-detalle\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Detalle de comisiones cobradas</span>\",\"col\":12}},{\"id\":\"sc-detalle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor Detalle\",\"col\":12}}]"
   },
   {
     "doctype": "Workspace",

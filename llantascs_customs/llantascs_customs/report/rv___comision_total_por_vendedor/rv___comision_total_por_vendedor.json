@@ -1,6 +1,6 @@
 {
   "doctype": "Report",
-  "name": "RV - Comisión Total por Vendedor",
+  "name": "RV - Comision Total por Vendedor",
   "is_standard": "Yes",
   "module": "Llantascs Customs",
   "ref_doctype": "Sales Invoice",
