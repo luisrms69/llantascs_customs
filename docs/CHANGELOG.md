@@ -11,6 +11,76 @@
 
 ---
 
+## [v2.7.3] - 2025-09-06 - DASHBOARD CHARTS FILTROS FUNCIONALES ✅ IMPLEMENTACIÓN COMPLETA
+
+### 🎯 TRABAJO DE SESIÓN: Implementación exitosa de filtros de fecha en Dashboard Charts
+
+**Problema Abordado**: Dashboard Charts tenían configuración de filtros pero no se mostraban en UI - tabla Filters vacía
+**Root Cause**: Script Reports necesitaban definición de filtros en JSON, no solo en código Python
+**Implementación**: Filtros agregados a Report DocTypes + use_report_chart habilitado
+**Estado**: FILTROS COMPLETAMENTE FUNCIONALES ✅ | CONTROLES DE FECHA DISPONIBLES ✅
+
+#### ✅ CAMBIOS IMPLEMENTADOS - Filtros de Dashboard Charts Funcionales
+
+**FUNCIONALIDAD DE FILTROS IMPLEMENTADA:**
+1. **Report JSON actualizados**: Agregados filtros `from_date` y `to_date` a los 3 Script Reports:
+   - `rv___opc_por_vendedor.json`
+   - `rv___comision_total_por_vendedor.json` 
+   - `rv___margen_promedio_por_vendedor.json`
+
+2. **Dashboard Chart configuración**: `use_report_chart: 1` habilitado para los 3 charts
+
+**FILTROS DISPONIBLES EN UI:**
+- **From Date**: Campo Date, opcional, sin valor default
+- **To Date**: Campo Date, opcional, sin valor default
+- **Funcionalidad**: Los filtros aparecen en modal "Set Filters" y se aplican correctamente
+
+#### 🔧 IMPLEMENTACIÓN TÉCNICA
+
+**Report JSON Structure:**
+```json
+"filters": [
+  { "fieldname": "from_date", "label": "From Date", "fieldtype": "Date", "mandatory": 0, "default": null },
+  { "fieldname": "to_date",   "label": "To Date",   "fieldtype": "Date", "mandatory": 0, "default": null }
+]
+```
+
+**Dashboard Chart Configuration:**
+```json
+{
+  "use_report_chart": 1,
+  "filters_json": "{\"from_date\":\"\",\"to_date\":\"\"}"
+}
+```
+
+#### 📈 RESULTADOS OBTENIDOS
+
+**ANTES:**
+- Dashboard Charts funcionaban pero sin filtros
+- Tabla "Filters" completamente vacía en UI
+- No había controles de fecha disponibles
+
+**DESPUÉS:**  
+- ✅ Modal "Set Filters" muestra campos From Date y To Date
+- ✅ Filtros se guardan y aplican correctamente a los charts
+- ✅ Scripts Python ya manejaban los filtros, solo faltaba UI
+
+#### 🏗️ ARQUITECTURA FINAL
+
+**Componentes implementados:**
+1. **Report DocType**: Definición de filtros en JSON para UI
+2. **Dashboard Chart**: `use_report_chart: 1` para heredar filtros del Report
+3. **Script Python**: Lógica de filtrado (ya existía y funcionaba)
+
+**Flujo de filtros:**
+1. Usuario abre modal "Set Filters" en Dashboard Chart
+2. ERPNext lee definición de filtros del Report JSON
+3. Muestra controles de fecha en UI
+4. Al aplicar filtros, se pasan al Script Python
+5. Script filtra datos según fechas seleccionadas
+
+---
+
 ## [v2.7.2] - 2025-09-06 - DASHBOARD CHARTS ENHANCEMENT ✅ FILTROS Y PRECISIÓN
 
 ### 🎯 TRABAJO DE SESIÓN: Mejoras semicosméticas y funcionales en Dashboard Charts

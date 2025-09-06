@@ -173,6 +173,48 @@ Para agregar charts adicionales:
 4. **Incluir roles apropiados** para cada chart
 5. **Validar con migrate** que chart persiste
 
+## v2.7.3 Update - Filtros de Dashboard Charts Funcionales
+
+### Implementación Completa de Filtros de Fecha
+
+**PROBLEMA RESUELTO**: Dashboard Charts no mostraban controles de filtro en UI
+
+#### Solución Implementada
+
+**1. Report DocType Configuration:**
+Agregados filtros a los 3 Script Reports JSON:
+
+```json
+"filters": [
+  { "fieldname": "from_date", "label": "From Date", "fieldtype": "Date", "mandatory": 0, "default": null },
+  { "fieldname": "to_date",   "label": "To Date",   "fieldtype": "Date", "mandatory": 0, "default": null }
+]
+```
+
+**2. Dashboard Chart Configuration:**
+```json
+{
+  "use_report_chart": 1,
+  "filters_json": "{\"from_date\":\"\",\"to_date\":\"\"}"
+}
+```
+
+#### Archivos Modificados
+- `llantascs_customs/report/rv___opc_por_vendedor/rv___opc_por_vendedor.json`
+- `llantascs_customs/report/rv___comision_total_por_vendedor/rv___comision_total_por_vendedor.json`
+- `llantascs_customs/report/rv___margen_promedio_por_vendedor/rv___margen_promedio_por_vendedor.json`
+- `fixtures/dashboard_chart.json` (ya tenía `use_report_chart: 1`)
+
+#### Flujo de Funcionamiento
+1. **UI**: Modal "Set Filters" muestra campos From Date y To Date
+2. **Storage**: Filtros se guardan en Dashboard Chart
+3. **Execution**: Script Reports reciben filtros y filtran datos correctamente
+
+#### Resultado Final
+✅ **Controles de fecha completamente funcionales en los 3 Dashboard Charts**
+
+---
+
 ## v2.7.2 Update - Filtros y Precisión
 
 ### Filtros Interactivos Implementados
