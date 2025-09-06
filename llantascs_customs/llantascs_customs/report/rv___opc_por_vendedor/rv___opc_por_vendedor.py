@@ -29,21 +29,21 @@ def execute(filters=None):
     sql = f"""
         SELECT
             c.persona_de_ventas AS sales_person,
-            COUNT(DISTINCT c.parent) AS opc_count
+            COUNT(DISTINCT c.sales_invoice_id) AS invoice_count
         FROM `tabComision LLCS` c
         INNER JOIN `tabOrden de Pago Comisiones` opc
-            ON opc.name = c.parent
+            ON opc.name = c.parent AND opc.docstatus = 1
         LEFT JOIN `tabSales Invoice` si
-            ON si.name = c.sales_invoice_id
+            ON si.name = c.sales_invoice_id AND si.docstatus = 1
         WHERE {" AND ".join(where)}
         GROUP BY c.persona_de_ventas
-        ORDER BY opc_count DESC, c.persona_de_ventas ASC
+        ORDER BY invoice_count DESC, c.persona_de_ventas ASC
     """
 
     data = frappe.db.sql(sql, params, as_dict=True)
 
     columns = [
         {"label": _("Vendedor"), "fieldname": "sales_person", "fieldtype": "Data", "width": 220},
-        {"label": _("# OPC"), "fieldname": "opc_count", "fieldtype": "Int", "width": 120},
+        {"label": _("# Facturas"), "fieldname": "invoice_count", "fieldtype": "Int", "width": 120},
     ]
     return columns, data

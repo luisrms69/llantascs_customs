@@ -13,8 +13,8 @@
     "use_report_chart": 1,
     "y_axis": [
       {
-        "y_field": "opc_count",
-        "label": "OPC",
+        "y_field": "invoice_count",
+        "label": "Facturas",
         "parent": "CH - OPC por Vendedor",
         "parentfield": "y_axis",
         "parenttype": "Dashboard Chart"
