@@ -1,65 +1,42 @@
 [
   {
-    "add_total_row": 0,
-    "add_translate_data": 0,
-    "columns": [],
-    "disabled": 0,
-    "docstatus": 0,
     "doctype": "Report",
+    "name": "Backlog Comisiones",
+    "report_name": "Backlog Comisiones",
+    "ref_doctype": "Sales Invoice",
+    "module": "Llantascs Customs",
+    "is_standard": 1,
+    "disabled": 0,
+    "prepared_report": 0,
+    "report_type": "Query Report",
+    "roles": [
+      {"role": "System Manager"},
+      {"role": "Accounts User"}
+    ],
     "filters": [
-      {
-        "fieldname": "from_date",
-        "label": "Desde",
-        "fieldtype": "Date",
-        "default": "2025-01-01",
-        "reqd": 1
-      },
-      {
-        "fieldname": "to_date",
-        "label": "Hasta",
-        "fieldtype": "Date",
-        "default": "Today",
-        "reqd": 1
-      },
+      {"fieldname": "from_date", "label": "Desde", "fieldtype": "Date", "reqd": 1, "default": "2025-01-01"},
+      {"fieldname": "to_date",   "label": "Hasta", "fieldtype": "Date", "reqd": 1, "default": "Today"},
       {
         "fieldname": "cost_center",
-        "label": "Sucursal",
-        "fieldtype": "Data",
-        "default": "__ALL__"
+        "label": "Sucursal (raíz o hija)",
+        "fieldtype": "Link",
+        "options": "Cost Center",
+        "reqd": 1,
+        "default": "Llantas de Calidad Star - LLCS"
       },
       {
         "fieldname": "sales_person",
-        "label": "Vendedor",
-        "fieldtype": "Data",
-        "default": "__ALL__"
+        "label": "Vendedor (raíz o hijo)",
+        "fieldtype": "Link",
+        "options": "Sales Person",
+        "reqd": 1,
+        "default": "Equipo de ventas"
       }
     ],
-    "is_standard": 0,
-    "javascript": null,
+    "query": "SELECT\n    si.name                                        AS \"Factura:Link/Sales Invoice:160\",\n    si.customer                                    AS \"Cliente:Link/Customer:220\",\n    si.posting_date                                AS \"Fecha:Date:100\",\n\n    /* Sucursales desde items (concat únicas) limitadas al subárbol seleccionado */\n    COALESCE((\n        SELECT GROUP_CONCAT(DISTINCT sii.cost_center ORDER BY sii.cost_center SEPARATOR ', ')\n        FROM `tabSales Invoice Item` sii\n        INNER JOIN `tabCost Center` cc_item ON cc_item.name = sii.cost_center\n        INNER JOIN `tabCost Center` cc_sel\n            ON cc_sel.name = %(cost_center)s\n           AND cc_item.lft BETWEEN cc_sel.lft AND cc_sel.rgt\n        WHERE sii.parent = si.name\n    ), '')                                         AS \"Sucursal(es):Data:240\",\n\n    si.base_grand_total                            AS \"Importe Factura:Currency:120\",\n\n    /* Cobro OK: SOLO totalmente pagada */\n    CASE\n      WHEN si.status = 'Paid' THEN 1\n      WHEN COALESCE(si.outstanding_amount, 0) = 0 THEN 1\n      ELSE 0\n    END                                            AS \"Cobro OK:Check:90\",\n\n    /* Indicador y lista de vendedores dentro del subárbol seleccionado */\n    CASE WHEN EXISTS (\n        SELECT 1\n        FROM `tabSales Team` st\n        INNER JOIN `tabSales Person` sp_item ON sp_item.name = st.sales_person\n        INNER JOIN `tabSales Person` sp_sel\n            ON sp_sel.name = %(sales_person)s\n           AND sp_item.lft BETWEEN sp_sel.lft AND sp_sel.rgt\n        WHERE st.parent = si.name\n    ) THEN 1 ELSE 0 END                            AS \"Vendedores OK:Check:90\",\n\n    COALESCE((\n        SELECT GROUP_CONCAT(DISTINCT st.sales_person ORDER BY st.sales_person SEPARATOR ', ')\n        FROM `tabSales Team` st\n        INNER JOIN `tabSales Person` sp_item ON sp_item.name = st.sales_person\n        INNER JOIN `tabSales Person` sp_sel\n            ON sp_sel.name = %(sales_person)s\n           AND sp_item.lft BETWEEN sp_sel.lft AND sp_sel.rgt\n        WHERE st.parent = si.name\n    ), '')                                         AS \"Vendedores (en subárbol):Data:260\"\n\nFROM `tabSales Invoice` si\nWHERE\n    si.docstatus = 1\n    AND si.posting_date BETWEEN %(from_date)s AND %(to_date)s\n\n    /* Debe existir al menos un ítem en el subárbol de la Sucursal seleccionada */\n    AND EXISTS (\n        SELECT 1\n        FROM `tabSales Invoice Item` sii\n        INNER JOIN `tabCost Center` cc_item ON cc_item.name = sii.cost_center\n        INNER JOIN `tabCost Center` cc_sel\n            ON cc_sel.name = %(cost_center)s\n           AND cc_item.lft BETWEEN cc_sel.lft AND cc_sel.rgt\n        WHERE sii.parent = si.name\n    )\n\n    /* Debe existir al menos un vendedor en el subárbol del Sales Person seleccionado */\n    AND EXISTS (\n        SELECT 1\n        FROM `tabSales Team` st\n        INNER JOIN `tabSales Person` sp_item ON sp_item.name = st.sales_person\n        INNER JOIN `tabSales Person` sp_sel\n            ON sp_sel.name = %(sales_person)s\n           AND sp_item.lft BETWEEN sp_sel.lft AND sp_sel.rgt\n        WHERE st.parent = si.name\n    )\n\n    /* Excluir clientes sin comisión (child de Comisiones Settings) */\n    AND NOT EXISTS (\n        SELECT 1\n        FROM `tabClientes Sin Comision` ex\n        WHERE ex.parenttype  = 'Comisiones Settings'\n          AND ex.parent      = 'Comisiones Settings'\n          AND ex.parentfield = 'clientes_sin_comision'\n          AND ex.customer    = si.customer\n          AND (ex.start_date IS NULL OR si.posting_date >= ex.start_date)\n          AND (ex.end_date   IS NULL OR si.posting_date <= ex.end_date)\n    )\n\n    /* Excluir SI ya incluidas en una OPC aprobada */\n    AND NOT EXISTS (\n        SELECT 1\n        FROM `tabComision LLCS` c\n        INNER JOIN `tabOrden de Pago Comisiones` opc\n                ON opc.name = c.parent AND opc.docstatus = 1\n        WHERE c.sales_invoice_id = si.name\n    )\n\nORDER BY si.posting_date DESC, si.name DESC;",
     "json": null,
-    "letter_head": null,
-    "modified": "2025-09-07 12:00:00.000000",
-    "module": "Llantascs Customs",
-    "name": "Backlog Comisiones",
-    "prepared_report": 0,
-    "query": "SELECT\n    si.name                           AS \"Factura:Link/Sales Invoice:160\",\n    si.customer                       AS \"Cliente:Link/Customer:200\",\n    si.posting_date                   AS \"Fecha:Date:100\",\n    si.base_grand_total               AS \"Importe Factura:Currency:120\",\n    /* Vendedores OK */\n    CASE WHEN EXISTS (\n        SELECT 1 FROM `tabSales Team` st2 WHERE st2.parent = si.name\n    ) THEN 1 ELSE 0 END               AS \"Vendedores OK:Check:110\",\n    /* Vendedores (concatenado) */\n    COALESCE((\n        SELECT GROUP_CONCAT(DISTINCT st.sales_person ORDER BY st.sales_person SEPARATOR ', ')\n        FROM `tabSales Team` st\n        WHERE st.parent = si.name\n    ), '')                            AS \"Vendedores:Data:220\"\nFROM `tabSales Invoice` si\nWHERE\n    si.docstatus = 1\n    AND si.posting_date >= %(from_date)s\n    AND si.posting_date <= %(to_date)s\n\n    /* ====== Filtros opcionales (mismo comportamiento previo) ====== */\n    /* Vendedor (Sales Person) */\n    AND ( %(sales_person)s = '__ALL__'\n          OR EXISTS (\n               SELECT 1 FROM `tabSales Team` st\n               WHERE st.parent = si.name AND st.sales_person = %(sales_person)s\n          )\n    )\n\n    /* Sucursal (Cost Center) — filtro por Items (aquí vivía el tema intermitente) */\n    AND ( %(cost_center)s = '__ALL__'\n          OR EXISTS (\n               SELECT 1 FROM `tabSales Invoice Item` sii\n               WHERE sii.parent = si.name AND sii.cost_center = %(cost_center)s\n          )\n    )\n\n    /* ====== Punto 1: excluir clientes en la lista (CHILD de Comisiones Settings) ====== */\n    AND NOT EXISTS (\n        SELECT 1\n        FROM `tabClientes Sin Comision` ex\n        WHERE ex.parenttype  = 'Comisiones Settings'\n          AND ex.parent      = 'Comisiones Settings'\n          AND ex.parentfield = 'clientes_sin_comision'\n          AND ex.customer    = si.customer\n          AND (ex.start_date IS NULL OR si.posting_date >= ex.start_date)\n          AND (ex.end_date   IS NULL OR si.posting_date <= ex.end_date)\n    )\n\n    /* Excluir SIs ya en OPC aprobado */\n    AND NOT EXISTS (\n        SELECT 1\n        FROM `tabComision LLCS` c\n        INNER JOIN `tabOrden de Pago Comisiones` opc\n                ON opc.name = c.parent AND opc.docstatus = 1\n        WHERE c.sales_invoice_id = si.name\n    )\n\nORDER BY si.posting_date DESC, si.name DESC",
-    "ref_doctype": "Sales Invoice",
-    "reference_report": null,
-    "report_name": "Backlog Comisiones",
-    "report_script": null,
-    "report_type": "Query Report",
-    "roles": [
-      {
-        "role": "System Manager"
-      },
-      {
-        "role": "Llantas CS Manager"
-      },
-      {
-        "role": "Llantas CS User"
-      }
-    ],
-    "timeout": 0
+    "javascript": null,
+    "report_script": null
   },
   {
     "add_total_row": 0,
