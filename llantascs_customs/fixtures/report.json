@@ -55,6 +55,65 @@
     "fieldname": "from_date",
     "label": "Desde",
     "fieldtype": "Date",
+    "default": "2025-01-01",
+    "mandatory": 1
+   },
+   {
+    "fieldname": "to_date",
+    "label": "Hasta",
+    "fieldtype": "Date",
+    "default": "Today",
+    "mandatory": 1
+   },
+   {
+    "fieldname": "cost_center",
+    "label": "Sucursal",
+    "fieldtype": "Link",
+    "options": "Cost Center",
+    "mandatory": 0,
+    "default": "__ALL__"
+   },
+   {
+    "fieldname": "sales_person",
+    "label": "Vendedor",
+    "fieldtype": "Link",
+    "options": "Sales Person",
+    "mandatory": 0,
+    "default": "__ALL__"
+   }
+  ],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-09-06 15:00:00.000000",
+  "module": "Llantascs Customs",
+  "name": "Backlog Comisiones",
+  "prepared_report": 0,
+  "query": "\nSELECT\n  si.name                                       AS \"Factura:Link/Sales Invoice:150\",\n  si.posting_date                               AS \"Fecha:Date:100\",\n  si.customer                                   AS \"Cliente:Link/Customer:180\",\n  si.cost_center                                AS \"Sucursal (Cost Center):Link/Cost Center:180\",\n  si.grand_total                                AS \"Total:Currency:120\",\n\n  -- Todos los vendedores asignados a la SI\n  COALESCE((\n    SELECT GROUP_CONCAT(DISTINCT st.sales_person ORDER BY st.sales_person SEPARATOR ', ')\n    FROM `tabSales Team` st\n    WHERE st.parent = si.name\n  ), '')                                        AS \"Vendedores:Data:220\",\n\n  -- Entrega OK\n  CASE\n    WHEN si.update_stock = 1 THEN 1\n    WHEN EXISTS (\n      SELECT 1\n      FROM `tabDelivery Note Item` dni\n      INNER JOIN `tabDelivery Note` dn ON dn.name = dni.parent AND dn.docstatus = 1\n      WHERE dni.against_sales_invoice = si.name\n    ) THEN 1\n    ELSE 0\n  END                                           AS \"Entrega OK:Check:110\",\n\n  -- Cobro OK (hay pago registrado)\n  CASE\n    WHEN EXISTS (\n      SELECT 1\n      FROM `tabPayment Entry Reference` per\n      INNER JOIN `tabPayment Entry` pe ON pe.name = per.parent AND pe.docstatus = 1\n      WHERE per.reference_doctype = 'Sales Invoice'\n        AND per.reference_name = si.name\n    ) THEN 1\n    ELSE 0\n  END                                           AS \"Cobro OK:Check:110\",\n\n  -- Conteo de facturas para total\n  1                                             AS \"Facturas:Int:80\"\n\nFROM `tabSales Invoice` si\nWHERE si.docstatus = 1\n  AND si.posting_date >= %(from_date)s\n  AND si.posting_date <= %(to_date)s\n\n  -- Filtro opcional por sucursal\n  AND (%(cost_center)s = '__ALL__' OR si.cost_center = %(cost_center)s)\n\n  -- Filtro opcional por vendedor (existe en Sales Team)\n  AND (%(sales_person)s = '__ALL__' OR EXISTS (\n        SELECT 1 FROM `tabSales Team` st\n        WHERE st.parent = si.name AND st.sales_person = %(sales_person)s\n      ))\n\n  -- Excluir SI que ya tienen comisión en OPC aprobada\n  AND NOT EXISTS (\n    SELECT 1\n    FROM `tabComision LLCS` c\n    INNER JOIN `tabOrden de Pago Comisiones` opc\n      ON opc.name = c.parent AND opc.docstatus = 1\n    WHERE c.sales_invoice_id = si.name\n  )\n\nORDER BY si.posting_date DESC;\n",
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Backlog Comisiones",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+    {"role": "System Manager"},
+    {"role": "Llantas CS Manager"},
+    {"role": "Llantas CS User"}
+  ]
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [
+   {
+    "fieldname": "from_date",
+    "label": "Desde",
+    "fieldtype": "Date",
     "mandatory": 0,
     "default": "2025-01-01"
    },

@@ -35,9 +35,14 @@
         "label": "Detalle OPC (Por Documento)",
         "type": "Report",
         "link_to": "Detalle OPC - Por Documento"
+      },
+      {
+        "label": "Backlog Comisiones",
+        "type": "Report",
+        "link_to": "Backlog Comisiones"
       }
     ],
-    "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Res\u00famenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"An\u00e1lisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Mis Comisiones\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}}\n]"
+    "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Res\u00famenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"An\u00e1lisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Mis Comisiones\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}},\n  \n  {\"id\":\"h-5\",\"type\":\"header\",\"data\":{\"text\":\"Backlog\",\"level\":2}},\n  {\"id\":\"sc-5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones\",\"col\":2}}\n]"
   },
   {
     "doctype": "Workspace",
