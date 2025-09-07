@@ -11,6 +11,40 @@
 
 ---
 
+## [v2.7.5] - 2025-09-06 - WORKSPACE COMISIONES ACTUALIZADO ✅ UI SIMPLIFICADO
+
+### 🎯 TRABAJO DE SESIÓN: Actualización de workspace "Comisiones" - Títulos y eliminación de secciones legacy
+
+**Problema Abordado**: Workspace desorganizado con títulos incorrectos y secciones obsoletas
+**Implementación**: Cambio de títulos UI y eliminación de secciones "Análisis por Vendedor" y "Auditoría y Migración Legacy"
+**Estado**: WORKSPACE ACTUALIZADO ✅ | TÍTULOS CORREGIDOS ✅ | SECCIONES LEGACY ELIMINADAS ✅
+
+#### ✅ CAMBIOS IMPLEMENTADOS - Workspace UI Mejorado
+
+**TAREA 2 - TÍTULOS CORREGIDOS:**
+- **Header**: "Backlog del Vendedor" → "Mis Comisiones" 
+- **Label shortcut**: "Mis Comisiones Backlog" → "Mis Comisiones"
+- **Shortcut_name**: Actualizado en content JSON para consistencia
+
+**TAREA 3 - SECCIONES ELIMINADAS:**
+- **Removida**: Sección "Análisis por Vendedor" + "Comisiones por Vendedor (Periodo)"
+- **Removida**: Sección "Auditoría y Migración Legacy" + "Auditoría OPC Legacy Pendientes"
+- **Resultado**: Workspace simplificado de 6 a 4 secciones
+
+#### 🎯 ESTRUCTURA FINAL DEL WORKSPACE
+
+**Secciones Restantes (4 secciones core):**
+1. **Pagos y Resúmenes** → Pagos OPC (Resumen)
+2. **Análisis por Sucursal** → Pagos OPC (Por Sucursal) 
+3. **Mis Comisiones** → Mis Comisiones
+4. **Detalle por OPC** → Detalle OPC (Por Documento)
+
+#### 🔧 ARCHIVOS MODIFICADOS
+- `llantascs_customs/fixtures/workspace.json` - Eliminación de shortcuts y content JSON
+- JSON syntax corregido para mantener integridad
+
+---
+
 ## [v2.7.4] - 2025-09-06 - MODIFICACIÓN REPORTE OPC POR VENDEDOR ✅ CONTEO DE FACTURAS
 
 ### 🎯 TRABAJO DE SESIÓN: Cambio de conteo de OPCs a facturas únicas por vendedor
