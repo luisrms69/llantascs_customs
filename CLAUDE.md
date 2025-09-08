@@ -281,3 +281,34 @@ Actualiza la documentación en **cualquier PR** que haga alguno de estos cambios
 - todos los committs seran autorizados por mi no puedes hacer committs sin mi autorizacion
 - claude code solo puede implementar codigo que se le entregue, cualquier codigo que quiera generar debe ser aprobado por el usuario
 - Claude NUNCA puede modificar código sin autorización EXPLÍCITA
+
+# ⛔ PROHIBICIÓN ABSOLUTA - FIXTURES VS BASE DE DATOS
+
+## 🚫 NUNCA REEMPLAZAR UN FIXTURE CON MODIFICACIÓN DIRECTA DE BD
+
+### ❌ PROHIBIDO TERMINANTEMENTE:
+Cuando se está implementando un **cambio de fixture**, NUNCA hacer modificación directa de BD como "atajo".
+
+```python
+# ESCENARIO: Fixture JSON roto, reporte no se actualiza
+# ❌ JAMÁS HACER ESTO COMO "SOLUCIÓN":
+frappe.db.sql("UPDATE `tabReport` SET query = %s WHERE name = 'Backlog Comisiones'", (new_query,))
+
+# ✅ HACER ESTO:
+# Arreglar el fixture JSON correctamente y usar migrate
+```
+
+### 🚨 POR QUÉ ES CATASTRÓFICO:
+1. **Siguiente migrate**: La modificación de BD se PERDERÁ (fixture sobrescribe)
+2. **Nuevos sitios**: Tendrán la versión del fixture (broken), no la de BD  
+3. **Inconsistencia total**: Cada sitio diferente configuración
+4. **Deploy imposible**: Fixture vs BD desincronizados
+
+### 🔥 REGLA ABSOLUTA:
+**SI EL CAMBIO VA EN UN FIXTURE → ARREGLAR EL FIXTURE**
+**NUNCA "ATAJAR" CON BD DIRECTA CUANDO HAY FIXTURE INVOLUCRADO**
+
+### ✅ PROCESO CORRECTO:
+1. Fixture roto → Arreglar fixture JSON
+2. Migrate → Aplica fixture corregido
+3. Nunca BD directa como reemplazo de fixture

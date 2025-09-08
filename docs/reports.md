@@ -36,13 +36,17 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 #### Columnas del Reporte
 
 1. **Factura** (Link/Sales Invoice:160) - Enlace a la factura
-2. **Cliente** (Link/Customer:220) - Cliente de la factura  
-3. **Fecha** (Date:100) - Fecha de la factura
-4. **Sucursal(es)** (Data:240) - Concatenación de sucursales de items
-5. **Importe Factura** (Currency:120) - Total de la factura
-6. **Cobro OK** (Check:90) - Indicador si está totalmente pagada
-7. **Vendedores OK** (Check:90) - Indicador si tiene vendedores válidos
-8. **Vendedores (en subárbol)** (Data:260) - Lista de vendedores del subárbol seleccionado
+2. **Fecha** (Date:95) - Fecha de la factura
+3. **Cliente** (Link/Customer:220) - Cliente de la factura
+4. **Sucursal** (Link/Cost Center:200) - Centro de costo de la factura
+5. **Venta (OPC def)** (Currency:120) - Base net total de la factura
+6. **Margen pct CC** (Percent:110) - Porcentaje de margen por centro de costo
+7. **Rate Comisión** (Percent:110) - Tasa de comisión aplicable
+8. **Comisión Estimada** (Currency:140) - Comisión calculada estimada
+9. **Vendedor** (Data:150) - Vendedor asignado a la factura
+10. **Status Pago** (Data:100) - Estado de pago (Pendiente/Pagado)
+11. **Status Entrega** (Data:100) - Estado de entrega (Pendiente/Entregado)
+12. **Status Comisiones** (Data:120) - Estado del proceso de comisiones
 
 #### Arquitectura Técnica
 
@@ -57,6 +61,13 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 - Sin Custom Reports que generen duplicación
 
 #### Historial de Implementación
+
+**v2.7.7 (2025-09-08):**
+- Corrección de 4 errores críticos identificados en segunda revisión
+- Restauración de 12 columnas completas (vs 8 anteriores)
+- Corrección del campo default rate: `default_commission_rate` → `porcentaje_sobre_utilidad`
+- Fix del error de cálculo de comisiones (factor 100x corregido)
+- Adición del LEFT JOIN con Sales Team para información de vendedores
 
 **v2.7.6 (2025-09-07):** 
 - Implementación inicial como Query Report puro
