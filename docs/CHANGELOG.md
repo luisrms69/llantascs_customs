@@ -11,6 +11,108 @@
 
 ---
 
+## [v2.7.8] - 2025-09-08 - BACKLOG COMISIONES CHATGPT PROPOSAL ✅ GL METHODOLOGY + BINARY CHECKS
+
+### 🎯 TRABAJO DE SESIÓN: Implementación exacta de propuesta ChatGPT para correcciones avanzadas
+
+**Problema Abordado**: Márgenes distorsionados y formato subóptimo en columnas status del reporte Backlog Comisiones
+**Implementación**: Metodología GL-based + columnas Check binarias según especificaciones ChatGPT exactas
+**Estado**: PROPUESTA IMPLEMENTADA ✅ | FORMATO MEJORADO ✅ | PRECISIÓN AJUSTADA ✅
+
+#### ✅ CAMBIOS IMPLEMENTADOS EXITOSAMENTE
+
+**CAMBIO 1 - METODOLOGÍA GL PARA MÁRGENES:**
+- ✅ **Nueva lógica contable**: Reemplazado cálculo basado en Sales Invoice por GL Entries agregados
+- ✅ **Ventana 90 días**: Análisis de Income vs COGS en período previo a fecha_hasta
+- ✅ **4 CTEs nuevos**: gl_90d, sales_cc, cogs_cc, cc_margin con lógica contable pura
+- ✅ **Aproximación ERPNext**: Metodología similar al reporte Gross Profit nativo
+- ✅ **Resultado**: Márgenes más alineados con realidad contable por centro de costo
+
+**CAMBIO 2 - COLUMNAS CHECK BINARIAS:**
+- ✅ **Pago OK**: `outstanding_amount = 0` → 1 si pagada totalmente, 0 si pendiente
+- ✅ **Entrega OK**: Lógica completa servicios (siempre 1) + stock items con DN + update_stock
+- ✅ **Comisiones OK**: EXISTS en OPC aprobada → 1 si procesada, 0 si pendiente
+- ✅ **Formato optimizado**: Check:80/90 reemplaza Data:100 para mejor visualización
+- ✅ **Resultado**: Visualización clara y rápida del estado de cada factura
+
+**CAMBIO 3 - FORMATO PORCENTAJE MEJORADO:**
+- ✅ **Patrón ERPNext**: Multiplicación por 100.0 + ROUND + fieldtype Percent
+- ✅ **Investigación aplicada**: Análisis del código fuente Gross Profit para replicar formato
+- ✅ **Precisión**: 2 decimales consistentes (15.06% vs .######%)
+- ✅ **Resultado**: Formato profesional alineado con estándares ERPNext
+
+**CAMBIO 4 - OPTIMIZACIONES ADICIONALES:**
+- ✅ **IFNULL vs COALESCE**: Cambio para mejor performance en cálculos comisión
+- ✅ **Precisión decimal Venta**: ROUND(si.base_net_total, 2) para 2 decimales exactos
+- ✅ **Currency precision**: Ancho columna Comisión ajustado a :120
+- ✅ **Resultado**: Performance mejorado y precisión numérica consistente
+
+#### 🔧 ARQUITECTURA TÉCNICA ACTUALIZADA
+
+**NUEVOS CTES IMPLEMENTADOS:**
+```sql
+gl_90d AS (...)          -- GL Entries ventana 90 días con is_cancelled = 0
+sales_cc AS (...)        -- Ingresos por CC: SUM(credit - debit) WHERE root_type = 'Income'  
+cogs_cc AS (...)         -- Costos por CC: SUM(debit - credit) WHERE account_type = 'COGS'
+cc_margin AS (...)       -- Margen: (selling - buying) / NULLIF(selling,0)
+```
+
+**COLUMNAS STATUS BINARIAS:**
+```sql
+CASE WHEN si.outstanding_amount = 0 THEN 1 ELSE 0 END AS "Pago OK:Check:80"
+CASE WHEN [lógica_servicios_DN] THEN 1 ELSE 0 END AS "Entrega OK:Check:80"  
+CASE WHEN EXISTS(OPC_aprobada) THEN 1 ELSE 0 END AS "Comisiones OK:Check:90"
+```
+
+**FORMATO PORCENTAJE CORREGIDO:**
+```sql
+ROUND(COALESCE(m.avg_margin_rate, 0) * 100.0, 2) as "Margen pct CC:Percent:110"
+```
+
+#### 📊 RESULTADOS POST-IMPLEMENTACIÓN
+
+**MÁRGENES GL-BASED:**
+- ✅ **Metodología contable**: Basados en GL Entries reales vs estimaciones SI
+- ✅ **Período consistente**: Ventana 90 días para promedio estable por CC
+- ✅ **Aproximación mejorada**: Más cercanos a ERPNext Gross Profit nativo
+- ✅ **Transparencia**: Lógica clara Income vs COGS por accounting periods
+
+**VISUALIZACIÓN MEJORADA:**
+- ✅ **Checks binarios**: Lectura inmediata del estado (1/0 vs texto descriptivo)
+- ✅ **Formato %**: Porcentajes con símbolo y 2 decimales (15.06% vs .0.150600)
+- ✅ **Precisión decimal**: Campos Currency con 2 decimales exactos
+- ✅ **Experiencia usuario**: Información clara y procesable para OPC
+
+#### ⚡ PERFORMANCE Y OPTIMIZACIÓN
+
+**CONSULTAS SQL:**
+- ✅ **GL Entries indexadas**: Uso de posting_date y is_cancelled para filtrado eficiente
+- ✅ **IFNULL optimization**: Mejor performance que COALESCE en cálculos
+- ✅ **CTE structure**: Lógica modular y cacheable por motor SQL
+- ✅ **Resultado**: Tiempo de ejecución similar con mayor precisión
+
+#### 📋 ARCHIVOS MODIFICADOS
+
+**FIXTURE ACTUALIZADO:**
+- `llantascs_customs/fixtures/report.json` - Query completamente reescrito con metodología GL
+
+#### 🎯 RESULTADO FASE 2 CHATGPT
+
+**METODOLOGÍA AVANZADA IMPLEMENTADA:**
+- ✅ **GL-based margins**: Lógica contable profesional aplicada
+- ✅ **Binary status checks**: UX mejorado para evaluación rápida
+- ✅ **ERPNext format compliance**: Estándares nativos replicados
+- ✅ **Precision optimized**: Decimales consistentes y controlados
+- ✅ **Ready for production**: Implementación robusta y escalable
+
+**BENEFICIOS ALCANZADOS:**
+- Márgenes más precisos usando contabilidad real
+- Visualización optimizada para procesamiento OPC
+- Formato profesional alineado con ERPNext estándar
+- Base sólida para futuras extensiones del reporte
+
+---
+
 ## [v2.7.7] - 2025-09-08 - BACKLOG COMISIONES CORRECTIONS PHASE 1 ✅ 4 FIXES IMPLEMENTED
 
 ### 🎯 TRABAJO DE SESIÓN: Corrección de 4 errores críticos identificados en segunda revisión

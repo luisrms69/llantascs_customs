@@ -39,14 +39,14 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 2. **Fecha** (Date:95) - Fecha de la factura
 3. **Cliente** (Link/Customer:220) - Cliente de la factura
 4. **Sucursal** (Link/Cost Center:200) - Centro de costo de la factura
-5. **Venta (OPC def)** (Currency:120) - Base net total de la factura
-6. **Margen pct CC** (Percent:110) - Porcentaje de margen por centro de costo
+5. **Venta (OPC def)** (Currency:120) - Base net total redondeado a 2 decimales
+6. **Margen pct CC** (Percent:110) - Porcentaje de margen por CC (metodología GL, 90 días)
 7. **Rate Comisión** (Percent:110) - Tasa de comisión aplicable
-8. **Comisión Estimada** (Currency:140) - Comisión calculada estimada
-9. **Vendedor** (Data:150) - Vendedor asignado a la factura
-10. **Status Pago** (Data:100) - Estado de pago (Pendiente/Pagado)
-11. **Status Entrega** (Data:100) - Estado de entrega (Pendiente/Entregado)
-12. **Status Comisiones** (Data:120) - Estado del proceso de comisiones
+8. **Comisión Estimada** (Currency:120) - Comisión calculada con IFNULL optimizado
+9. **Vendedor** (Data:150) - Vendedor del primer registro Sales Team
+10. **Pago OK** (Check:80) - Check binario: 1=factura totalmente pagada, 0=pendiente
+11. **Entrega OK** (Check:80) - Check binario: 1=servicios o entregado, 0=pendiente
+12. **Comisiones OK** (Check:90) - Check binario: 1=incluida en OPC aprobada, 0=pendiente
 
 #### Arquitectura Técnica
 
@@ -61,6 +61,15 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 - Sin Custom Reports que generen duplicación
 
 #### Historial de Implementación
+
+**v2.7.8 (2025-09-08):**
+- Implementación propuesta ChatGPT: metodología GL-based para márgenes
+- Conversión de columnas status a formato Check binario (1/0)
+- Corrección formato porcentaje siguiendo patrón ERPNext (x100.0 + ROUND)
+- Optimización IFNULL en cálculos de comisión
+- Precisión decimal limitada a 2 en campo Venta
+- **Metodología GL**: 4 CTEs nuevos (gl_90d, sales_cc, cogs_cc, cc_margin)
+- **Lógica binaria**: outstanding_amount=0, servicios/DN delivery, OPC existente
 
 **v2.7.7 (2025-09-08):**
 - Corrección de 4 errores críticos identificados en segunda revisión
