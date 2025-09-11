@@ -100,6 +100,93 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 
 ---
 
+## Backlog Comisiones Completo
+
+**Tipo:** Query Report  
+**Ubicación:** `/app/query-report/Backlog Comisiones Completo`  
+**Módulo:** Llantascs Customs  
+
+#### Descripción
+
+Versión sin filtros obligatorios del reporte Backlog Comisiones. Eliminó las limitaciones de lógica de negocio que requerían seleccionar Cost Center y Sales Person, manteniendo las columnas visibles en resultados.
+
+#### Filtros
+
+| Campo | Tipo | Requerido | Default | Descripción |
+|-------|------|-----------|---------|-------------|
+| `from_date` | Date | No | "2025-01-01" | Fecha inicio del rango de búsqueda |
+| `to_date` | Date | No | "Today" | Fecha fin del rango de búsqueda |
+
+#### Diferencias vs Backlog Comisiones
+
+**ELIMINADO:**
+- Filtros obligatorios `cost_center` y `sales_person`
+- CTEs jerárquicos `cc_root` y `sp_root` 
+- Condiciones de filtrado por jerarquía lft/rgt
+- Dependencias a `%(cost_center)s` y `%(sales_person)s`
+
+**CONSERVADO:**
+- Todas las columnas incluyendo Sucursal y Vendedor
+- Exclusiones de clientes sin comisión
+- Exclusiones de OPCs ya procesadas
+- Metodología GL para márgenes (CTEs: gl_90d, sales_cc, cogs_cc, cc_margin)
+- Cálculo de comisión estimada
+- Checks binarios de estado (Pago OK, Entrega OK, Comisiones OK)
+
+#### Columnas del Reporte
+
+1. **Factura** (Link/Sales Invoice:160) - Enlace a la factura
+2. **Fecha** (Date:95) - Fecha de la factura
+3. **Cliente** (Link/Customer:220) - Cliente de la factura
+4. **Sucursal** (Link/Cost Center:150) - Centro de costo de la factura
+5. **Vendedor** (Data:150) - Vendedores concatenados del Sales Team
+6. **Venta (OPC def)** (Currency:120) - Base net total redondeado a 2 decimales
+7. **Margen pct CC** (Percent:110) - Porcentaje de margen por CC (metodología GL, 90 días)
+8. **Rate Comisión** (Percent:110) - Tasa de comisión aplicable
+9. **Comisión Estimada** (Currency:120) - Comisión calculada con IFNULL optimizado
+10. **Pago OK** (Check:80) - Check binario: 1=factura totalmente pagada, 0=pendiente
+11. **Entrega OK** (Check:80) - Check binario: 1=servicios o entregado, 0=pendiente
+12. **Comisiones OK** (Check:90) - Check binario: 1=incluida en OPC aprobada, 0=pendiente
+
+#### Casos de Uso
+
+1. **Vista general sin filtros**: Análisis amplio sin restricciones de sucursal/vendedor
+2. **Exploración inicial**: Identificar patrones antes de filtros específicos  
+3. **Auditorías completas**: Revisión total del backlog sin limitaciones
+4. **Preparación masiva OPC**: Identificar facturas pendientes globalmente
+
+#### Arquitectura Técnica
+
+**SQL Base Simplificado:**
+```sql
+base_si as (
+  select si.*
+  from `tabSales Invoice` si
+  where si.docstatus = 1
+    and si.posting_date between %(from_date)s and %(to_date)s
+    -- Sin condiciones jerárquicas de CC o SP
+    -- Mantiene exclusiones de clientes y OPCs
+)
+```
+
+**Columnas Mantenidas:**
+```sql
+si.cost_center as "Sucursal:Link/Cost Center:150"
+(select group_concat(distinct st.sales_person...) as "Vendedor:Data:150"
+```
+
+#### Historial de Implementación
+
+**v2.7.9 (2025-09-11):**
+- Implementación inicial del reporte sin filtros obligatorios
+- Eliminación de CTEs jerárquicos cc_root y sp_root
+- Remoción de condiciones lft/rgt en base_si
+- Conservación de columnas Sucursal y Vendedor como output
+- Descontaminación de fixtures con whitelist en hooks.py
+- Configuración en workspace como primer acceso en sección Backlog
+
+---
+
 ## Pagos OPC - Resumen
 
 **Tipo:** Query Report  

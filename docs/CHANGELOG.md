@@ -11,6 +11,143 @@
 
 ---
 
+## [v2.7.9] - 2025-09-11 - BACKLOG COMISIONES COMPLETO ✅ SIN FILTROS OBLIGATORIOS + FIXTURES DECONTAMINATION
+
+### 🎯 TRABAJO DE SESIÓN: Implementación de reporte sin limitaciones de lógica de negocio + limpieza de fixtures
+
+**Problema Abordado**: Limitaciones de UX en Backlog Comisiones que requería filtros obligatorios de Sucursal y Vendedor
+**Implementación**: Nuevo reporte "Backlog Comisiones Completo" sin filtros obligatorios + descontaminación de report.json
+**Estado**: REPORTE IMPLEMENTADO ✅ | FIXTURES LIMPIOS ✅ | WORKSPACE CONFIGURADO ✅
+
+#### ✅ CAMBIOS IMPLEMENTADOS EXITOSAMENTE
+
+**CAMBIO 1 - NUEVO REPORTE SIN FILTROS OBLIGATORIOS:**
+- ✅ **Reporte duplicado**: "Backlog Comisiones Completo" basado en el original
+- ✅ **Filtros simplificados**: Solo from_date y to_date (no obligatorios)
+- ✅ **CTEs eliminados**: Removidos cc_root y sp_root completamente
+- ✅ **Condiciones jerárquicas removidas**: Sin lft/rgt filtering en base_si
+- ✅ **Columnas conservadas**: Sucursal y Vendedor visibles en resultados
+- ✅ **Resultado**: Acceso directo sin barreras de UX para análisis amplio
+
+**CAMBIO 2 - ARQUITECTURA SQL SIMPLIFICADA:**
+- ✅ **base_si limpio**: Eliminadas condiciones jerárquicas CC y SP
+- ✅ **Columnas output**: si.cost_center y group_concat(st.sales_person) mantenidas
+- ✅ **Sin dependencias**: Cero referencias a %(cost_center)s o %(sales_person)s
+- ✅ **Lógica conservada**: Exclusiones de clientes sin comisión y OPCs procesadas
+- ✅ **Metodología GL mantenida**: CTEs de márgenes (gl_90d, sales_cc, cogs_cc, cc_margin)
+- ✅ **Resultado**: SQL optimizado sin restricciones pero con información completa
+
+**CAMBIO 3 - DESCONTAMINACIÓN DE FIXTURES:**
+- ✅ **Whitelist implementada**: hooks.py con filtros específicos por nombre de reporte
+- ✅ **Limpieza jq**: report.json reducido de 2498 líneas a 290 líneas limpias
+- ✅ **Export-fixtures seguro**: Solo reportes custom de llantascs_customs incluidos
+- ✅ **Blindaje futuro**: Configuración previene futuras contaminaciones automáticas
+- ✅ **Resultado**: Fixtures limpios y migrables sin reportes core ERPNext
+
+**CAMBIO 4 - WORKSPACE Y NAVEGACIÓN:**
+- ✅ **Shortcut primario**: "Backlog Comisiones Completo" como primera opción en workspace
+- ✅ **Ordenamiento lógico**: Reporte sin filtros primero, con filtros segundo
+- ✅ **Configuración workspace.json**: Fixture actualizado con nueva estructura
+- ✅ **Resultado**: UX mejorada con acceso directo al reporte completo
+
+#### 🔧 ARQUITECTURA TÉCNICA ACTUALIZADA
+
+**NUEVOS REPORTES:**
+```
+"Backlog Comisiones Completo" - Sin filtros obligatorios
+"Backlog Comisiones"          - Con filtros jerárquicos (original)
+```
+
+**SQL SIMPLIFICADO COMPLETO:**
+```sql
+base_si as (
+  select si.*
+  from `tabSales Invoice` si
+  where si.docstatus = 1
+    and si.posting_date between %(from_date)s and %(to_date)s
+    -- Sin condiciones CC/SP jerárquicas
+    and not exists (exclusiones_clientes_sin_comision)
+    and not exists (exclusiones_opcs_procesadas)
+)
+```
+
+**WHITELIST HOOKS.PY:**
+```python
+{
+    "doctype": "Report",
+    "filters": {
+        "name": ["in", [
+            "Backlog Comisiones",
+            "Backlog Comisiones Completo", 
+            "Pagos OPC - Resumen",
+            "Pagos OPC - Por Sucursal",
+            "Mis Comisiones Backlog",
+            "Detalle OPC - Por Documento"
+        ]]
+    }
+}
+```
+
+#### 📊 RESULTADOS POST-IMPLEMENTACIÓN
+
+**UX MEJORADA:**
+- ✅ **Acceso inmediato**: Sin barreras de filtros obligatorios para vista general
+- ✅ **Análisis flexible**: Usuarios pueden explorar sin restricciones previas
+- ✅ **Información completa**: Todas las columnas incluyendo Sucursal y Vendedor
+- ✅ **Workflow optimizado**: Reporte completo → filtros específicos cuando necesario
+
+**FIXTURES OPTIMIZADOS:**
+- ✅ **Tamaño reducido**: 88% reducción en líneas de código (2498→290)
+- ✅ **Deploy rápido**: Fixtures más pequeños para migraciones
+- ✅ **Mantenimiento**: Solo reportes relevantes en control de versiones
+- ✅ **Prevención**: Blindaje automático contra futuras contaminaciones
+
+#### ⚡ PERFORMANCE Y ESCALABILIDAD
+
+**CONSULTAS SQL:**
+- ✅ **Sin joins jerárquicos**: Eliminación de complejidad lft/rgt innecesaria
+- ✅ **Filtrado temprano**: Solo por fechas y exclusiones de negocio
+- ✅ **Subconsulta vendedores**: group_concat eficiente para múltiples vendedores
+- ✅ **Resultado**: Performance similar con mayor accesibilidad
+
+#### 📋 ARCHIVOS MODIFICADOS
+
+**FIXTURES ACTUALIZADOS:**
+- `llantascs_customs/fixtures/report.json` - Nuevo reporte + limpieza completa
+- `llantascs_customs/fixtures/workspace.json` - Shortcut configurado
+- `llantascs_customs/hooks.py` - Whitelist de reportes implementada
+
+**DOCUMENTACIÓN ACTUALIZADA:**
+- `docs/reports.md` - Documentación completa del nuevo reporte
+- `docs/CHANGELOG.md` - Registro detallado de implementación v2.7.9
+
+#### 🎯 CASOS DE USO NUEVOS HABILITADOS
+
+**ANÁLISIS SIN RESTRICCIONES:**
+1. **Vista global inicial**: Identificar patrones antes de filtros específicos
+2. **Auditorías completas**: Revisión total del backlog sin limitaciones
+3. **Preparación masiva OPC**: Identificar facturas pendientes globalmente
+4. **Exploración de datos**: Análisis exploratorio sin barreras de entrada
+
+#### ✅ VERIFICACIONES DE CALIDAD
+
+**MIGRACIÓN:**
+- ✅ `bench --site llantascs.dev migrate` - Exitosa sin errores
+- ✅ `bench --site llantascs.dev clear-cache` - Cache limpiado
+- ✅ `bench restart` - Servicio reiniciado correctamente
+
+**FIXTURES:**
+- ✅ report.json válido y limpio (290 líneas vs 2498 anteriores)
+- ✅ hooks.py con whitelist funcional
+- ✅ workspace.json con shortcuts configurados
+
+**FUNCIONALIDAD:**
+- ✅ Reporte accesible sin filtros obligatorios
+- ✅ Columnas Sucursal y Vendedor visibles
+- ✅ Lógica de negocio conservada (exclusiones, márgenes, comisiones)
+
+---
+
 ## [v2.7.8] - 2025-09-08 - BACKLOG COMISIONES CHATGPT PROPOSAL ✅ GL METHODOLOGY + BINARY CHECKS
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación exacta de propuesta ChatGPT para correcciones avanzadas
