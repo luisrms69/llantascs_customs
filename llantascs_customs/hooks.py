@@ -252,8 +252,20 @@ fixtures = [
     {"dt": "Custom Field",
      "filters": {"module": "Llantascs Customs"}},
 
-    # Reportes: solo los que no requieren .py
-    {"dt": "Report", "filters": [["report_type", "in", ["Query Report", "Report Builder"]]]},
+    # Reportes: whitelist específica para evitar contaminación
+    {
+        "doctype": "Report",
+        "filters": {
+            "name": ["in", [
+                "Backlog Comisiones",
+                "Backlog Comisiones Completo",
+                "Pagos OPC - Resumen",
+                "Pagos OPC - Por Sucursal",
+                "Mis Comisiones Backlog",
+                "Detalle OPC - Por Documento"
+            ]]
+        }
+    },
     
 
     # Workspace "Comisiones" (incluye el content JSON con los shortcuts funcionales)

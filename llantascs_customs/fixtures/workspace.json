@@ -1,125 +1,150 @@
 [
-  {
-    "doctype": "Workspace",
-    "name": "Comisiones",
-    "title": "Comisiones",
-    "label": "Comisiones",
-    "public": 1,
-    "is_default": 0,
-    "category": "",
-    "module": "",
-    "sequence_id": 1,
-    "public_dashboard": 1,
-    "roles": [
-      {"role": "System Manager"},
-      {"role": "Llantas CS Manager"},
-      {"role": "Llantas CS User"}
-    ],
-    "shortcuts": [
-      {
-        "label": "Pagos OPC (Resumen)",
-        "type": "Report",
-        "link_to": "Pagos OPC - Resumen"
-      },
-      {
-        "label": "Pagos OPC (Por Sucursal)",
-        "type": "Report",
-        "link_to": "Pagos OPC - Por Sucursal"
-      },
-      {
-        "label": "Mis Comisiones",
-        "type": "Report",
-        "link_to": "Mis Comisiones Backlog"
-      },
-      {
-        "label": "Detalle OPC (Por Documento)",
-        "type": "Report",
-        "link_to": "Detalle OPC - Por Documento"
-      },
-      {
-        "label": "Backlog Comisiones",
-        "type": "Report",
-        "link_to": "Backlog Comisiones"
-      }
-    ],
-    "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Res\u00famenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"An\u00e1lisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Mis Comisiones\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}},\n  \n  {\"id\":\"h-5\",\"type\":\"header\",\"data\":{\"text\":\"Backlog\",\"level\":2}},\n  {\"id\":\"sc-5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones\",\"col\":2}}\n]"
-  },
-  {
-    "doctype": "Workspace",
-    "name": "Vendedores",
-    "title": "Vendedores",
-    "label": "Vendedores",
-    "public": 1,
-    "is_default": 0,
-    "category": "",
-    "module": "",
-    "parent_page": "Comisiones",
-    "sequence_id": 1,
-    "roles": [
-      { "role": "System Manager" },
-      { "role": "Llantas CS Manager" },
-      { "role": "Llantas CS User" }
-    ],
-    "charts": [
-      {
-        "chart_name": "CH - OPC por Vendedor",
-        "label": "CH - OPC por Vendedor"
-      },
-      {
-        "chart_name": "CH - Comisión Total por Vendedor",
-        "label": "CH - Comisión Total por Vendedor"
-      },
-      {
-        "chart_name": "CH - Margen Promedio por Vendedor",
-        "label": "CH - Margen Promedio por Vendedor"
-      }
-    ],
-    "shortcuts": [
-      {
-        "label": "Comisiones por Vendedor Detalle",
-        "type": "Report",
-        "link_to": "Comisiones por Vendedor Detalle"
-      }
-    ],
-    "content": "[{\"id\":\"h-top\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis por vendedor</span>\",\"col\":12}},{\"id\":\"row-graphs\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Gráficos comparativos</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Comisión Total por Vendedor\",\"col\":12}},{\"id\":\"chart-3\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Margen Promedio por Vendedor\",\"col\":12}},{\"id\":\"row-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Indicadores (rango de fechas)</span>\",\"col\":12}},{\"id\":\"row-detalle\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Detalle de comisiones cobradas</span>\",\"col\":12}},{\"id\":\"sc-detalle\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comisiones por Vendedor Detalle\",\"col\":12}}]"
-  },
-  {
-    "doctype": "Workspace",
-    "name": "Z - Demo Charts",
-    "title": "Z - Demo Charts",
-    "label": "Z - Demo Charts",
-    "public": 1,
-    "sequence_id": 1,
-    "parent_page": "Comisiones",
-    "content": "[{\"id\":\"HDR1\",\"type\":\"header\",\"data\":{\"text\":\"Demo Report Chart\",\"level\":2}},{\"id\":\"CH_OPC_VEN\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - OPC por Vendedor\",\"col\":1}}]",
-    "roles": [
-      { "role": "System Manager" }
-    ]
-  },
-  {
-    "doctype": "Workspace",
-    "name": "Mi Workspace de Prueba",
-    "title": "Mi Workspace de Prueba", 
-    "label": "Prueba Gráficos",
-    "public": 1,
-    "sequence_id": 1,
-    "parent_page": null,
-    "content": "[{\"id\":\"HDR1\",\"type\":\"header\",\"data\":{\"text\":\"Mi Primer Gráfico en Frappe\",\"level\":2}},{\"id\":\"CH1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"CH - Test Grafico Simple\",\"col\":1}}]",
-    "roles": [
-      { "role": "System Manager" }
-    ]
-  },
-  {
-    "doctype": "Workspace",
-    "name": "DUMMY Test Charts",
-    "title": "DUMMY Test Charts",
-    "label": "DUMMY Test Charts", 
-    "public": 1,
-    "sequence_id": 1,
-    "parent_page": null,
-    "content": "[{\"id\":\"HDR1\",\"type\":\"header\",\"data\":{\"text\":\"Dummy Chart Test\",\"level\":2}},{\"id\":\"CH1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"DUMMY - Chart Test Fixed\",\"col\":1}}]",
-    "roles": [
-      { "role": "System Manager" }
-    ]
-  }
+ {
+  "charts": [],
+  "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Resúmenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"Análisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Mis Comisiones\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}},\n  \n  {\"id\":\"h-5\",\"type\":\"header\",\"data\":{\"text\":\"Backlog\",\"level\":2}},\n  {\"id\":\"sc-6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones Completo\",\"col\":1}},\n  {\"id\":\"sc-5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones\",\"col\":2}}\n]",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": null,
+  "hide_custom": 0,
+  "icon": null,
+  "indicator_color": null,
+  "is_hidden": 0,
+  "label": "Comisiones",
+  "links": [],
+  "modified": "2025-09-11 14:57:00.076201",
+  "module": "",
+  "name": "Comisiones",
+  "number_cards": [],
+  "parent_page": null,
+  "public": 1,
+  "quick_lists": [],
+  "restrict_to_domain": null,
+  "roles": [
+   {
+    "parent": "Comisiones",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Comisiones",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Comisiones",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "Llantas CS User"
+   }
+  ],
+  "sequence_id": 1.0,
+  "shortcuts": [
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Pagos OPC (Resumen)",
+    "link_to": "Pagos OPC - Resumen",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Orden de Pago Comisiones",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Pagos OPC (Por Sucursal)",
+    "link_to": "Pagos OPC - Por Sucursal",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Orden de Pago Comisiones",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Mis Comisiones",
+    "link_to": "Mis Comisiones Backlog",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Orden de Pago Comisiones",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Detalle OPC (Por Documento)",
+    "link_to": "Detalle OPC - Por Documento",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Backlog Comisiones Completo",
+    "link_to": "Backlog Comisiones Completo",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Backlog Comisiones",
+    "link_to": "Backlog Comisiones",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   }
+  ],
+  "title": "Comisiones"
+ }
 ]
