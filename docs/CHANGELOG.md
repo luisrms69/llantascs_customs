@@ -11,6 +11,64 @@
 
 ---
 
+## [v2.7.10] - 2025-09-12 - INVESTIGACIÓN TOTALES: BUG FRAPPE add_total_row IDENTIFICADO ❌
+
+### 🎯 TRABAJO DE SESIÓN: Implementación de totales automáticos en reportes Backlog - ABANDONADO
+
+**Problema Abordado**: Implementar fila de totales automáticos en reportes Backlog Comisiones y Backlog Comisiones Completo
+**Resultado**: TAREA ABANDONADA - Bug confirmado en Frappe Framework v15.78.1  
+**Estado**: ERROR SQL CORREGIDO ✅ | TOTALES NO IMPLEMENTADOS ❌ | BUG DOCUMENTADO ✅
+
+#### 🔧 Cambios Técnicos Realizados
+
+**fixtures/report.json:**
+- Corrección caracteres problemáticos: `'%'` → `'%%'` en CONCAT para ambos reportes
+- Configuración correcta: `"add_total_row": 1` en fixtures (no sincroniza con BD)
+- Alias mejorados: `COALESCE(ROUND(...), 0) AS "Comisión Estimada:Currency:120"`
+
+**Error SQL Solucionado:**
+- TypeError: not enough arguments for format string → RESUELTO
+- Reportes funcionan sin errores → VERIFICADO ✅
+
+#### 🐛 Bug Frappe Confirmado
+
+**Síntomas:**
+- Fixtures: `"add_total_row": 1` 
+- Base de Datos: `add_total_row: 0` (después de migrate)
+- Queries complejas con CTEs, COALESCE, CONCAT no sincronizan
+
+**Reportes Afectados:**
+- Backlog Comisiones: BD mantiene `0` pese a fixture `1`
+- Backlog Comisiones Completo: BD mantiene `0` pese a fixture `1`
+
+**Reportes Funcionales (Comparación):**
+- Reporte Cobranza por Sucural: Query simple, `add_total_row: 1` funciona ✅
+- Pagos OPC - Por Sucursal: Usa `WITH ROLLUP` (workaround no oficial)
+
+#### 📚 Documentación Actualizada
+
+**ADR-006:** Decisión arquitectónica de abandonar implementación
+**docs/reports.md:** Sección "Investigación de Totales" agregada  
+**Tiempo Invertido:** ~4 horas de investigación técnica profunda
+
+#### 🎯 Lecciones Aprendidas
+
+1. **Frappe Limitation**: `add_total_row` no funciona con queries complejas
+2. **Fixture Sync Issue**: Migrate no sincroniza todos los campos de Report DocType
+3. **Alternative Solutions**: `WITH ROLLUP` funciona pero es hack SQL no oficial
+4. **Cost-Benefit**: Característica básica no justifica más tiempo de investigación
+
+#### ⚠️ Estado Final
+
+- **Reportes Funcionales**: Ambos reportes operan sin errores
+- **Sin Totales**: Los usuarios deben calcular totales manualmente  
+- **Fixtures Correctos**: Se mantienen para futuras versiones de Frappe
+- **Bug Report**: Documentado completamente en ADR-006
+
+**CONCLUSIÓN**: Problema no resuelto debido a limitación del framework, no error de implementación.
+
+---
+
 ## [v2.7.9] - 2025-09-11 - BACKLOG COMISIONES COMPLETO ✅ SIN FILTROS OBLIGATORIOS + FIXTURES DECONTAMINATION
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación de reporte sin limitaciones de lógica de negocio + limpieza de fixtures

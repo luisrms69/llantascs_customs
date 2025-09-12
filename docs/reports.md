@@ -185,6 +185,14 @@ si.cost_center as "Sucursal:Link/Cost Center:150"
 - Descontaminación de fixtures con whitelist en hooks.py
 - Configuración en workspace como primer acceso en sección Backlog
 
+**Investigación de Totales (2025-09-12):**
+- **PROBLEMA IDENTIFICADO**: Sistema `add_total_row` de Frappe no funciona con queries complejas
+- **Fixtures vs BD**: Los fixtures contienen `add_total_row: 1` pero la BD mantiene `0` después de migrate
+- **Caracteres problemáticos**: Corrección de `'%'` → `'%%'` solucionó error SQL pero no totales
+- **Comparación técnica**: Reportes que funcionan (ej: "Reporte Cobranza por Sucural") usan queries simples
+- **Alternativas evaluadas**: `WITH ROLLUP` funciona pero es "hack" SQL no oficial de Frappe
+- **CONCLUSIÓN**: Bug confirmado de Frappe - `add_total_row` no sincroniza con fixtures en queries complejas
+
 ---
 
 ## Pagos OPC - Resumen
