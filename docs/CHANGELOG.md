@@ -11,6 +11,39 @@
 
 ---
 
+## [v2.7.11] - 2025-09-12 - COMISIONES COMPARTIDAS: Múltiples vendedores por factura ✅
+
+### 🎯 TRABAJO DE SESIÓN: Mostrar todos los vendedores cuando la comisión se comparte
+
+**Problema Abordado**: Reportes solo mostraban el primer vendedor de Sales Team, perdiendo información cuando hay comisiones compartidas  
+**Resultado**: IMPLEMENTACIÓN EXITOSA - Ambos reportes muestran todos los vendedores separados por coma  
+**Estado**: PROPUESTA CHATGPT IMPLEMENTADA ✅ | SIN DUPLICACIÓN DE FILAS ✅ | MIGRACIÓN EXITOSA ✅
+
+#### 🔧 Cambios Técnicos Realizados
+
+**fixtures/report.json:**
+- **Backlog Comisiones**: Columna "Vendedor" → "Vendedores" con sub-query GROUP_CONCAT  
+- **Backlog Comisiones Completo**: Sincronizado con misma lógica de concatenación
+- **JOIN eliminado**: Removido `left join tabSales Team st on st.parent = si.name and st.idx = 1`
+- **Sub-query añadido**: `COALESCE((SELECT GROUP_CONCAT(DISTINCT st.sales_person ORDER BY st.sales_person SEPARATOR ', ') FROM tabSales Team st WHERE st.parent = si.name), '') AS "Vendedores:Data:220"`
+- **Ancho expandido**: Columna de 150px → 220px para acomodar múltiples nombres
+
+#### ✅ Verificaciones Completadas
+
+**Sin duplicación de filas**: Una sola fila por factura, todos los vendedores en columna única  
+**CTEs preservados**: Toda la lógica de márgenes (gl_90d, sales_cc, cogs_cc, cc_margin) intacta  
+**Filtros mantenidos**: Exclusiones de clientes sin comisión y OPCs procesadas funcionando  
+**Jerárquía conservada**: Filtrado lft/rgt por Cost Center y Sales Person sin cambios  
+
+#### 🎯 Beneficios Implementados
+
+**Transparencia completa**: Facturas con comisión compartida muestran todos los vendedores involucrados  
+**Sin pérdida de información**: Eliminado el problema de solo ver el primer vendedor (idx=1)  
+**Compatibilidad total**: Ambos reportes (normal y completo) con comportamiento consistente  
+**Performance optimizada**: Sub-query es más eficiente que JOIN que duplicaba filas  
+
+---
+
 ## [v2.7.10] - 2025-09-12 - INVESTIGACIÓN TOTALES: BUG FRAPPE add_total_row IDENTIFICADO ❌
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación de totales automáticos en reportes Backlog - ABANDONADO

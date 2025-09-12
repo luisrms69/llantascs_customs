@@ -43,7 +43,7 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 6. **Margen pct CC** (Percent:110) - Porcentaje de margen por CC (metodología GL, 90 días)
 7. **Rate Comisión** (Percent:110) - Tasa de comisión aplicable
 8. **Comisión Estimada** (Currency:120) - Comisión calculada con IFNULL optimizado
-9. **Vendedor** (Data:150) - Vendedor del primer registro Sales Team
+9. **Vendedores** (Data:220) - Todos los vendedores concatenados con coma cuando hay comisión compartida
 10. **Pago OK** (Check:80) - Check binario: 1=factura totalmente pagada, 0=pendiente
 11. **Entrega OK** (Check:80) - Check binario: 1=servicios o entregado, 0=pendiente
 12. **Comisiones OK** (Check:90) - Check binario: 1=incluida en OPC aprobada, 0=pendiente
@@ -61,6 +61,13 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 - Sin Custom Reports que generen duplicación
 
 #### Historial de Implementación
+
+**v2.7.11 (2025-09-12):**
+- **Comisiones compartidas**: Implementación de columna "Vendedores" con concatenación multiple
+- **Sub-query optimizado**: Reemplazo de JOIN problemático por sub-query con GROUP_CONCAT
+- **Elimina duplicación**: Una sola fila por factura, múltiples vendedores separados por coma
+- **Ancho ajustado**: Columna Vendedores expandida de 150 a 220 píxeles
+- **Compatibilidad**: Mantiene filtros jerárquicos y todas las exclusiones existentes
 
 **v2.7.8 (2025-09-08):**
 - Implementación propuesta ChatGPT: metodología GL-based para márgenes
@@ -139,7 +146,7 @@ Versión sin filtros obligatorios del reporte Backlog Comisiones. Eliminó las l
 2. **Fecha** (Date:95) - Fecha de la factura
 3. **Cliente** (Link/Customer:220) - Cliente de la factura
 4. **Sucursal** (Link/Cost Center:150) - Centro de costo de la factura
-5. **Vendedor** (Data:150) - Vendedores concatenados del Sales Team
+5. **Vendedores** (Data:220) - Todos los vendedores concatenados con coma cuando hay comisión compartida
 6. **Venta (OPC def)** (Currency:120) - Base net total redondeado a 2 decimales
 7. **Margen pct CC** (Percent:110) - Porcentaje de margen por CC (metodología GL, 90 días)
 8. **Rate Comisión** (Percent:110) - Tasa de comisión aplicable
@@ -176,6 +183,12 @@ si.cost_center as "Sucursal:Link/Cost Center:150"
 ```
 
 #### Historial de Implementación
+
+**v2.7.11 (2025-09-12):**
+- **Comisiones compartidas**: Implementación de columna "Vendedores" con concatenación multiple
+- **Sub-query optimizado**: Vendedores concatenados con GROUP_CONCAT sin JOINs problemáticos
+- **Ancho ajustado**: Columna expandida de 150 a 220 píxeles para múltiples nombres
+- **Consistencia**: Sincronizado con cambios del reporte "Backlog Comisiones" normal
 
 **v2.7.9 (2025-09-11):**
 - Implementación inicial del reporte sin filtros obligatorios
