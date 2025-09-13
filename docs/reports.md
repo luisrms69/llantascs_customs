@@ -62,6 +62,14 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 
 #### Historial de Implementación
 
+**v2.7.14 (2025-09-13):**
+- **Nuevo reporte GP nativo**: Implementación Fase 1 de "Backlog Comisiones (GP nativo)" 
+- **Metodología revolucionaria**: Skeleton Query Report preparado para usar ERPNext native Gross Profit en Fase 2
+- **Workspace integration**: Posicionado como primer item en workspace Comisiones > sección Backlog
+- **Filtros sin defaults**: cost_center y sales_person sin valores por defecto para máxima flexibilidad
+- **Arquitectura limpia**: Query Report puro sin lógica Python embebida, listo para GP nativo
+- **Fix estético**: Shortcuts de Backlog organizados en filas separadas (col:1) evitando amontonamiento
+
 **v2.7.13 (2025-09-13):**
 - **LIMPIEZA COMPLETA**: Eliminación total del proyecto fallido GP Margen por Sucursal
 - **Sistema restaurado**: Regreso completo al último punto funcional (commit c5c77fae486a86)
