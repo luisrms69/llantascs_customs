@@ -1,7 +1,7 @@
 [
  {
   "charts": [],
-  "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Resúmenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"Análisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Mis Comisiones\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}},\n  \n  {\"id\":\"h-5\",\"type\":\"header\",\"data\":{\"text\":\"Backlog\",\"level\":2}},\n  {\"id\":\"sc-6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones Completo\",\"col\":1}},\n  {\"id\":\"sc-5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones\",\"col\":2}}\n]",
+  "content": "[\n  {\"id\":\"h-1\",\"type\":\"header\",\"data\":{\"text\":\"Pagos y Resúmenes\",\"level\":2}},\n  {\"id\":\"sc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Resumen)\",\"col\":1}},\n  \n  {\"id\":\"h-2\",\"type\":\"header\",\"data\":{\"text\":\"Análisis por Sucursal\",\"level\":2}},\n  {\"id\":\"sc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pagos OPC (Por Sucursal)\",\"col\":2}},\n  \n  {\"id\":\"h-3\",\"type\":\"header\",\"data\":{\"text\":\"Mis Comisiones\",\"level\":2}},\n  {\"id\":\"sc-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mis Comisiones\",\"col\":3}},\n  \n  {\"id\":\"h-4\",\"type\":\"header\",\"data\":{\"text\":\"Detalle por OPC\",\"level\":2}},\n  {\"id\":\"sc-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Detalle OPC (Por Documento)\",\"col\":1}},\n  \n  {\"id\":\"h-5\",\"type\":\"header\",\"data\":{\"text\":\"Backlog\",\"level\":2}},\n  {\"id\":\"sc-7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones (GP nativo)\",\"col\":1}},\n  {\"id\":\"sc-6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones Completo\",\"col\":1}},\n  {\"id\":\"sc-5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Backlog Comisiones\",\"col\":1}}\n]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -105,6 +105,23 @@
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
     "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Backlog Comisiones (GP nativo)",
+    "link_to": "Backlog Comisiones (GP nativo)",
+    "parent": "Comisiones",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
