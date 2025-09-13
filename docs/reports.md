@@ -62,6 +62,14 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 
 #### Historial de Implementación
 
+**v2.7.12 (2025-09-13):**
+- **FRACASO TOTAL**: Proyecto de migración a reporte nativo ERPNext abandonado por problemas técnicos irresolubles
+- **ImportError persistente**: DocType "GP Margen por Sucursal" no se puede instanciar vía ORM después de múltiples propuestas técnicas
+- **Márgenes en cero**: Tabla cache vacía resulta en márgenes cero en reportes, problema no resuelto
+- **Metodología GL mantenida**: Se mantiene metodología GL-based existente como única alternativa funcional
+- **Diagnóstico técnico**: DocType recién creado (2025-09-12) no se registró correctamente en sistema de controladores Frappe
+- **Decisión de abandono**: Después de 3 propuestas técnicas implementadas completamente sin éxito, proyecto declarado fracaso total
+
 **v2.7.11 (2025-09-12):**
 - **Comisiones compartidas**: Implementación de columna "Vendedores" con concatenación multiple
 - **Sub-query optimizado**: Reemplazo de JOIN problemático por sub-query con GROUP_CONCAT
