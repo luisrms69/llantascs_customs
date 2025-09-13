@@ -62,6 +62,15 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 
 #### Historial de Implementación
 
+**v2.7.13 (2025-09-13):**
+- **LIMPIEZA COMPLETA**: Eliminación total del proyecto fallido GP Margen por Sucursal
+- **Sistema restaurado**: Regreso completo al último punto funcional (commit c5c77fae486a86)
+- **Cleanup filesystem**: Eliminados DocType, tasks.py, install.py, gp_cache/ y todos los archivos relacionados
+- **Cleanup BD**: Dropeada tabla, eliminados metadata DocType, DocField, DocPerm y Scheduled Job Type
+- **Fixtures restaurados**: report.json restaurado a metodología GL original con 4 CTEs funcionales
+- **Hooks limpiados**: Eliminadas referencias a after_migrate y scheduler_events del proyecto fallido
+- **Verificación exitosa**: Ambos reportes funcionando correctamente con metodología GL sin residuos GP
+
 **v2.7.12 (2025-09-13):**
 - **FRACASO TOTAL**: Proyecto de migración a reporte nativo ERPNext abandonado por problemas técnicos irresolubles
 - **ImportError persistente**: DocType "GP Margen por Sucursal" no se puede instanciar vía ORM después de múltiples propuestas técnicas

@@ -11,6 +11,27 @@
 
 ---
 
+## [v2.7.13] - 2025-09-13 - LIMPIEZA TOTAL: Eliminación completa proyecto GP Margen fallido 🧹
+
+### 🎯 TRABAJO DE SESIÓN: Limpieza completa de implementación fallida y restauración a estado funcional
+
+**Problema Abordado**: Sistema contaminado con DocType GP Margen por Sucursal no funcional, hooks erróneos, tabla BD huérfana y fixtures corruptos  
+**Resultado**: LIMPIEZA TOTAL EXITOSA - Sistema restaurado completamente al commit c5c77fae486a86 funcional  
+**Estado**: FILESYSTEM LIMPIO ✅ | BD LIMPIA ✅ | FIXTURES GL RESTAURADOS ✅ | REPORTES FUNCIONANDO ✅
+
+### 📋 ACCIONES REALIZADAS
+- **Filesystem cleanup**: Eliminados DocType, tasks.py, install.py, gp_cache/ completamente
+- **Database cleanup**: Dropeada tabla `tabGP Margen por Sucursal`, eliminados DocType, DocField, DocPerm metadata
+- **Fixtures restoration**: report.json restaurado a metodología GL con 4 CTEs funcionales  
+- **Hooks cleanup**: Eliminadas referencias after_migrate y scheduler_events del proyecto fallido
+- **System verification**: Ambos reportes Backlog Comisiones funcionando sin residuos GP
+
+### 🔧 DETALLES TÉCNICOS
+- **Commit restaurado**: c5c77fae486a86 (último punto estable GL-based)
+- **Metodología**: 4 CTEs (gl_90d, sales_cc, cogs_cc, cc_margin) completamente funcional
+- **Sin residuos**: Verificación `LOCATE('GP Margen', query) = 0` exitosa para ambos reportes
+- **One-offs cleanup**: Eliminado archivo tracking accidental según política CLAUDE.md
+
 ## [v2.7.11] - 2025-09-12 - COMISIONES COMPARTIDAS: Múltiples vendedores por factura ✅
 
 ### 🎯 TRABAJO DE SESIÓN: Mostrar todos los vendedores cuando la comisión se comparte
