@@ -312,3 +312,42 @@ frappe.db.sql("UPDATE `tabReport` SET query = %s WHERE name = 'Backlog Comisione
 1. Fixture roto → Arreglar fixture JSON
 2. Migrate → Aplica fixture corregido
 3. Nunca BD directa como reemplazo de fixture
+
+# ⛔ PROHIBICIÓN ABSOLUTA - NO IMPLEMENTAR CAMBIOS MANUALES PARA FALLAS DE MIGRACIÓN
+
+## 🚫 NUNCA IMPLEMENTAR SOLUCIONES MANUALES POR FALLAS EN MIGRATE
+
+### ❌ PROHIBIDO TERMINANTEMENTE:
+Cuando `bench migrate` falla o no aplica cambios correctamente, NUNCA implementar cambios manuales para "reparar" lo que migrate debería haber hecho.
+
+```python
+# ESCENARIO: migrate no creó DocType, tabla no existe
+# ❌ JAMÁS HACER ESTO COMO "SOLUCIÓN":
+frappe.db.sql("CREATE TABLE `tabDocType Name` ...")
+frappe.get_doc({"doctype": "DocType", ...}).insert()
+
+# ESCENARIO: migrate no aplicó fixture
+# ❌ JAMÁS HACER ESTO COMO "SOLUCIÓN":  
+frappe.db.sql("UPDATE `tabReport` SET query = %s WHERE name = 'Report Name'", (query,))
+
+# ✅ HACER ESTO:
+# 1. REPORTAR el problema exacto
+# 2. ESPERAR autorización del usuario
+# 3. Solo proceder con autorización explícita
+```
+
+### 🚨 POR QUÉ ES CATASTRÓFICO:
+1. **Inconsistencia**: Sitio funciona diferente a otros sitios
+2. **No reproducible**: Cambios manuales no están en código fuente
+3. **Deploy imposible**: Nuevas instalaciones fallarán igual
+4. **Debugging imposible**: Estado del sistema no corresponde al código
+
+### 🔥 REGLA ABSOLUTA:
+**SI MIGRATE FALLA → REPORTAR Y ESPERAR AUTORIZACIÓN**
+**NUNCA IMPLEMENTAR CAMBIOS MANUALES SIN AUTORIZACIÓN EXPLÍCITA**
+
+### ✅ PROCESO CORRECTO PARA FALLAS DE MIGRACIÓN:
+1. REPORTAR: "migrate falló, no creó X"
+2. ESPERAR: Autorización específica del usuario
+3. PROCEDER: Solo con autorización literal "autorizo hacer X"
+4. DOCUMENTAR: Qué cambios manuales fueron necesarios
