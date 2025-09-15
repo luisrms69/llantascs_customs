@@ -401,9 +401,30 @@ def execute(filters: Optional[Dict[str, Any]] = None) -> Tuple[List[Dict[str, An
     }
     base_columns.append(margin_col)
 
+    # Agregar nueva columna: Comisión Estimada GP nativo
+    comision_gp_col = {
+        "fieldname": "comision_estimada_gp",
+        "label": "Comisión Estimada GP nativo",
+        "fieldtype": "Currency",
+        "width": 130,
+    }
+    base_columns.append(comision_gp_col)
+
     # Poblar valores
     for d in base_rows:
         cc = d.get("cost_center")
         d["margin_cc_6m_gp"] = margin_by_cc.get(cc)
+
+        # Calcular Comisión Estimada GP nativo
+        venta_opc_def = d.get("venta_opc_def")
+        margin_cc_6m_gp = d.get("margin_cc_6m_gp")
+        rate_comision = d.get("rate_comision")
+
+        if venta_opc_def is not None and margin_cc_6m_gp is not None and rate_comision is not None:
+            # Fórmula: venta_opc_def * (margin_cc_6m_gp / 100) * (rate_comision / 100)
+            comision_estimada_gp = venta_opc_def * (margin_cc_6m_gp / 100) * (rate_comision / 100)
+            d["comision_estimada_gp"] = round(comision_estimada_gp, 2)
+        else:
+            d["comision_estimada_gp"] = None
 
     return base_columns, base_rows
