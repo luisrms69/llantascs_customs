@@ -259,6 +259,7 @@ fixtures = [
             "name": ["in", [
                 "Backlog Comisiones",
                 "Backlog Comisiones Completo",
+                "Backlog Comisiones GP nativo",
                 "Pagos OPC - Resumen",
                 "Pagos OPC - Por Sucursal",
                 "Mis Comisiones Backlog",
@@ -268,8 +269,8 @@ fixtures = [
     },
     
 
-    # Workspace "Comisiones" (incluye el content JSON con los shortcuts funcionales)
-    {"doctype": "Workspace", "filters": [["name", "=", "Comisiones"]]},
+    # Workspace: Incluye AMBOS workspaces (Comisiones y Vendedores con charts)
+    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores"]]]},
 
     # Roles custom para asegurar que existen en destino
     {"doctype": "Role", "filters": [["role_name", "in", [
