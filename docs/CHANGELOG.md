@@ -11,6 +11,44 @@
 
 ---
 
+## [v2.7.18] - 2025-09-15 - MONTHLY COMMISSIONS CHART: Gráfico mensual de comisiones en workspace 📊
+
+### 🎯 TRABAJO DE SESIÓN: Implementación gráfico "Comisiones Mensuales" en workspace via fixtures
+
+**Problema Abordado**: Workspace Comisiones carecía de visualización temporal de comisiones pagadas
+**Resultado**: GRÁFICO FUNCIONAL - Barras mensuales mostrando suma de monto_total por hasta_fecha
+**Estado**: CHART ✅ | WORKSPACE INTEGRATION ✅ | ERPNEXT PATTERNS ✅ | FIXTURES ✅
+
+#### ✅ LOGROS DE ESTA SESIÓN
+
+**🔧 Dashboard Chart Implementado**:
+- Chart `comisiones_pagadas_por_mes` agregado via fixtures
+- Configuración Document Type siguiendo patrones ERPNext funcionales
+- Chart type "Sum" con timeseries mensual del año actual
+
+**📊 Workspace Updates**:
+- Comisiones: Agregada sección "Comisiones Mensuales" con gráfico
+- Vendedores: Removido header problemático "Indicadores (rango de fechas)"
+
+**🧠 Research & Pattern Discovery**:
+- Identificados patrones correctos para Document Type charts en ERPNext v15
+- Documentados errores comunes y configuraciones funcionales
+- Validación contra charts existentes (Outgoing Bills, Purchase Orders, etc.)
+
+#### 🛠 ARCHIVOS MODIFICADOS
+- `fixtures/dashboard_chart.json`: +Chart comisiones_pagadas_por_mes
+- `fixtures/workspace.json`: +Comisiones chart integration, -Vendedores Indicadores
+- `hooks.py`: +Dashboard Chart fixture configuration
+
+#### 📚 DOCUMENTACIÓN ACTUALIZADA
+- `docs/dashboard-charts.md`: Nueva sección Document Type charts con patrones
+- `docs/CHANGELOG.md`: Esta entrada
+
+#### 🎯 RESULTADO TÉCNICO
+Chart muestra suma mensual de `monto_total` agrupado por `hasta_fecha` para documentos OPC (docstatus < 2), compatible con sistema de fixtures para deploy en múltiples sitios.
+
+---
+
 ## [v2.7.17] - 2025-09-14 - OPC DETAILED PDF REPORTS: Sistema completo de reportes PDF con 3 secciones 📄
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación sistema de reportes PDF detallado para OPC

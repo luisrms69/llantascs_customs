@@ -28,6 +28,30 @@ Este documento describe la implementación correcta de Dashboard Charts en ERPNe
 
 **Child Tables Requeridas**:
 - `y_axis`: Configuración de ejes Y con estructura parent/parentfield/parenttype
+
+### 2. Document Type Charts (Nuevo)
+
+**Implementación**: Charts basados directamente en DocTypes (sin Script Report intermedio)
+
+**Configuración Correcta**:
+```json
+{
+  "chart_type": "Sum",
+  "source": "",
+  "document_type": "Orden de Pago Comisiones",
+  "based_on": "hasta_fecha",
+  "value_based_on": "monto_total",
+  "timeseries": 1,
+  "time_interval": "Monthly"
+}
+```
+
+**Campos Críticos**:
+- `chart_type`: "Sum" (NO "Bar" para Document Type)
+- `source`: "" (vacío, NO "Document Type")
+- `based_on`: Campo de fecha para agrupación temporal
+- `value_based_on`: Campo numérico para agregación
+- `timeseries`: 1 para habilitar series temporales
 - `roles`: Roles con acceso al chart, incluyendo `idx` para ordering
 
 #### 2. Workspace Integration
@@ -222,6 +246,60 @@ WHERE c.sales_invoice_id IS NOT NULL
 - **22 vendedores** con datos válidos
 - **724 facturas** máximo (Jose Luis Messner)
 - **Protección DISTINCT** contra duplicados
+
+## v2.7.15 Update - Comisiones Mensuales Chart
+
+### Document Type Chart Implementation
+
+**PROBLEMA ABORDADO**: Necesidad de visualizar comisiones pagadas por mes en workspace Comisiones
+
+#### Chart Implementado: `comisiones_pagadas_por_mes`
+
+**Configuración Final (Funcional)**:
+```json
+{
+  "chart_type": "Sum",
+  "source": "",
+  "document_type": "Orden de Pago Comisiones",
+  "based_on": "hasta_fecha",
+  "value_based_on": "monto_total",
+  "timeseries": 1,
+  "time_interval": "Monthly",
+  "timespan": "This Year"
+}
+```
+
+#### Lessons Learned - ERPNext Document Type Charts
+
+**PATRONES CORRECTOS** (basados en charts funcionales como "Outgoing Bills"):
+- ✅ `chart_type: "Sum"` (NO "Bar")
+- ✅ `source: ""` (vacío, NO "Document Type")
+- ✅ `based_on`: Campo de fecha (ej: "hasta_fecha", "posting_date")
+- ✅ `value_based_on`: Campo numérico para agregación
+- ✅ `timeseries: 1` para series temporales
+
+**ERRORES COMUNES EVITAR**:
+- ❌ `chart_type: "Bar"` con `source: "Document Type"`
+- ❌ `based_on`: Campo numérico (causa TypeError en comparaciones de fecha)
+- ❌ `data_source` vs `source` (field name confusion)
+- ❌ `time_series` vs `timeseries` (field name confusion)
+
+#### Integración Workspace
+
+**Cambios en `workspace.json`**:
+1. **Comisiones**: Agregado header "Comisiones Mensuales" + chart
+2. **Vendedores**: Removido header "Indicadores (rango de fechas)"
+
+**Charts Array Requerido**:
+```json
+"charts": [{
+  "chart_name": "comisiones_pagadas_por_mes",
+  "label": "comisiones_pagadas_por_mes",
+  "parent": "Comisiones",
+  "parentfield": "charts",
+  "parenttype": "Workspace"
+}]
+```
 
 ---
 

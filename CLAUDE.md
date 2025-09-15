@@ -352,3 +352,39 @@ frappe.db.sql("UPDATE `tabReport` SET query = %s WHERE name = 'Report Name'", (q
 2. ESPERAR: Autorización específica del usuario
 3. PROCEDER: Solo con autorización literal "autorizo hacer X"
 4. DOCUMENTAR: Qué cambios manuales fueron necesarios
+
+# ⛔ PROHIBICIÓN ABSOLUTA - NO FORZAR OPERACIONES DEL SISTEMA
+
+## 🚫 NUNCA FORZAR MIGRACIONES, CACHE CLEARING O OPERACIONES INCONSISTENTES
+
+### ❌ PROHIBIDO TERMINANTEMENTE:
+NUNCA ejecutar comandos que fuercen el estado del sistema sin autorización explícita:
+
+```bash
+# ❌ JAMÁS HACER ESTO SIN AUTORIZACIÓN:
+bench --site llantascs.dev import-doc apps/llantascs_customs/...
+bench --site llantascs.dev execute "frappe.get_doc('Workspace', 'X').save()"
+bench --site llantascs.dev clear-cache (repetidamente)
+bench restart (como "solución" a problemas)
+
+# ✅ HACER ESTO:
+# 1. REPORTAR el problema exacto
+# 2. ESPERAR autorización del usuario
+# 3. Solo proceder con autorización explícita
+```
+
+### 🚨 POR QUÉ ES CATASTRÓFICO:
+1. **Inconsistencia del sistema**: El sitio queda en estado no reproducible
+2. **Pérdida de tiempo**: Operaciones innecesarias que no solucionan el problema real
+3. **Debugging imposible**: Estado del sistema no corresponde al flujo normal
+4. **Violación de autorización**: Claude tomando decisiones sin permiso
+
+### 🔥 REGLA ABSOLUTA:
+**SOLO USAR EL FLUJO NORMAL DE ACTUALIZACIONES DEL SITIO**
+**NUNCA FORZAR OPERACIONES COMO "SOLUCIÓN" SIN AUTORIZACIÓN**
+
+### ✅ PROCESO CORRECTO:
+1. Usar solo `bench migrate` y operaciones estándar de ERPNext
+2. Si algo no funciona: REPORTAR y ESPERAR autorización
+3. No asumir que "forzar" es la solución
+4. Respetar el flujo normal de actualizaciones del sistema
