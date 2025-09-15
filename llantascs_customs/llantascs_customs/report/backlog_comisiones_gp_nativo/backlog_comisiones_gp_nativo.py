@@ -373,6 +373,113 @@ def _build_margin_cc_6m_map(
 # 3) EXECUTE: ENSAMBLAR TODO Y DEVOLVER
 # ======================================================
 
+def _apply_tree_filters(rows: List[Dict[str, Any]], filters: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Aplica post-filtros por árbol lft/rgt para Cost Center y Sales Person
+    según propuesta ChatGPT
+    """
+    if not filters:
+        return rows
+
+    filters = frappe._dict(filters)
+    cost_center_filter = filters.get('cost_center')
+    sales_person_filter = filters.get('sales_person')
+
+    # Si no hay filtros de árbol, retornar todas las filas
+    if not cost_center_filter and not sales_person_filter:
+        return rows
+
+    filtered_rows = rows
+
+    # 1. Filtro por Cost Center (Sucursal)
+    if cost_center_filter:
+        filtered_rows = _filter_by_cost_center_tree(filtered_rows, cost_center_filter)
+
+    # 2. Filtro por Sales Person (Vendedor)
+    if sales_person_filter:
+        filtered_rows = _filter_by_sales_person_tree(filtered_rows, sales_person_filter)
+
+    return filtered_rows
+
+
+def _filter_by_cost_center_tree(rows: List[Dict[str, Any]], cost_center_name: str) -> List[Dict[str, Any]]:
+    """
+    Filtra filas por Cost Center usando lft/rgt tree (incluye nodos hijos)
+    """
+    try:
+        # Obtener lft/rgt del cost center seleccionado
+        cc_data = frappe.db.get_value("Cost Center", cost_center_name, ["lft", "rgt"], as_dict=True)
+        if not cc_data:
+            return []  # Cost center no existe
+
+        # Obtener todos los cost centers en el árbol (incluye hijos)
+        valid_cost_centers = frappe.db.sql("""
+            SELECT name
+            FROM `tabCost Center`
+            WHERE lft >= %s AND rgt <= %s
+        """, (cc_data.lft, cc_data.rgt), as_list=True)
+
+        valid_cc_set = {cc[0] for cc in valid_cost_centers}
+
+        # Filtrar filas que tengan cost_center en el árbol
+        # Filas SIN sucursal quedan FUERA cuando hay filtro
+        filtered = []
+        for row in rows:
+            row_cc = row.get('cost_center')
+            if row_cc and row_cc in valid_cc_set:
+                filtered.append(row)
+
+        return filtered
+
+    except Exception as e:
+        frappe.log_error(f"Error filtering by cost center tree: {str(e)}")
+        return rows  # En caso de error, retornar datos sin filtrar
+
+
+def _filter_by_sales_person_tree(rows: List[Dict[str, Any]], sales_person_name: str) -> List[Dict[str, Any]]:
+    """
+    Filtra filas por Sales Person usando lft/rgt tree (incluye vendedores hijos)
+    Construye set de facturas con Sales Team.sales_person en el árbol
+    """
+    try:
+        # Obtener lft/rgt del sales person seleccionado
+        sp_data = frappe.db.get_value("Sales Person", sales_person_name, ["lft", "rgt"], as_dict=True)
+        if not sp_data:
+            return []  # Sales person no existe
+
+        # Obtener todos los sales persons en el árbol (incluye hijos)
+        valid_sales_persons = frappe.db.sql("""
+            SELECT name
+            FROM `tabSales Person`
+            WHERE lft >= %s AND rgt <= %s
+        """, (sp_data.lft, sp_data.rgt), as_list=True)
+
+        valid_sp_set = {sp[0] for sp in valid_sales_persons}
+
+        # Obtener facturas que tienen Sales Team con sales_person en el árbol
+        valid_invoices = frappe.db.sql("""
+            SELECT DISTINCT st.parent
+            FROM `tabSales Team` st
+            WHERE st.sales_person IN %(valid_sales_persons)s
+        """, {"valid_sales_persons": list(valid_sp_set)}, as_list=True)
+
+        valid_invoice_set = {inv[0] for inv in valid_invoices}
+
+        # Filtrar filas que tengan factura en el set
+        # Facturas SIN vendedor quedan FUERA cuando hay filtro
+        filtered = []
+        for row in rows:
+            row_invoice = row.get('name')  # fieldname 'name' contiene el ID de la factura
+            if row_invoice and row_invoice in valid_invoice_set:
+                filtered.append(row)
+
+        return filtered
+
+    except Exception as e:
+        frappe.log_error(f"Error filtering by sales person tree: {str(e)}")
+        return rows  # En caso de error, retornar datos sin filtrar
+
+
 def execute(filters: Optional[Dict[str, Any]] = None) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """
     1) Trae TODAS las columnas del Backlog (idénticas a reportes viejos) usando la SQL original.
@@ -407,4 +514,7 @@ def execute(filters: Optional[Dict[str, Any]] = None) -> Tuple[List[Dict[str, An
         else:
             d["comision_estimada_gp"] = None
 
-    return base_columns, base_rows
+    # Aplicar post-filtros por árbol lft/rgt según propuesta ChatGPT
+    filtered_rows = _apply_tree_filters(base_rows, filters)
+
+    return base_columns, filtered_rows
