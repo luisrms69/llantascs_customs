@@ -11,6 +11,29 @@
 
 ---
 
+## [v2.7.19] - 2025-09-15 - MONTO_TOTAL PATCH FIX: Corrección valores OPC con SQL directo 🔧
+
+### 🎯 TRABAJO DE SESIÓN: Fix crítico para monto_total incorrectos en OPCs
+
+**Problema Abordado**: 88 OPCs tenían monto_total=0 pero suma de comisiones > 0, causando inconsistencia de datos
+**Solución**: Patch SQL directo con UPDATE+JOIN evitando filtros get_all problemáticos
+**Resultado**: 80 OPCs corregidas, 302/305 OPCs con valores correctos, 3 restantes válidas (sin hijos o negativas)
+**Estado**: PATCH ✅ | DATOS CONSISTENTES ✅ | READY FOR DEPLOY ✅
+
+### 📋 Cambios Técnicos
+- **NEW**: `patches/post/fix_opc_monto_total_corrected.py` - Patch funcional con SQL directo
+- **FIX**: Lógica actualización monto_total desde suma tabla hija Comision LLCS
+- **METHOD**: UPDATE con JOIN en lugar de get_all + set_value individual
+- **PROTECTION**: WHERE con múltiples condiciones protege OPCs válidas existentes
+
+### 🔍 Detalles de Implementación
+- **Query Base**: `UPDATE tabOrden_de_Pago_Comisiones p JOIN (SELECT parent, SUM(total_comision) ...) WHERE docstatus=1 AND monto_total≈0 AND child_sum>0`
+- **Casos Edge**: Comisiones negativas permanecen con monto_total=0 (correcto)
+- **Validación**: 3 casos restantes verificados como correctos
+- **Deploy**: Patch listo para ejecución automática en otros sitios via migrate
+
+---
+
 ## [v2.7.18] - 2025-09-15 - MONTHLY COMMISSIONS CHART: Gráfico mensual de comisiones en workspace 📊
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación gráfico "Comisiones Mensuales" en workspace via fixtures
