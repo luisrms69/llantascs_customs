@@ -236,9 +236,9 @@ def _get_backlog_rows(filters: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Li
         {"fieldname": "cost_center", "label": "Sucursal", "fieldtype": "Link", "options": "Cost Center", "width": 150},
         {"fieldname": "vendedores", "label": "Vendedores", "fieldtype": "Data", "width": 200},
         {"fieldname": "venta_opc_def", "label": "Venta (OPC def)", "fieldtype": "Currency", "width": 120},
-        {"fieldname": "margen_pct_cc", "label": "Margen pct CC", "fieldtype": "Percent", "width": 110},
+        {"fieldname": "margin_cc_6m_gp", "label": "Margen Sucursal 6m (GP nativo)", "fieldtype": "Percent", "precision": 2, "width": 160},
         {"fieldname": "rate_comision", "label": "Rate Comisión", "fieldtype": "Percent", "width": 110},
-        {"fieldname": "comision_estimada", "label": "Comisión Estimada", "fieldtype": "Currency", "width": 120},
+        {"fieldname": "comision_estimada_gp", "label": "Comisión Estimada GP nativo", "fieldtype": "Currency", "width": 130},
         {"fieldname": "pago_ok", "label": "Pago OK", "fieldtype": "Check", "width": 80},
         {"fieldname": "entrega_ok", "label": "Entrega OK", "fieldtype": "Check", "width": 80},
         {"fieldname": "comisiones_ok", "label": "Comisiones OK", "fieldtype": "Check", "width": 90},
@@ -255,9 +255,7 @@ def _get_backlog_rows(filters: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Li
             "cost_center": row.get("Sucursal:Link/Cost Center:150"),
             "vendedores": row.get("Vendedores:Data:200"),
             "venta_opc_def": row.get("Venta (OPC def):Currency:120"),
-            "margen_pct_cc": row.get("Margen pct CC:Percent:110"),
             "rate_comision": row.get("Rate Comisión:Percent:110"),
-            "comision_estimada": row.get("Comisión Estimada:Currency:120"),
             "pago_ok": row.get("Pago OK:Check:80"),
             "entrega_ok": row.get("Entrega OK:Check:80"),
             "comisiones_ok": row.get("Comisiones OK:Check:90"),
@@ -391,24 +389,6 @@ def execute(filters: Optional[Dict[str, Any]] = None) -> Tuple[List[Dict[str, An
     target_ccs = [r.get("cost_center") for r in base_rows]
     margin_by_cc = _build_margin_cc_6m_map(gp_rows, target_ccs)
 
-    # 3) Añadir columna nueva: "Margen Sucursal 6m (GP nativo)"
-    margin_col = {
-        "fieldname": "margin_cc_6m_gp",
-        "label": "Margen Sucursal 6m (GP nativo)",
-        "fieldtype": "Percent",
-        "precision": 2,
-        "width": 160,
-    }
-    base_columns.append(margin_col)
-
-    # Agregar nueva columna: Comisión Estimada GP nativo
-    comision_gp_col = {
-        "fieldname": "comision_estimada_gp",
-        "label": "Comisión Estimada GP nativo",
-        "fieldtype": "Currency",
-        "width": 130,
-    }
-    base_columns.append(comision_gp_col)
 
     # Poblar valores
     for d in base_rows:
