@@ -131,6 +131,12 @@
     "parentfield": "roles",
     "parenttype": "Workspace",
     "role": "Llantas CS User"
+   },
+   {
+    "parent": "Comisiones",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "Employee"
    }
   ],
   "sequence_id": 1.0,

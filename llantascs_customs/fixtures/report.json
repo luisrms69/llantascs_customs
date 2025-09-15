@@ -32,13 +32,7 @@
     "parent": "Mis Comisiones Backlog",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "Llantas CS Manager"
-   },
-   {
-    "parent": "Mis Comisiones Backlog",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Llantas CS User"
+    "role": "Employee"
    }
   ],
   "timeout": 0
@@ -95,12 +89,6 @@
     "parent": "Pagos OPC - Por Sucursal",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "Llantas CS Manager"
-   },
-   {
-    "parent": "Pagos OPC - Por Sucursal",
-    "parentfield": "roles",
-    "parenttype": "Report",
     "role": "System Manager"
    },
    {
@@ -108,6 +96,12 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
    }
   ],
   "timeout": 0
@@ -239,7 +233,13 @@
     "parent": "Backlog Comisiones Completo",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "Accounts User"
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Backlog Comisiones Completo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
    }
   ],
   "timeout": 0
@@ -326,7 +326,13 @@
     "parent": "Backlog Comisiones",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "Accounts User"
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Backlog Comisiones",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
    }
   ],
   "timeout": 0
