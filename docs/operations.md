@@ -529,3 +529,115 @@ Dashboard Chart implementation suspended pending alternative approach or technic
 **User Visible:** Broken charts in otherwise functional workspace
 
 **REQUIRES:** Resolution of Script Report import path issues for full functionality.
+
+## OPC Detailed PDF Report System (v2.7.17) ✅ IMPLEMENTED
+
+### Implementation Status
+**FECHA**: Septiembre 2025 - Sistema de reportes PDF detallado
+**STATUS**: COMPLETAMENTE FUNCIONAL - Reportes PDF con 3 secciones implementados
+
+### 🎯 Funcionalidad Implementada
+
+#### Custom Button Integration
+- **Button Name**: "📄 Reporte Detallado"
+- **Location**: Orden de Pago Comisiones form (JavaScript integration)
+- **Visibility**: Only appears for saved documents (`frm.doc.name && !frm.is_new()`)
+- **Styling**: Primary button with emoji icon for clear identification
+- **Functionality**: Direct PDF download via ERPNext native print system
+
+#### PDF Report Structure (3 Sections)
+**Section 1: General Summary**
+- Total branches, invoices, income, costs, margin, paid commission
+- Branch breakdown with invoice counts and income amounts
+- Executive-level overview for quick decision making
+
+**Section 2: Branch-wise Breakdown**
+- Detailed breakdown by branch → salesperson → individual invoices
+- Per-invoice details: income, costs, margin, margin percentage, commission
+- Subtotals by salesperson and branch for accountability tracking
+
+**Section 3: Cross-branch Salesperson Consolidation**
+- Salesperson performance across all branches
+- Consolidated metrics: total invoices, income, costs, margin, commission
+- Multi-branch activity visibility for sales management
+
+### 🔧 Technical Architecture
+
+#### ERPNext Native Integration
+- **Print Format**: Jinja2 template (`opc_detallado.html`)
+- **PDF Generation**: `frappe.utils.print_format.download_pdf` API
+- **Deployment**: Fixtures-based via `hooks.py` configuration
+- **Security**: Safe data access patterns, no `__dict__` usage
+
+#### Template Engineering
+- **Helper Macros**: `money()` for currency formatting, `pct()` for percentages
+- **Dynamic Lookups**: `get_cost_center()` macro for Sales Invoice relationships
+- **Responsive Calculations**: Real-time margin percentage calculations
+- **Data Safety**: Graceful handling of missing or null values
+
+#### Business Logic Integration
+- **Document Status**: Displays current OPC state (Draft/Submitted/Cancelled)
+- **Commission Data**: Uses existing `comisiones_incluidas` child table
+- **Cost Center Resolution**: Dynamic lookup via Sales Invoice relationships
+- **Currency Formatting**: Two decimal precision for all monetary values
+
+### 📊 Report Features
+
+#### Data Presentation
+- **Professional Formatting**: Clean table layout with proper styling
+- **Decimal Precision**: All monetary values display with exactly 2 decimals
+- **Percentage Calculations**: Margin percentages calculated as (margin/income)
+- **Hierarchical Organization**: Logical flow from summary to detailed breakdown
+
+#### User Experience
+- **Conditional Access**: Button only appears when document can generate valid PDF
+- **Instant Generation**: Direct browser download, no intermediate steps
+- **Document Context**: PDF includes OPC name, status, and creation date
+- **Clear Sections**: Distinct headers and organization for easy navigation
+
+### 🛡️ Implementation Safety
+
+#### Data Integrity
+- **Read-Only Operation**: PDF generation doesn't modify source data
+- **Template Security**: Removes unsafe Jinja operations and global access
+- **Error Handling**: Graceful degradation for missing data fields
+- **Consistent Results**: Deterministic output based on current document state
+
+#### User Interface Protection
+- **Save Requirement**: Prevents PDF generation for unsaved documents
+- **Document Validation**: Ensures data consistency before report generation
+- **Browser Compatibility**: Standard PDF download mechanism
+- **Performance**: Efficient template rendering without database modifications
+
+### 📋 Files Implemented
+
+#### Core Implementation
+- `llantascs_customs/print_format/opc_detallado/opc_detallado.html` - Jinja template
+- `llantascs_customs/print_format/opc_detallado/opc_detallado.json` - Print Format metadata
+- `llantascs_customs/doctype/orden_de_pago_comisiones/orden_de_pago_comisiones.js` - Button integration
+- `llantascs_customs/hooks.py` - Fixtures configuration
+
+#### Supporting Structure
+- `llantascs_customs/print_format/__init__.py` - Module initialization
+- `llantascs_customs/print_format/opc_detallado/__init__.py` - Subdirectory initialization
+
+### 🎯 Business Impact
+
+#### Management Benefits
+- **Executive Dashboards**: Section 1 provides high-level metrics
+- **Operational Control**: Section 2 enables branch performance analysis
+- **Sales Management**: Section 3 supports cross-branch salesperson evaluation
+- **Audit Trail**: Complete commission breakdown for financial transparency
+
+#### User Workflow Enhancement
+- **Self-Service Access**: Users generate detailed reports on-demand
+- **Professional Output**: PDF format suitable for presentations and sharing
+- **Data Consistency**: Reports reflect current document state accurately
+- **Time Efficiency**: Instant generation eliminates manual report creation
+
+### ✅ Quality Assurance Completed
+- **Template Security**: Eliminated unsafe Jinja operations
+- **Data Accuracy**: Verified calculations match source commission data
+- **Formatting Standards**: Consistent decimal precision and currency display
+- **UI Integration**: Seamless button integration with existing OPC interface
+- **Browser Testing**: PDF generation validated across standard browsers

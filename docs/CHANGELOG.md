@@ -11,6 +11,130 @@
 
 ---
 
+## [v2.7.17] - 2025-09-14 - OPC DETAILED PDF REPORTS: Sistema completo de reportes PDF con 3 secciones 📄
+
+### 🎯 TRABAJO DE SESIÓN: Implementación sistema de reportes PDF detallado para OPC
+
+**Problema Abordado**: OPC carecía de funcionalidad de reportes detallados para análisis y presentación
+**Resultado**: SISTEMA COMPLETO FUNCIONAL - PDF con 3 secciones integrado via Print Format
+**Estado**: BUTTON ✅ | PDF GENERATION ✅ | 3 SECTIONS ✅ | FORMATTING ✅
+
+#### 🔧 Cambios Técnicos Implementados
+
+**Print Format Jinja Template:**
+- Template completo `opc_detallado.html` con 3 secciones estructuradas
+- Helper macros `money()` y `pct()` para formateo consistente
+- Función `get_cost_center()` para lookup seguro de Sales Invoice → Cost Center
+- Eliminación de patrones inseguros (`__dict__`, `frappe.defaults`)
+
+**Integración ERPNext Nativa:**
+- Custom button "📄 Reporte Detallado" en OPC JavaScript existente
+- PDF generation via `frappe.utils.print_format.download_pdf` API
+- Fixtures deployment para Print Format en `hooks.py`
+- Condicionalidad: solo documentos guardados (no nuevos)
+
+**Estructura de 3 Secciones:**
+- **Sección 1**: Resumen general (sucursales, facturas, totales ejecutivos)
+- **Sección 2**: Breakdown por sucursal → vendedor → facturas individuales
+- **Sección 3**: Consolidación cross-sucursal por vendedor
+
+**Formateo y UX:**
+- Precision exacta: 2 decimales para todos los valores monetarios
+- Cálculo dinámico: porcentajes de margen (margen/ingreso)
+- Estilo profesional: tablas con bordes, alineación, headers claros
+- Información contextual: estado del documento, fecha, identificadores
+
+#### 📊 Características del Reporte Implementadas
+
+**Datos de Resumen:**
+- Total sucursales únicas dinámicamente calculado
+- Conteos de facturas y métricas financieras agregadas
+- Desglose por sucursal con conteos y montos de ingresos
+
+**Análisis por Sucursal:**
+- Agrupación jerárquica: sucursal → vendedor → facturas
+- Métricas por factura: ingresos, costos, margen, % margen, comisión
+- Subtotales por vendedor y por sucursal para control
+
+**Consolidación por Vendedor:**
+- Vista cross-sucursal de performance de vendedores
+- Métricas consolidadas: facturas totales, ingresos, márgenes
+- Identificación de sucursales donde opera cada vendedor
+
+#### 🛡️ Seguridad y Robustez Implementadas
+
+**Template Security:**
+- Eliminación de acceso `__dict__` inseguro
+- Replacement de `frappe.defaults.get_global_default()` con valor fijo
+- Manejo graceful de valores nulos y missing data
+- Lookup seguro via `frappe.get_doc()` en macro helper
+
+**Data Consistency:**
+- Cálculos determinísticos basados en estado actual del documento
+- Lookup dinámico de Cost Center via Sales Invoice relationships
+- Agregaciones correctas usando filtros Jinja (no loops anidados)
+- Error handling para casos edge (facturas sin sucursal/vendedor)
+
+**UX Protection:**
+- Button aparece solo para documentos guardados (estado != "new-")
+- PDF generation no modifica datos fuente (read-only operation)
+- Validation de documentos antes de permitir generación
+- Browser compatibility con standard download mechanism
+
+#### 🎯 Archivos Implementados
+
+**Core Implementation:**
+- `llantascs_customs/print_format/opc_detallado/opc_detallado.html` - Template Jinja completo
+- `llantascs_customs/print_format/opc_detallado/opc_detallado.json` - Print Format metadata
+- `llantascs_customs/doctype/orden_de_pago_comisiones/orden_de_pago_comisiones.js` - Button integration
+- `llantascs_customs/hooks.py` - Fixtures configuration update
+
+**Module Structure:**
+- `llantascs_customs/print_format/__init__.py` - Python module initialization
+- `llantascs_customs/print_format/opc_detallado/__init__.py` - Subdirectory initialization
+
+#### ✅ Validación de Calidad Completada
+
+**Template Testing:**
+- Eliminación exitosa de errores de seguridad Jinja
+- Verificación de datos no-cero en las 3 secciones
+- Formateo correcto de decimales y porcentajes
+- Responsiveness ante missing/null data
+
+**Integration Testing:**
+- Button aparece correctamente solo en documentos guardados
+- PDF se genera instantáneamente via browser download
+- Template renderiza datos actuales del documento
+- No side effects en data source durante generation
+
+**Business Logic Validation:**
+- Sección 1: Métricas agregadas correctas vs tabla hijo
+- Sección 2: Subtotales por vendedor/sucursal matemáticamente correctos
+- Sección 3: Cross-sucursal aggregation precisa por vendedor
+- Cálculos de % margen consistentes en todas las secciones
+
+#### 💼 Impacto Organizacional
+
+**Management Capabilities:**
+- Self-service detailed reporting para análisis de comisiones
+- Executive summary disponible on-demand para decisiones
+- Audit trail completo para transparencia financiera
+- Professional PDF output para presentaciones y sharing
+
+**Operational Efficiency:**
+- Eliminación de reportes manuales tiempo-intensivos
+- Datos consistentes reflejando estado actual siempre
+- Análisis multi-dimensional (sucursal, vendedor, cross-branch)
+- Instant access sin dependencias de personal técnico
+
+**Technical Benefits:**
+- ERPNext native integration elimina dependencias externas
+- Fixtures-based deployment asegura consistency cross-environment
+- Template security sigue best practices de Frappe framework
+- Performance optimizado con single-document scope
+
+---
+
 ## [v2.7.16] - 2025-09-14 - FILTROS JERÁRQUICOS: Post-filtrado funcional por árbol lft/rgt 🌳
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación completa de filtros jerárquicos por Cost Center y Sales Person
