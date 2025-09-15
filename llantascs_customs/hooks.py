@@ -275,5 +275,8 @@ fixtures = [
     {"doctype": "Role", "filters": [["role_name", "in", [
         "Llantas CS Manager", "Llantas CS User"
     ]]]},
+
+    # Print Format para reporte OPC detallado
+    {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
 ]
 

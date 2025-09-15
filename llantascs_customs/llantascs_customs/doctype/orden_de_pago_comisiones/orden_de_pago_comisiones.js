@@ -264,5 +264,17 @@ frappe.ui.form.on('Orden de Pago Comisiones', {
                 d.show();
             })
         }
+
+        // Botón para Reporte Detallado PDF - solo si está guardado (no nuevo)
+        if (frm.doc.name && !frm.is_new() && !frm.doc.name.startsWith('new-')) {
+            frm.add_custom_button('📄 Reporte Detallado', () => {
+                const url = `/api/method/frappe.utils.print_format.download_pdf`
+                    + `?doctype=Orden%20de%20Pago%20Comisiones`
+                    + `&name=${encodeURIComponent(frm.doc.name)}`
+                    + `&format=opc_detallado`
+                    + `&no_letterhead=0`;
+                window.open(url);
+            }).addClass('btn-primary');
+        }
     }
 });

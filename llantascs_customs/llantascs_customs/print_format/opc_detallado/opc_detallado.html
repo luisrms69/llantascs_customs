@@ -1,0 +1,239 @@
+{# ============================
+   Print Format: opc_detallado
+   Doctype: Orden de Pago Comisiones
+   ============================ #}
+
+{% set docstatus_map = {0: 'Borrador', 1: 'Enviado', 2: 'Cancelado'} %}
+{% set estado_opc = docstatus_map.get(doc.docstatus, 'Desconocido') %}
+
+{# Corregido: usar el nombre real del campo tabla hija #}
+{% set lineas = doc.comisiones_incluidas or [] %}
+
+{% macro money(v) %}{{ "$ {:,.2f}".format(v or 0) }}{% endmacro %}
+{% macro pct(v) %}{{ "{:.2f}%".format((v or 0) * 100) }}{% endmacro %}
+
+{# Simplificar: usar directamente las líneas originales y obtener cost_center en cada iteración #}
+{# Crear función helper para obtener cost_center de forma segura #}
+{% macro get_cost_center(sales_invoice_id) -%}
+  {%- if sales_invoice_id -%}
+    {%- set si_doc = frappe.get_doc("Sales Invoice", sales_invoice_id) -%}
+    {{- si_doc.cost_center or 'Sin sucursal' -}}
+  {%- else -%}
+    Sin sucursal
+  {%- endif -%}
+{% endmacro %}
+
+{# Calcular totales directamente de las líneas originales #}
+{% set total_facturas   = lineas|length %}
+{% set total_ingresos = (lineas|sum(attribute='ingreso')) or 0 %}
+{% set total_costos   = (lineas|sum(attribute='costo_de_ventas'))   or 0 %}
+{% set total_margen   = (lineas|sum(attribute='utilidad_transaccion'))  or 0 %}
+{% set total_comision = (lineas|sum(attribute='total_comision')) or 0 %}
+
+{# Calcular total de sucursales únicas dinámicamente #}
+{% set unique_cost_centers = [] %}
+{% for line in lineas %}
+  {% set cc = get_cost_center(line.sales_invoice_id) %}
+  {% if cc not in unique_cost_centers %}
+    {% set _ = unique_cost_centers.append(cc) %}
+  {% endif %}
+{% endfor %}
+{% set total_sucursales = unique_cost_centers|length %}
+
+<style>
+  .h1 { font-size: 18px; font-weight: 700; margin: 8px 0; }
+  .h2 { font-size: 15px; font-weight: 700; margin: 6px 0; }
+  .h3 { font-size: 13px; font-weight: 700; margin: 4px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+  th, td { border: 1px solid #ccc; padding: 4px; font-size: 11px; }
+  .right { text-align: right; }
+  .muted { color: #666; }
+</style>
+
+<div>
+  <!-- ENCABEZADO -->
+  <div class="h1">Orden de Pago Comisiones — Detalle</div>
+  <div class="muted">OPC: {{ doc.name }} · Estado: <b>{{ estado_opc }}</b> · Fecha: {{ frappe.format_date(doc.creation) }}</div>
+
+  <!-- SECCION 1: RESUMEN GENERAL -->
+  <div class="h2">Resumen</div>
+  <table>
+    <tr>
+      <th>Total sucursales</th>
+      <th>Total facturas</th>
+      <th>Ingresos</th>
+      <th>Costos</th>
+      <th>Margen</th>
+      <th>Comision pagada</th>
+    </tr>
+    <tr>
+      <td class="right">{{ total_sucursales }}</td>
+      <td class="right">{{ total_facturas }}</td>
+      <td class="right">{{ money(total_ingresos) }}</td>
+      <td class="right">{{ money(total_costos) }}</td>
+      <td class="right">{{ money(total_margen) }}</td>
+      <td class="right">{{ money(total_comision) }}</td>
+    </tr>
+  </table>
+
+  <div class="h3">Desglose por sucursal (conteo y monto)</div>
+  <table>
+    <tr>
+      <th>Sucursal</th>
+      <th>Facturas</th>
+      <th>Monto ingresos</th>
+    </tr>
+    {% for cc in unique_cost_centers %}
+      {% set facturas_cc = [] %}
+      {% for line in lineas %}
+        {% if get_cost_center(line.sales_invoice_id) == cc %}
+          {% set _ = facturas_cc.append(line) %}
+        {% endif %}
+      {% endfor %}
+      {% set total_ingresos_cc = facturas_cc|sum(attribute='ingreso') or 0 %}
+      <tr>
+        <td>{{ cc or 'Sin sucursal' }}</td>
+        <td class="right">{{ facturas_cc|length }}</td>
+        <td class="right">{{ money(total_ingresos_cc) }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <!-- SECCION 2: RESUMEN POR SUCURSAL -->
+  <div class="h2">Resumen por sucursal</div>
+  {% for cc in unique_cost_centers %}
+    {# Obtener todas las líneas de esta sucursal #}
+    {% set l_cc = [] %}
+    {% for line in lineas %}
+      {% if get_cost_center(line.sales_invoice_id) == cc %}
+        {% set _ = l_cc.append(line) %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="h3">Sucursal: {{ cc or 'Sin sucursal' }}</div>
+
+    {# Agrupar por vendedor dentro de esta sucursal #}
+    {% set vendedores_cc = [] %}
+    {% for line in l_cc %}
+      {% set sp = line.persona_de_ventas or 'Sin vendedor' %}
+      {% if sp not in vendedores_cc %}
+        {% set _ = vendedores_cc.append(sp) %}
+      {% endif %}
+    {% endfor %}
+
+    {% for sp in vendedores_cc %}
+      {% set l_sp = [] %}
+      {% for line in l_cc %}
+        {% if (line.persona_de_ventas or 'Sin vendedor') == sp %}
+          {% set _ = l_sp.append(line) %}
+        {% endif %}
+      {% endfor %}
+
+      <table>
+        <tr>
+          <th colspan="6">Vendedor: {{ sp }}</th>
+        </tr>
+        <tr>
+          <th>Factura</th>
+          <th class="right">Ingresos</th>
+          <th class="right">Costos</th>
+          <th class="right">Margen</th>
+          <th class="right">% Margen</th>
+          <th class="right">Comision pagada</th>
+        </tr>
+        {% for r in l_sp %}
+          {% set margen_pct = (r.utilidad_transaccion / r.ingreso) if r.ingreso and r.ingreso > 0 else 0 %}
+          <tr>
+            <td>{{ r.sales_invoice_id }}</td>
+            <td class="right">{{ money(r.ingreso) }}</td>
+            <td class="right">{{ money(r.costo_de_ventas) }}</td>
+            <td class="right">{{ money(r.utilidad_transaccion) }}</td>
+            <td class="right">{{ pct(margen_pct) }}</td>
+            <td class="right">{{ money(r.total_comision) }}</td>
+          </tr>
+        {% endfor %}
+        {% set total_ingresos_sp = l_sp|sum(attribute='ingreso') or 0 %}
+        {% set total_margen_sp = l_sp|sum(attribute='utilidad_transaccion') or 0 %}
+        {% set margen_pct_total = (total_margen_sp / total_ingresos_sp) if total_ingresos_sp > 0 else 0 %}
+        <tr>
+          <th class="right">Totales vendedor</th>
+          <th class="right">{{ money(total_ingresos_sp) }}</th>
+          <th class="right">{{ money(l_sp|sum(attribute='costo_de_ventas')) }}</th>
+          <th class="right">{{ money(total_margen_sp) }}</th>
+          <th class="right">{{ pct(margen_pct_total) }}</th>
+          <th class="right">{{ money(l_sp|sum(attribute='total_comision')) }}</th>
+        </tr>
+      </table>
+    {% endfor %}
+
+    {% set total_ingresos_cc = l_cc|sum(attribute='ingreso') or 0 %}
+    {% set total_margen_cc = l_cc|sum(attribute='utilidad_transaccion') or 0 %}
+    {% set margen_pct_cc = (total_margen_cc / total_ingresos_cc) if total_ingresos_cc > 0 else 0 %}
+    <table>
+      <tr>
+        <th class="right">Subtotal sucursal {{ cc or 'Sin sucursal' }}</th>
+        <th class="right">{{ money(total_ingresos_cc) }}</th>
+        <th class="right">{{ money(l_cc|sum(attribute='costo_de_ventas')) }}</th>
+        <th class="right">{{ money(total_margen_cc) }}</th>
+        <th class="right">{{ pct(margen_pct_cc) }}</th>
+        <th class="right">{{ money(l_cc|sum(attribute='total_comision')) }}</th>
+      </tr>
+    </table>
+  {% endfor %}
+
+  <!-- SECCION 3: RESUMEN POR VENDEDOR -->
+  <div class="h2">Resumen por vendedor</div>
+
+  {# Obtener vendedores únicos #}
+  {% set unique_vendedores = [] %}
+  {% for line in lineas %}
+    {% set sp = line.persona_de_ventas or 'Sin vendedor' %}
+    {% if sp not in unique_vendedores %}
+      {% set _ = unique_vendedores.append(sp) %}
+    {% endif %}
+  {% endfor %}
+
+  {% for sp in unique_vendedores %}
+    {# Obtener todas las líneas de este vendedor #}
+    {% set l_sp_all = [] %}
+    {% for line in lineas %}
+      {% if (line.persona_de_ventas or 'Sin vendedor') == sp %}
+        {% set _ = l_sp_all.append(line) %}
+      {% endif %}
+    {% endfor %}
+
+    {# Obtener sucursales únicas de este vendedor #}
+    {% set sucursales_sp = [] %}
+    {% for line in l_sp_all %}
+      {% set cc = get_cost_center(line.sales_invoice_id) %}
+      {% if cc not in sucursales_sp %}
+        {% set _ = sucursales_sp.append(cc) %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="h3">Vendedor: {{ sp }}</div>
+    {% set total_ingresos_sp_all = l_sp_all|sum(attribute='ingreso') or 0 %}
+    {% set total_margen_sp_all = l_sp_all|sum(attribute='utilidad_transaccion') or 0 %}
+    {% set margen_pct_sp_all = (total_margen_sp_all / total_ingresos_sp_all) if total_ingresos_sp_all > 0 else 0 %}
+    <table>
+      <tr>
+        <th>Sucursales</th>
+        <th class="right">Facturas</th>
+        <th class="right">Ingresos</th>
+        <th class="right">Costos</th>
+        <th class="right">Margen</th>
+        <th class="right">% Margen</th>
+        <th class="right">Comision pagada</th>
+      </tr>
+      <tr>
+        <td>{{ sucursales_sp | join(', ') }}</td>
+        <td class="right">{{ l_sp_all|length }}</td>
+        <td class="right">{{ money(total_ingresos_sp_all) }}</td>
+        <td class="right">{{ money(l_sp_all|sum(attribute='costo_de_ventas')) }}</td>
+        <td class="right">{{ money(total_margen_sp_all) }}</td>
+        <td class="right">{{ pct(margen_pct_sp_all) }}</td>
+        <td class="right">{{ money(l_sp_all|sum(attribute='total_comision')) }}</td>
+      </tr>
+    </table>
+  {% endfor %}
+</div>
