@@ -279,5 +279,8 @@ fixtures = [
 
     # Print Format para reporte OPC detallado
     {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
+
+    # Dashboard Chart para gráfico de comisiones por mes
+    {"doctype": "Dashboard Chart", "filters": [["name", "in", ["comisiones_pagadas_por_mes"]]]},
 ]
 
