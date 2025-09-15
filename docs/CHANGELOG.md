@@ -11,6 +11,38 @@
 
 ---
 
+## [v2.7.20] - 2025-09-15 - DASHBOARD CHART FIX: Visualización completa gráfico comisiones mensuales 📊
+
+### 🎯 TRABAJO DE SESIÓN: Fix completo visualización dashboard chart comisiones
+
+**Problema Abordado**: Chart "Comisiones Pagadas por Mes" mostraba datos en hover pero sin barras/líneas visuales
+**Root Cause**: Faltaba campo `type: "Bar"` y filtros `docstatus=1` en configuración chart
+**Solución**: Aplicar patrón estándar ERPNext Document Type charts con campos requeridos
+**Resultado**: Visualización completa con barras mensuales, filtros correctos, label estético
+
+### 📋 Cambios Técnicos
+- **FIX**: Agregado `"type": "Bar"` para rendering visual de barras
+- **FIX**: Aplicado `filters_json` con patrón ERPNext: `[["Orden de Pago Comisiones","docstatus","=","1",false]]`
+- **UX**: Cambiado `chart_name` de "comisiones_pagadas_por_mes" → "Comisiones Pagadas por Mes"
+- **CONFIG**: Ajustado `timespan` de "This Year" → "Last Year" para datos históricos
+- **STYLE**: Agregado `color: "#7b933d"` consistente con charts ERPNext estándar
+
+### 🔍 Patrón ERPNext Document Type Charts Identificado
+- **Campo crítico**: `type` determina rendering visual (Bar/Line/etc)
+- **Filtros estándar**: `docstatus=1` siempre requerido en Document Type charts
+- **Formato filters_json**: Array de arrays con 5 elementos `[["DocType","field","operator","value",boolean]]`
+- **Timespan recomendado**: "Last Year" para datos históricos vs "This Year" limitado
+- **Consistency**: Patrones consistentes entre Sales Invoice, Purchase Invoice, Delivery Note
+
+### ✅ Estado Final
+- **VISUALIZACIÓN**: ✅ Barras renderizando correctamente por mes
+- **DATOS**: ✅ Valores correctos en hover y visualización
+- **UX**: ✅ Label sin underscores, estética mejorada
+- **COMPLIANCE**: ✅ Sigue patrones estándar ERPNext
+- **READY FOR PRODUCTION**: ✅
+
+---
+
 ## [v2.7.19] - 2025-09-15 - MONTO_TOTAL PATCH FIX: Corrección valores OPC con SQL directo 🔧
 
 ### 🎯 TRABAJO DE SESIÓN: Fix crítico para monto_total incorrectos en OPCs
