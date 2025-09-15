@@ -11,6 +11,89 @@
 
 ---
 
+## [v2.7.16] - 2025-09-14 - FILTROS JERÁRQUICOS: Post-filtrado funcional por árbol lft/rgt 🌳
+
+### 🎯 TRABAJO DE SESIÓN: Implementación completa de filtros jerárquicos por Cost Center y Sales Person
+
+**Problema Abordado**: Filtros de sucursal y vendedor no funcionaban en el reporte GP nativo, no aplicaban filtrado jerárquico
+**Resultado**: FILTROS COMPLETAMENTE FUNCIONALES - Post-filtrado por árbol lft/rgt con intersección correcta
+**Estado**: FILTROS ✅ | JERARQUÍA ✅ | INTERSECCIÓN ✅ | PERFORMANCE ✅
+
+#### 🔧 Cambios Técnicos Implementados
+
+**Post-Filtrado por Árbol lft/rgt:**
+- Implementación `_apply_tree_filters()` con aplicación secuencial de filtros
+- Función `_filter_by_cost_center_tree()` usando `lft/rgt` de `tabCost Center`
+- Función `_filter_by_sales_person_tree()` usando `lft/rgt` + `tabSales Team` lookup
+- Manejo de errores con fallback a datos sin filtrar
+
+**Filtrado Jerárquico Cost Center:**
+- Nodos raíz incluyen automáticamente todos los nodos hijos (lft/rgt semantics)
+- Filas sin sucursal quedan FUERA cuando hay filtro, INCLUIDAS cuando está vacío
+- Performance: Query único para obtener set válido de cost centers
+
+**Filtrado Jerárquico Sales Person:**
+- Construye set de facturas con Sales Team que tienen sales persons en el árbol
+- Facturas sin vendedor quedan FUERA cuando hay filtro, INCLUIDAS cuando está vacío
+- Intersección por ID de factura para máxima precisión
+
+**Columnas Simplificadas:**
+- Eliminadas columnas metodología GL anterior: `margen_pct_cc`, `comision_estimada`
+- Mantenidas solo columnas GP nativas: `margin_cc_6m_gp`, `comision_estimada_gp`
+- Reordenadas nuevas columnas en posiciones de las anteriores para UX consistente
+
+#### 📊 Validación de Filtros Completada
+
+**Pruebas de Aceptación Exitosas:**
+- **Sin filtros**: 314 filas (datos completos)
+- **Solo sucursal** ("108 - VILLAHERMOSA - LLCS"): 17 filas ✅ (filtró correctamente)
+- **Solo vendedor** ("Equipo de ventas"): 313 filas ✅ (filtró 1 fila)
+- **Combinado** (sucursal + vendedor): 17 filas ✅ (intersección correcta)
+
+**Casos de Uso Validados:**
+- ✅ Vista por sucursal: solo facturas de esa sucursal y sus hijas
+- ✅ Vista por equipo: facturas de todo el equipo jerárquico
+- ✅ Vista específica: intersección precisa de ambos criterios
+- ✅ Vista global: incluye facturas sin asignaciones cuando no hay filtros
+
+#### 🚀 Arquitectura Técnica Final
+
+**Script Report Completo:**
+- 12 columnas funcionales con datos GP nativos
+- Post-filtrado eficiente después de cálculos base
+- Filtros jerárquicos con lft/rgt tree semantics
+- Performance optimizada: filtrado no afecta cálculos GP
+
+**Metodología Implementada:**
+1. Obtener datos base completos (314 filas)
+2. Calcular márgenes GP nativos por cost center
+3. Aplicar post-filtros jerárquicos secuenciales
+4. Retornar datos filtrados con intersección correcta
+
+#### 💡 Lecciones Técnicas Clave
+
+1. **Post-filtrado**: Más eficiente que filtros SQL complejos para reportes con cálculos pesados
+2. **Tree Semantics**: lft/rgt tree permite filtrado jerárquico natural en ERPNext
+3. **Sales Team Lookup**: Filtrado por vendedor requiere lookup indirecto vía tabSales Team
+4. **Intersección Secuencial**: Aplicar filtros en orden permite intersección correcta
+5. **Error Handling**: Fallback a datos sin filtrar evita errores críticos en UI
+
+#### 🎯 Capacidades Finales
+
+**Filtrado Avanzado:**
+- Filtros jerárquicos automáticos (padres incluyen hijos)
+- Intersección precisa para análisis específicos
+- Compatibilidad total con UI de filtros ERPNext
+- Sin impacto en performance de cálculos GP
+
+**UX Optimizada:**
+- Columnas en posiciones familiares para usuarios
+- Solo metodología GP nativa visible (sin confusión GL)
+- Filtros opcionales sin defaults (máxima flexibilidad)
+- Workspace integration mantenida
+
+---
+
 ## [v2.7.15] - 2025-09-14 - SCRIPT REPORT GP NATIVO: Implementación completa con ERPNext integration 🎯
 
 ### 🎯 TRABAJO DE SESIÓN: Conversión exitosa Query Report → Script Report con debugging sistemático

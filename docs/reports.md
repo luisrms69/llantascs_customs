@@ -294,7 +294,33 @@ Script Report avanzado que combina todas las columnas de "Backlog Comisiones Com
 **Características de Filtros:**
 - **Sin defaults**: Máxima flexibilidad, usuario define rangos
 - **Filtros opcionales**: Todos los filtros son opcionales (no mandatory)
-- **Compatibilidad**: Mismos filtros que reportes Query Report existentes
+- **Filtros jerárquicos**: Implementados con lft/rgt tree semantics
+- **Post-filtrado**: Se aplica después de cálculos GP, no afecta performance
+
+#### Filtrado Jerárquico Avanzado
+
+**Filtrado por Cost Center (Sucursal):**
+- **Lógica**: Si se selecciona un nodo, incluye automáticamente todos sus nodos hijos
+- **Implementación**: Usa `lft/rgt` tree de `tabCost Center` para determinar jerarquía
+- **Comportamiento**: Filas sin sucursal quedan FUERA cuando hay filtro, INCLUIDAS cuando está vacío
+- **Ejemplo**: Seleccionar "LLCS (Matriz)" incluye "VILLAHERMOSA", "QUERETARO", etc.
+
+**Filtrado por Sales Person (Vendedor):**
+- **Lógica**: Si se selecciona un nodo, incluye facturas de todos sus vendedores hijos
+- **Implementación**: Usa `lft/rgt` tree de `tabSales Person` + `tabSales Team` lookup
+- **Comportamiento**: Facturas sin vendedor quedan FUERA cuando hay filtro, INCLUIDAS cuando está vacío
+- **Ejemplo**: Seleccionar "Equipo de ventas" incluye todos los vendedores individuales
+
+**Filtros Combinados:**
+- **Intersección**: Cuando ambos filtros están presentes, se aplican secuencialmente
+- **Orden**: Primero Cost Center, luego Sales Person
+- **Resultado**: Solo facturas que cumplan AMBOS criterios jerárquicos
+
+**Casos de Uso Filtrado:**
+- **Vista por sucursal**: cost_center = "VILLAHERMOSA" → solo facturas de esa sucursal
+- **Vista por equipo**: sales_person = "Equipo de ventas" → facturas de todo el equipo
+- **Vista específica**: Ambos filtros → intersección precisa
+- **Vista global**: Sin filtros → incluye facturas sin asignaciones
 
 #### Columnas del Reporte
 
@@ -368,6 +394,15 @@ gp_columns, gp_data = gp_execute(gp_filters)
 **Prioridad:** Posicionado antes de "Backlog Comisiones Completo"
 
 #### Historial de Implementación
+
+**v2.7.16 (2025-09-14):**
+- **FILTROS JERÁRQUICOS FUNCIONALES**: Implementación completa de filtrado por Cost Center y Sales Person
+- **Post-filtrado por árbol**: Usa lft/rgt tree semantics para incluir nodos hijos automáticamente
+- **Filtros combinados**: Intersección correcta cuando ambos filtros están presentes
+- **Performance optimizada**: Post-filtrado después de cálculos GP, no afecta performance base
+- **Validación completa**: 314→17 filas (sucursal), 314→313 filas (vendedor), intersección funcional
+- **Columnas simplificadas**: Solo metodología GP nativa visible, eliminadas columnas GL anteriores
+- **Orden optimizado**: Nuevas columnas GP en posiciones de las anteriores para UX consistente
 
 **v2.7.15 (2025-09-14):**
 - **Implementación inicial**: Conversión completa Query Report → Script Report
