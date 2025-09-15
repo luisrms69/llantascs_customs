@@ -62,8 +62,18 @@ Reporte principal para identificar facturas pendientes de inclusión en Órdenes
 
 #### Historial de Implementación
 
+**v2.7.15 (2025-09-14):**
+- **CONVERSIÓN A SCRIPT REPORT**: Migración completa del reporte "Backlog Comisiones GP nativo" de Query Report a Script Report
+- **Integración ERPNext nativa**: Implementación de Python backend que invoca ERPNext standard Gross Profit report
+- **Nueva columna GP nativo**: "Margen Sucursal 6m (GP nativo)" calculada mediante promedio 6 meses por cost center tree
+- **Resolución caching crítico**: Solucionado issue de prepared_report causando 707 filas vacías en UI
+- **Metodología 4-plano**: Debugging sistemático identificó discrepancia fixture vs BD en prepared_report
+- **Performance optimizada**: Sin cache de prepared reports, consultas frescas directas
+- **Mapeo SQL corregido**: Fix crítico en key mapping ("Factura:Link/Sales Invoice:160" vs "Factura")
+- **Arquitectura robusta**: Script Report con execute() function, filtros dinámicos, integración workspace
+
 **v2.7.14 (2025-09-13):**
-- **Nuevo reporte GP nativo**: Implementación Fase 1 de "Backlog Comisiones (GP nativo)" 
+- **Nuevo reporte GP nativo**: Implementación Fase 1 de "Backlog Comisiones (GP nativo)"
 - **Metodología revolucionaria**: Skeleton Query Report preparado para usar ERPNext native Gross Profit en Fase 2
 - **Workspace integration**: Posicionado como primer item en workspace Comisiones > sección Backlog
 - **Filtros sin defaults**: cost_center y sales_person sin valores por defecto para máxima flexibilidad
@@ -238,7 +248,130 @@ si.cost_center as "Sucursal:Link/Cost Center:150"
 **Tipo:** Query Report  
 **Descripción:** Resumen de Órdenes de Pago de Comisiones con estadísticas por período.
 
-## Pagos OPC - Por Sucursal  
+## Pagos OPC - Por Sucursal
 
-**Tipo:** Query Report  
+**Tipo:** Query Report
 **Descripción:** Análisis de pagos de comisiones agrupados por sucursal/centro de costo.
+
+---
+
+## Script Reports
+
+### Backlog Comisiones GP nativo
+
+**Tipo:** Script Report
+**Ubicación:** `/app/query-report/Backlog Comisiones GP nativo`
+**Módulo:** Llantascs Customs
+**Python Module:** `llantascs_customs.llantascs_customs.report.backlog_comisiones_gp_nativo.backlog_comisiones_gp_nativo`
+
+#### Descripción
+
+Script Report avanzado que combina todas las columnas de "Backlog Comisiones Completo" con una nueva columna calculada "Margen Sucursal 6m (GP nativo)" que utiliza la metodología nativa de ERPNext Gross Profit report para calcular márgenes promedio de 6 meses por cost center tree.
+
+#### Arquitectura Técnica
+
+**Tipo:** Script Report con Python backend
+**Función Principal:** `execute(filters=None)`
+**Integración:** ERPNext standard Gross Profit report
+**Caching:** `prepared_report = 0` (sin cache, consultas frescas)
+
+**Backend Flow:**
+1. **Data Source**: Invoke "Backlog Comisiones Completo" para obtener datos base
+2. **GP Integration**: Llama a `erpnext.accounts.report.gross_profit.gross_profit.execute()`
+3. **Margin Calculation**: Calcula promedio 6 meses por cost center usando tree hierarchy
+4. **Data Merge**: Combina datos base con márgenes GP nativos
+5. **Response**: Retorna `(columns, data)` para ERPNext framework
+
+#### Filtros
+
+| Campo | Tipo | Requerido | Default | Descripción |
+|-------|------|-----------|---------|-------------|
+| `from_date` | Date | No | None | Fecha inicio del rango de búsqueda |
+| `to_date` | Date | No | None | Fecha fin del rango de búsqueda |
+| `cost_center` | Link | No | None | Centro de costo (sucursal) raíz o hija |
+| `sales_person` | Link | No | None | Vendedor raíz o hijo |
+
+**Características de Filtros:**
+- **Sin defaults**: Máxima flexibilidad, usuario define rangos
+- **Filtros opcionales**: Todos los filtros son opcionales (no mandatory)
+- **Compatibilidad**: Mismos filtros que reportes Query Report existentes
+
+#### Columnas del Reporte
+
+**Columnas Base (heredadas de "Backlog Comisiones Completo"):**
+1. **Factura** (Link/Sales Invoice:160) - Enlace a la factura
+2. **Fecha** (Date:95) - Fecha de la factura
+3. **Cliente** (Link/Customer:220) - Cliente de la factura
+4. **Sucursal** (Link/Cost Center:200) - Centro de costo de la factura
+5. **Vendedores** (Data:220) - Todos los vendedores concatenados
+6. **Venta (OPC def)** (Currency:120) - Base net total redondeado
+7. **Margen pct CC** (Percent:110) - Porcentaje de margen (metodología GL)
+8. **Rate Comisión** (Percent:110) - Tasa de comisión aplicable
+9. **Comisión Estimada** (Currency:120) - Comisión calculada
+10. **Pago OK** (Check:80) - Estado de pago
+11. **Entrega OK** (Check:80) - Estado de entrega
+12. **Comisiones OK** (Check:90) - Estado de comisión
+
+**Nueva Columna (GP nativo):**
+13. **Margen Sucursal 6m (GP nativo)** (Percent:130) - Promedio 6 meses calculado con ERPNext native Gross Profit
+
+#### Metodología GP Nativo
+
+**Integración ERPNext:**
+```python
+from erpnext.accounts.report.gross_profit.gross_profit import execute as gp_execute
+
+# Invocar reporte nativo
+gp_columns, gp_data = gp_execute(gp_filters)
+```
+
+**Cálculo de Márgenes:**
+1. **Período**: 6 meses retrospectivos desde `to_date`
+2. **Granularidad**: Por cost center individual
+3. **Agregación**: Promedio ponderado por net amount
+4. **Tree Hierarchy**: Incluye cost centers hijos automáticamente
+5. **Fallback**: 0.0% cuando no hay datos GP
+
+**Ventajas vs Metodología GL:**
+- **Nativo ERPNext**: Usa algoritmos oficiales de gross profit
+- **Actualización automática**: Sigue cambios en ERPNext core
+- **Compatibilidad**: Consistente con otros reportes ERPNext
+- **Precision**: Mayor precisión en cálculos complejos
+
+#### Resolución de Issues Técnicos
+
+**Issue Crítico Resuelto (2025-09-14):**
+- **Problema**: 707 filas devueltas por backend pero UI mostraba filas vacías
+- **Causa Raíz**: `prepared_report = 1` en BD vs `prepared_report = 0` en fixture + cache obsoleto
+- **Metodología**: Debugging sistemático 4-plano identificó discrepancia caching
+- **Solución**: Migrate + cache purge sincronizó fixture → BD correctamente
+- **Fix SQL Mapping**: Corrección mapeo keys ("Factura:Link/Sales Invoice:160")
+
+**Debugging 4-Plano Aplicado:**
+1. **Plano 0**: Sanity checks ✅
+2. **Plano 1**: Backend verification ✅ (datos reales retornados)
+3. **Plano 2**: Filter types verification ✅ (string/dict ambos funcionan)
+4. **Plano 3**: Prepared report identification ✅ (fixture vs BD sync)
+5. **Plano 4**: No requerido (problema resuelto en Plano 3)
+
+#### Casos de Uso
+
+1. **Análisis comparativo**: Comparar márgenes GL vs GP nativo por sucursal
+2. **Validación metodológica**: Verificar consistencia entre enfoques de cálculo
+3. **Commission planning**: Planificación de comisiones con márgenes ERPNext oficiales
+4. **Auditoría avanzada**: Análisis profundo con metodología nativa ERPNext
+
+#### Workspace Integration
+
+**Ubicación:** Workspace "Comisiones" > Sección "Backlog" > Primer ítem
+**Shortcut:** "Backlog Comisiones GP nativo"
+**Prioridad:** Posicionado antes de "Backlog Comisiones Completo"
+
+#### Historial de Implementación
+
+**v2.7.15 (2025-09-14):**
+- **Implementación inicial**: Conversión completa Query Report → Script Report
+- **Python backend**: Función execute() con integración ERPNext Gross Profit
+- **Resolución caching**: Debugging 4-plano y corrección prepared_report sync
+- **Mapeo SQL fix**: Corrección crítica key mapping para display correcto
+- **Testing completo**: Verificación 707 filas datos reales en UI

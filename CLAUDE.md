@@ -19,6 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - NUNCA ejecutar consultas DB exploratorias sin permiso
 - NUNCA tomar decisiones técnicas unilateralmente
 - NUNCA modificar/crear/eliminar archivos "porque es mejor así"
+- NUNCA modificar directamente la base de datos sin autorización EXPLÍCITA del usuario
 
 ## SISTEMA DE CONFIRMACIÓN OBLIGATORIA - VERSIÓN FINAL
 

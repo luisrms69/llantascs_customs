@@ -11,6 +11,124 @@
 
 ---
 
+## [v2.7.15] - 2025-09-14 - SCRIPT REPORT GP NATIVO: Implementación completa con ERPNext integration 🎯
+
+### 🎯 TRABAJO DE SESIÓN: Conversión exitosa Query Report → Script Report con debugging sistemático
+
+**Problema Abordado**: Migrar de Query Report skeleton a Script Report funcional con integración ERPNext native Gross Profit
+**Resultado**: CONVERSIÓN COMPLETA - Script Report funcional con nueva columna GP nativa y resolución crítica de caching
+**Estado**: SCRIPT REPORT ✅ | GP INTEGRATION ✅ | CACHING FIXED ✅ | UI WORKING ✅
+
+#### 🔧 Cambios Técnicos Implementados
+
+**Arquitectura - Query Report → Script Report:**
+- Migración completa de `report_type: "Query Report"` → `report_type: "Script Report"`
+- Implementación Python backend con función `execute(filters=None)`
+- Configuración `report_script: "llantascs_customs.llantascs_customs.report.backlog_comisiones_gp_nativo.backlog_comisiones_gp_nativo"`
+- Eliminación campo `query` (NULL para Script Reports)
+
+**Integración ERPNext Native Gross Profit:**
+- Import correcto: `from erpnext.accounts.report.gross_profit.gross_profit import execute as gp_execute`
+- Invocación reporte nativo ERPNext para cálculo de márgenes
+- Algoritmo promedio 6 meses ponderado por net amount
+- Integración tree hierarchy para cost centers automática
+
+**Nueva Columna Calculada:**
+- "Margen Sucursal 6m (GP nativo)" (Percent:130)
+- Metodología ERPNext oficial vs lógica GL custom anterior
+- Fallback 0.0% para casos sin datos GP disponibles
+
+#### 🚨 Resolución Issue Crítico - 707 Filas Vacías
+
+**Diagnóstico Sistemático 4-Plano (Metodología ChatGPT):**
+- **Plano 0**: Sanity checks ✅ - Backend retornaba 707 filas
+- **Plano 1**: Backend verification ✅ - Función execute() con datos reales
+- **Plano 2**: Filter types ✅ - String/dict ambos funcionando
+- **Plano 3**: **CAUSA RAÍZ IDENTIFICADA** - Prepared Report caching
+
+**Root Cause - Prepared Report Desincronización:**
+- BD: `prepared_report = 1` (incorrecto)
+- Fixture: `prepared_report = 0` (correcto)
+- 6 registros cache obsoletos en `tabPrepared Report`
+- migrate falló en sincronizar fixture → BD
+
+**Solución Aplicada:**
+- Migrate sincronizó `prepared_report = 0` desde fixture a BD
+- Sistema auto-purgó cache obsoleto de Prepared Reports
+- UI ahora consulta datos frescos sin cache intermedio
+
+**Fix SQL Mapping Crítico:**
+- **Problema**: Keys SQL "Factura:Link/Sales Invoice:160" vs mapping "Factura"
+- **Solución**: Mapeo completo usando exact SQL keys del reporte origen
+- **Resultado**: Todas las columnas muestran datos reales correctamente
+
+#### 📊 Funcionalidad Final Verificada
+
+**Columnas Funcionando (13 total):**
+1. Factura (Link/Sales Invoice:160) ✅
+2. Fecha (Date:95) ✅
+3. Cliente (Link/Customer:220) ✅
+4. Sucursal (Link/Cost Center:200) ✅
+5. Vendedores (Data:220) ✅
+6. Venta (OPC def) (Currency:120) ✅
+7. Margen pct CC (Percent:110) ✅ [Metodología GL]
+8. Rate Comisión (Percent:110) ✅
+9. Comisión Estimada (Currency:120) ✅
+10. Pago OK (Check:80) ✅
+11. Entrega OK (Check:80) ✅
+12. Comisiones OK (Check:90) ✅
+13. **Margen Sucursal 6m (GP nativo)** (Percent:130) ✅ [NUEVA - ERPNext nativo]
+
+**Filtros Verificados:**
+- from_date ✅ (opcional)
+- to_date ✅ (opcional)
+- cost_center ✅ (opcional)
+- sales_person ✅ (opcional)
+
+**Performance:**
+- 707 filas mostradas correctamente en UI ✅
+- Sin cache obsoleto interferiendo ✅
+- Consultas frescas directas ✅
+- Workspace integration funcional ✅
+
+#### 🎯 Metodología Destacada
+
+**Debugging Sistemático 4-Plano:**
+Metodología propuesta por ChatGPT fue 100% efectiva:
+1. Verificar backend aislado ✅
+2. Verificar tipos de filtros ✅
+3. **Identificar discrepancia cache** ✅ (CLAVE)
+4. Frontend isolation (no requerido)
+
+**Arquitectura Robusta:**
+- Script Report con Python backend confiable
+- Integración ERPNext nativa para márgenes
+- prepared_report=0 evita cache issues
+- Fixture-based configuration para deploy seguro
+
+#### 💡 Lecciones Técnicas Clave
+
+1. **Prepared Reports**: Cache puede servir datos obsoletos si fixture vs BD desincronizados
+2. **SQL Mapping**: Keys de reportes origen deben mapearse exactamente ("Factura:Link/Sales Invoice:160")
+3. **migrate Sync**: Fixtures no siempre sincronizan automáticamente, verificar manualmente
+4. **Debugging Sistemático**: Approach metódico 4-plano identifica root cause efectivamente
+5. **ERPNext Integration**: Invocar reportes nativos preferible vs re-implementar lógica
+
+#### 🚀 Impacto Empresarial
+
+**Capacidades Nuevas:**
+- Comparación directa metodología GL vs ERPNext nativo
+- Análisis avanzado con algoritmos oficiales ERPNext
+- Base para future migration completa a GP nativo
+- Validación cruzada de cálculos de comisiones
+
+**Workspace Priority:**
+- Posicionado como primer ítem en sección "Backlog"
+- Acceso directo desde workspace "Comisiones"
+- UI moderna con 13 columnas funcionales
+
+---
+
 ## [v2.7.14] - 2025-09-13 - FASE 1 BACKLOG GP NATIVO: Skeleton funcional con workspace integration 🚀
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación exitosa Fase 1 - Visibilidad en Workspace 
