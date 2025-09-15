@@ -5,3 +5,4 @@
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 llantascs_customs.patches.v2_5_0.migrate_opc_v2
+llantascs_customs.patches.post.fix_opc_monto_total_corrected
