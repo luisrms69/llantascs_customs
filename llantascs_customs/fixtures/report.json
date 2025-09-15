@@ -346,7 +346,7 @@
     "label": "Desde",
     "mandatory": 0,
     "options": null,
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "filters",
     "parenttype": "Report",
     "wildcard_filter": 0
@@ -358,7 +358,7 @@
     "label": "Hasta",
     "mandatory": 0,
     "options": null,
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "filters",
     "parenttype": "Report",
     "wildcard_filter": 0
@@ -370,7 +370,7 @@
     "label": "Sucursal (raíz o hija)",
     "mandatory": 0,
     "options": "Cost Center",
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "filters",
     "parenttype": "Report",
     "wildcard_filter": 0
@@ -382,7 +382,7 @@
     "label": "Vendedor (raíz o hijo)",
     "mandatory": 0,
     "options": "Sales Person",
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "filters",
     "parenttype": "Report",
     "wildcard_filter": 0
@@ -394,29 +394,29 @@
   "letter_head": null,
   "modified": "2025-09-13 15:45:00.000000",
   "module": "Llantascs Customs",
-  "name": "Backlog Comisiones (GP nativo)",
+  "name": "Backlog Comisiones GP nativo",
   "prepared_report": 0,
-  "query": "SELECT 'En desarrollo - Fase 1 completada' as \"Estado:Data:300\"",
+  "query": null,
   "ref_doctype": "Sales Invoice",
   "reference_report": null,
-  "report_name": "Backlog Comisiones (GP nativo)",
-  "report_script": null,
-  "report_type": "Query Report",
+  "report_name": "Backlog Comisiones GP nativo",
+  "report_script": "llantascs_customs.llantascs_customs.report.backlog_comisiones_gp_nativo.backlog_comisiones_gp_nativo",
+  "report_type": "Script Report",
   "roles": [
    {
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "System Manager"
    },
    {
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Llantas CS Manager"
    },
    {
-    "parent": "Backlog Comisiones (GP nativo)",
+    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Llantas CS User"
