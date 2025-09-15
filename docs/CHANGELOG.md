@@ -11,6 +11,42 @@
 
 ---
 
+## [v2.7.21] - 2025-09-15 - CLEANUP & PERMISSIONS: Limpieza reportes legacy + permisos por roles 🧹
+
+### 🎯 TRABAJO DE SESIÓN: Limpieza completa sistema comisiones + seguridad
+
+**Problema Abordado**: Reportes legacy confusos + permisos abiertos sin restricciones por rol
+**Solución Aplicada**: Eliminación completa reportes obsoletos + permisos granulares por rol
+**Resultado**: Sistema limpio con un solo reporte Backlog + acceso controlado por roles
+
+### 🗑️ Limpieza de Reportes Legacy
+- **ELIMINADO**: "Backlog Comisiones Completo" - obsoleto, duplicaba funcionalidad
+- **ELIMINADO**: "Backlog Comisiones" - obsoleto, reemplazado por versión GP nativo
+- **CONSERVADO**: "Backlog Comisiones GP nativo" - único reporte Backlog actual
+- **WORKSPACE**: Header "Backlog" ahora muestra solo 1 reporte (antes 3)
+- **DATABASE**: Eliminados reports, prepared reports y shortcuts de workspace
+
+### 🔐 Implementación Permisos por Roles
+- **REPORTES RESTRINGIDOS**: Visibles solo para System Manager + Llantas CS Manager + Llantas CS User
+  - Pagos OPC - Por Sucursal, Pagos OPC - Resumen, todos los Backlog Comisiones
+- **MIS COMISIONES**: Visible para Employee + System Manager, filtrado por usuario
+- **WORKSPACE**: Agregado rol Employee para acceso a "Mis Comisiones"
+- **ELIMINADO**: Rol "Accounts User" removido de reportes comisiones
+
+### 📋 Archivos Modificados
+- `fixtures/workspace.json`: Shortcuts legacy eliminados, rol Employee agregado
+- `fixtures/report.json`: Reportes legacy eliminados, permisos actualizados
+- `report/mis_comisiones_backlog/mis_comisiones_backlog.json`: Permisos Employee
+
+### ✅ Estado Final Sistema
+- **1 REPORTE BACKLOG**: Solo "Backlog Comisiones GP nativo" en UI
+- **PERMISOS SEGUROS**: Acceso controlado por roles, sin exposición no autorizada
+- **UI LIMPIA**: Workspace simplificado, sin confusión por reportes duplicados
+- **COMPLIANCE**: Filtrado user-level en "Mis Comisiones" para empleados
+- **READY FOR PRODUCTION**: ✅
+
+---
+
 ## [v2.7.20] - 2025-09-15 - DASHBOARD CHART FIX: Visualización completa gráfico comisiones mensuales 📊
 
 ### 🎯 TRABAJO DE SESIÓN: Fix completo visualización dashboard chart comisiones
