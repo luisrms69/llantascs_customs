@@ -82,7 +82,8 @@
     "url": null
    }
   ],
-  "title": "Vendedores"
+  "title": "Vendedores",
+ "type": "Module"
  },
  {
   "charts": [
@@ -210,6 +211,7 @@
     "url": null
    }
   ],
-  "title": "Comisiones"
+  "title": "Comisiones",
+  "type": "Module"
  }
 ]
