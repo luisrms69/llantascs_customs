@@ -1,0 +1,271 @@
+[
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": "{}",
+  "letter_head": null,
+  "modified": "2025-09-03 23:44:54.657235",
+  "module": "Llantascs Customs",
+  "name": "Mis Comisiones Backlog",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Orden de Pago Comisiones",
+  "reference_report": null,
+  "report_name": "Mis Comisiones Backlog",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Mis Comisiones Backlog",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Mis Comisiones Backlog",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Employee"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [
+   {
+    "default": "2025-01-01",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "Desde",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": "Today",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "Hasta",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
+  "is_standard": "No",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Letter head Llantascs",
+  "modified": "2025-09-03 12:38:01.440420",
+  "module": "Llantascs Customs",
+  "name": "Pagos OPC - Por Sucursal",
+  "prepared_report": 0,
+  "query": "\nSELECT\n  x.cc_label                              AS \"Sucursal (Cost Center):Data:220\",\n  x.total_commission                      AS \"Total Comisiones:Currency:140\",\n  x.opc_count                             AS \"# OPCs:Int:80\",\n  x.invoice_count                         AS \"# Facturas:Int:100\"\nFROM (\n  SELECT\n    IFNULL(si.cost_center,'TOTAL')        AS cc_label,\n    ROUND(SUM(c.total_comision), 2)       AS total_commission,\n    COUNT(DISTINCT c.parent)              AS opc_count,\n    COUNT(DISTINCT c.sales_invoice_id)    AS invoice_count\n  FROM `tabComision LLCS` c\n  INNER JOIN `tabOrden de Pago Comisiones` opc ON opc.name = c.parent AND opc.docstatus = 1\n  INNER JOIN `tabSales Invoice` si ON si.name = c.sales_invoice_id AND si.docstatus = 1\n  WHERE si.posting_date >= %(from_date)s\n    AND si.posting_date <= %(to_date)s\n  GROUP BY si.cost_center WITH ROLLUP\n) x\nORDER BY (x.cc_label = 'TOTAL'), x.cc_label;\n",
+  "ref_doctype": "Orden de Pago Comisiones",
+  "reference_report": null,
+  "report_name": "Pagos OPC - Por Sucursal",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Pagos OPC - Por Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [
+   {
+    "default": null,
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "Desde",
+    "mandatory": 1,
+    "options": null,
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": null,
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "Hasta",
+    "mandatory": 1,
+    "options": null,
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Letter head Llantascs",
+  "modified": "2025-09-11 14:56:58.342678",
+  "module": "Llantascs Customs",
+  "name": "Pagos OPC - Resumen",
+  "prepared_report": 0,
+  "query": "/* Pagos OPC - Resumen: NO recalcula nada; usa lo que guard\u00f3 la OPC (Comision LLCS) */\nSELECT\n  c.parent                              AS \"OPC:Link/Orden de Pago Comisiones:200\",\n  MIN(si.posting_date)                  AS \"Primer D\u00eda:Date:110\",\n  MAX(si.posting_date)                  AS \"\u00daltimo D\u00eda:Date:110\",\n  COUNT(DISTINCT c.sales_invoice_id)    AS \"# Facturas:Int:90\",\n  SUM(c.ingreso)                        AS \"Ingreso:Currency:120\",\n  SUM(c.costo_de_ventas)                AS \"Costo:Currency:120\",\n  SUM(c.utilidad_transaccion)           AS \"Utilidad:Currency:120\",\n  SUM(c.total_comision)                 AS \"Comisi\u00f3n:Currency:120\"\nFROM `tabComision LLCS` c\nINNER JOIN `tabOrden de Pago Comisiones` opc\n  ON opc.name = c.parent AND opc.docstatus = 1\nLEFT JOIN `tabSales Invoice` si\n  ON si.name = c.sales_invoice_id AND si.docstatus = 1\nWHERE si.posting_date BETWEEN %(from_date)s AND %(to_date)s\nGROUP BY c.parent\nORDER BY MAX(si.posting_date) DESC, c.parent DESC;",
+  "ref_doctype": "Orden de Pago Comisiones",
+  "reference_report": null,
+  "report_name": "Pagos OPC - Resumen",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Pagos OPC - Resumen",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [
+   {
+    "default": "2025-01-01",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "Desde",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": "Today",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "Hasta",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": null,
+    "fieldname": "cost_center",
+    "fieldtype": "Link",
+    "label": "Sucursal (ra\u00edz o hija)",
+    "mandatory": 0,
+    "options": "Cost Center",
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": null,
+    "fieldname": "sales_person",
+    "fieldtype": "Link",
+    "label": "Vendedor (ra\u00edz o hijo)",
+    "mandatory": 0,
+    "options": "Sales Person",
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-09-13 15:45:00.000000",
+  "module": "Llantascs Customs",
+  "name": "Backlog Comisiones GP nativo",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Backlog Comisiones GP nativo",
+  "report_script": "llantascs_customs.llantascs_customs.report.backlog_comisiones_gp_nativo.backlog_comisiones_gp_nativo",
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
+   }
+  ],
+  "timeout": 0
+ }
+]

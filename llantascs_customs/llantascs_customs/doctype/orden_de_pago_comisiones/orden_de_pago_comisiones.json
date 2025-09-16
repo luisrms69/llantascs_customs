@@ -8,11 +8,14 @@
  "field_order": [
   "section_break_6yse",
   "sucursal",
+  "sucursales_multi",
+  "comisiones_por_sucursal",
   "amended_from",
   "fecha_de_envio",
   "fecha_confirmacion_pago",
   "confirmacion_de_pago",
   "monto_total",
+  "subtotal_comisiones_negativas",
   "column_break_adkr",
   "desde",
   "hasta_fecha",
@@ -45,7 +48,7 @@
    "fieldtype": "Table",
    "label": "Comisiones Incluidas",
    "options": "Comision LLCS",
-   "read_only": 1
+   "read_only": 0
   },
   {
    "default": "Today",
@@ -71,7 +74,22 @@
    "fieldtype": "Link",
    "label": "Sucursal",
    "options": "Cost Center",
+   "hidden": 1
+  },
+  {
+   "fieldname": "sucursales_multi",
+   "fieldtype": "Table MultiSelect",
+   "label": "Sucursales",
+   "options": "Sucursales Multi",
    "reqd": 1
+  },
+  {
+   "fieldname": "comisiones_por_sucursal",
+   "fieldtype": "Table",
+   "label": "Comisiones por Sucursal",
+   "options": "OPC Comision Por Sucursal",
+   "cannot_add_rows": 1,
+   "cannot_delete_rows": 1
   },
   {
    "fieldname": "fecha_confirmacion_pago",
@@ -106,6 +124,14 @@
    "label": "Monto Total de esta Orden",
    "non_negative": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "subtotal_comisiones_negativas",
+   "fieldtype": "Currency",
+   "label": "Subtotal Comisiones Negativas",
+   "read_only": 1,
+   "default": 0,
+   "in_list_view": 0
   }
  ],
  "grid_page_length": 50,
@@ -120,39 +146,19 @@
  "owner": "Administrator",
  "permissions": [
   {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Llantas CS User",
-   "share": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
    "role": "Llantas CS Manager",
-   "share": 1,
+   "read": 1,
+   "write": 1,
+   "create": 1,
    "submit": 1,
-   "write": 1
+   "cancel": 1,
+   "amend": 1,
+   "print": 1,
+   "email": 1,
+   "export": 1,
+   "report": 1,
+   "share": 0,
+   "delete": 0
   }
  ],
  "sort_field": "modified",

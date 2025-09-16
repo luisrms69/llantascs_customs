@@ -1,0 +1,33 @@
+{
+  "doctype": "Report",
+  "name": "Pagos OPC - Resumen",
+  "report_name": "Pagos OPC - Resumen",
+  "module": "Llantascs Customs",
+  "ref_doctype": "Orden de Pago Comisiones",
+  "report_type": "Query Report",
+  "is_standard": "Yes",
+  "prepared_report": 0,
+  "disabled": 0,
+  "add_total_row": 1,
+  "letter_head": "Letter head Llantascs",
+  "filters": [
+    {
+      "fieldname": "from_date",
+      "label": "Desde",
+      "fieldtype": "Date",
+      "mandatory": 1
+    },
+    {
+      "fieldname": "to_date",
+      "label": "Hasta",
+      "fieldtype": "Date",
+      "mandatory": 1
+    }
+  ],
+  "query": "/* Pagos OPC - Resumen: NO recalcula nada; usa lo que guardó la OPC (Comision LLCS) */\nSELECT\n  c.parent                              AS \"OPC:Link/Orden de Pago Comisiones:200\",\n  MIN(si.posting_date)                  AS \"Primer Día:Date:110\",\n  MAX(si.posting_date)                  AS \"Último Día:Date:110\",\n  COUNT(DISTINCT c.sales_invoice_id)    AS \"# Facturas:Int:90\",\n  SUM(c.ingreso)                        AS \"Ingreso:Currency:120\",\n  SUM(c.costo_de_ventas)                AS \"Costo:Currency:120\",\n  SUM(c.utilidad_transaccion)           AS \"Utilidad:Currency:120\",\n  SUM(c.total_comision)                 AS \"Comisión:Currency:120\"\nFROM `tabComision LLCS` c\nINNER JOIN `tabOrden de Pago Comisiones` opc\n  ON opc.name = c.parent AND opc.docstatus = 1\nLEFT JOIN `tabSales Invoice` si\n  ON si.name = c.sales_invoice_id AND si.docstatus = 1\nWHERE si.posting_date BETWEEN %(from_date)s AND %(to_date)s\nGROUP BY c.parent\nORDER BY MAX(si.posting_date) DESC, c.parent DESC;",
+  "roles": [
+    { "role": "System Manager" },
+    { "role": "Llantas CS Manager" },
+    { "role": "Llantas CS User" }
+  ]
+}

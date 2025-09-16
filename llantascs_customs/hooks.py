@@ -137,13 +137,11 @@ doctype_js = {"Sales Invoice" : "llantascs_customs/core_doctype.js"}
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Orden de Pago Comisiones": {
+		"before_cancel": "llantascs_customs.llantascs_customs.doctype.orden_de_pago_comisiones.orden_de_pago_comisiones.OrdenDePagoComisiones.before_cancel"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -244,6 +242,45 @@ override_whitelisted_methods = {
 
 # fixtures = ["Role"]
 
-fixtures = [{"dt":"Custom Field",
-             "filters":{"module":"Llantascs Customs"}}]
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": {
+            "module": "Llantascs Customs"
+        }
+    },
+    {"dt": "Custom Field",
+     "filters": {"module": "Llantascs Customs"}},
+
+    # Reportes: whitelist específica para evitar contaminación
+    {
+        "doctype": "Report",
+        "filters": {
+            "name": ["in", [
+                "Backlog Comisiones",
+                "Backlog Comisiones Completo",
+                "Backlog Comisiones GP nativo",
+                "Pagos OPC - Resumen",
+                "Pagos OPC - Por Sucursal",
+                "Mis Comisiones Backlog",
+                "Detalle OPC - Por Documento"
+            ]]
+        }
+    },
+    
+
+    # Workspace: Incluye AMBOS workspaces (Comisiones y Vendedores con charts)
+    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores"]]]},
+
+    # Roles custom para asegurar que existen en destino
+    {"doctype": "Role", "filters": [["role_name", "in", [
+        "Llantas CS Manager", "Llantas CS User"
+    ]]]},
+
+    # Print Format para reporte OPC detallado
+    {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
+
+    # Dashboard Chart para gráfico de comisiones por mes
+    {"doctype": "Dashboard Chart", "filters": [["name", "in", ["comisiones_pagadas_por_mes"]]]},
+]
 

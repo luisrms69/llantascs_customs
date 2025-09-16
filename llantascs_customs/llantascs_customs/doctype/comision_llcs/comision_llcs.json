@@ -41,7 +41,6 @@
   {
    "fieldname": "utilidad_transaccion",
    "fieldtype": "Currency",
-   "is_virtual": 1,
    "label": "Utilidad Transaccion"
   },
   {
