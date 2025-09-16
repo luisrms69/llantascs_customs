@@ -11,6 +11,26 @@
 
 ---
 
+## [v2.7.22] - 2025-09-16 - UTILIDAD DATA FIX: Corrección masiva datos históricos utilidad_transaccion 🔧
+
+### 🎯 TRABAJO DE SESIÓN: Fix crítico para reportes con utilidad en cero
+
+**Problema Abordado**: 4,608 registros con `utilidad_transaccion = 0` causando reportes vacíos post-migrate
+**Solución Aplicada**: Patch SQL idempotente poblando desde `ingreso - costo_de_ventas`
+**Resultado**: Chart "Margen Promedio" y reporte "Comisiones Detalle" funcionando correctamente
+
+### 🔧 Cambios Técnicos
+- **NUEVO**: `fix_utilidad_transaccion_historico_v2.py` - Patch población datos históricos
+- **ACTUALIZADO**: `patches.txt` - Registro para deployment automático
+- **DOCUMENTADO**: `docs/migrations.md` - Procedimientos migración y troubleshooting
+
+### ✅ Impacto
+- **4,608 registros corregidos** de utilidad_transaccion
+- **Reportes funcionales** post-migrate en todos los sitios
+- **Deployment automático** via migrate para sitios futuros
+
+---
+
 ## [v2.7.21] - 2025-09-15 - CLEANUP & PERMISSIONS: Limpieza reportes legacy + permisos por roles 🧹
 
 ### 🎯 TRABAJO DE SESIÓN: Limpieza completa sistema comisiones + seguridad
