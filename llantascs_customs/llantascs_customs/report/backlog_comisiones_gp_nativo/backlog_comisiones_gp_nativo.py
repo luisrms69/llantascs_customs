@@ -157,6 +157,7 @@ base_si as (
   from `tabSales Invoice` si
   where si.docstatus = 1
     and si.posting_date between %(from_date)s and %(to_date)s
+    and (si.custom_status_comisiones IS NULL OR si.custom_status_comisiones = 'Sin Enviar')
     and not exists (
       select 1
       from `tabClientes Sin Comision` ex
@@ -199,10 +200,12 @@ CASE
     WHERE sii.parent = si.name AND i.is_stock_item = 1
   ) THEN 1
   WHEN si.update_stock = 1 THEN 1
-  WHEN EXISTS (
-    SELECT 1 FROM `tabDelivery Note Item` dni
-    INNER JOIN `tabDelivery Note` dn ON dn.name = dni.parent AND dn.docstatus = 1
-    WHERE dni.against_sales_invoice = si.name
+  WHEN NOT EXISTS (
+    SELECT 1 FROM `tabSales Invoice Item` sii
+    INNER JOIN `tabItem` i ON i.name = sii.item_code
+    WHERE sii.parent = si.name
+      AND i.is_stock_item = 1
+      AND (IFNULL(sii.delivered_qty, 0) + IFNULL(sii.delivered_by_supplier, 0)) < sii.qty
   ) THEN 1
   ELSE 0
 END AS "Entrega OK:Check:80",
