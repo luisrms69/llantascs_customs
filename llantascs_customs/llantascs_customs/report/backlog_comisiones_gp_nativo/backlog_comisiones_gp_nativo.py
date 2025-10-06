@@ -157,6 +157,7 @@ base_si as (
   from `tabSales Invoice` si
   where si.docstatus = 1
     and si.posting_date between %(from_date)s and %(to_date)s
+    and (si.custom_status_comisiones IS NULL OR si.custom_status_comisiones = 'Sin Enviar')
     and not exists (
       select 1
       from `tabClientes Sin Comision` ex
