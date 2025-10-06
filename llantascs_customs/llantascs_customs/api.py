@@ -270,8 +270,8 @@ def _cost_from_gl_entries(si_name: str) -> float:
         FROM `tabGL Entry`
         WHERE voucher_type = 'Sales Invoice'
           AND voucher_no   = %s
-          AND account      IN %(accs)s
-    """, (si_name, {"accs": tuple(cogs_accounts)}), as_dict=True)
+          AND account      IN %s
+    """, (si_name, tuple(cogs_accounts)), as_dict=True)
 
     return abs(flt(row[0].cogs)) if row and row[0].cogs is not None else 0.0
 
@@ -462,20 +462,28 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
         """
         Consideramos 'entregada' si:
           - La factura hizo update_stock (ya descargó inventario), o
-          - Tiene Delivery Notes vinculados con qty entregada > 0
+          - TODOS los items de stock tienen entrega completa:
+            (delivered_qty + delivered_by_supplier) >= qty
         """
-        upd = frappe.db.get_value("Sales Invoice", si_name, "update_stock")
-        if upd:
+        si = frappe.get_doc("Sales Invoice", si_name)
+
+        # Si update_stock=1, ya descargó inventario automáticamente
+        if si.update_stock:
             return True
 
-        # ¿Tiene al menos un Delivery Note vinculado?
-        has_dn = frappe.db.sql("""
-            SELECT 1
-            FROM `tabSales Invoice Item`
-            WHERE parent = %s AND IFNULL(delivery_note, '') != ''
-            LIMIT 1
-        """, (si_name,))
-        return bool(has_dn)
+        # Validar entrega completa para items de stock
+        for item in si.items:
+            # Verificar si es item de stock (usar cached para performance)
+            item_doc = frappe.get_cached_doc("Item", item.item_code)
+            if not item_doc.is_stock_item:
+                continue  # Servicios no requieren entrega
+
+            # Validar entrega completa
+            total_delivered = flt(item.delivered_qty) + flt(item.delivered_by_supplier)
+            if total_delivered < item.qty:
+                return False  # Entrega incompleta
+
+        return True  # Todos los items de stock están completamente entregados
 
     # Post-filtrado por entrega según tipo de items
     out = []
