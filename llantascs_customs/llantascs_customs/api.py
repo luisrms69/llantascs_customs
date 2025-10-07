@@ -158,28 +158,58 @@ def _cost_from_po_for_dropship(si_name: str) -> float:
 def _cost_from_dn_items(si_name: str) -> float:
     """
     Costo por renglones con Delivery Note:
-    suma DN Item.base_net_rate * qty por cada (delivery_note, item_code) vinculado.
-    Si algún renglón no encuentra su DN item, ese renglón no suma.
+    Busca DN vinculados por dos rutas:
+    1. SI Item.delivery_note (link directo)
+    2. DN Item.against_sales_invoice (link inverso)
+    Deduplica por DN y suma COGS desde GL Entries de todos los DN únicos.
     """
-    rows = frappe.db.sql("""
-        SELECT delivery_note, item_code, qty
+    dn_set = set()
+
+    # Ruta 1: DN vinculados directamente en SI Item
+    rows_direct = frappe.db.sql("""
+        SELECT DISTINCT delivery_note
         FROM `tabSales Invoice Item`
         WHERE parent=%s AND IFNULL(delivery_note,'')!=''
     """, (si_name,), as_dict=True)
-    if not rows:
+
+    for r in rows_direct:
+        if r.delivery_note:
+            dn_set.add(r.delivery_note)
+
+    # Ruta 2: DN vinculados por against_sales_invoice
+    rows_inverse = frappe.db.sql("""
+        SELECT DISTINCT parent as delivery_note
+        FROM `tabDelivery Note Item`
+        WHERE against_sales_invoice = %s
+    """, (si_name,), as_dict=True)
+
+    for r in rows_inverse:
+        if r.delivery_note:
+            dn_set.add(r.delivery_note)
+
+    if not dn_set:
         return 0.0
 
+    # Obtener cuentas COGS
+    cogs_accounts = get_cogs_account()
+    if not cogs_accounts:
+        return 0.0
+
+    # Sumar COGS de GL Entries de todos los DN únicos
     total = 0.0
-    for r in rows:
-        cost_row = frappe.db.sql("""
-            SELECT (base_net_rate * %s) AS cost
-            FROM `tabDelivery Note Item`
-            WHERE parent=%s AND item_code=%s
-            ORDER BY idx
-            LIMIT 1
-        """, (flt(r.qty), r.delivery_note, r.item_code), as_dict=True)
-        if cost_row and cost_row[0].get("cost") is not None:
-            total += flt(cost_row[0].cost)
+    for dn_name in dn_set:
+        dn_cogs = frappe.db.sql("""
+            SELECT SUM(debit) AS cogs
+            FROM `tabGL Entry`
+            WHERE voucher_type = 'Delivery Note'
+              AND voucher_no = %s
+              AND account IN %s
+              AND is_cancelled = 0
+        """, (dn_name, tuple(cogs_accounts)), as_dict=True)
+
+        if dn_cogs and dn_cogs[0].cogs is not None:
+            total += flt(dn_cogs[0].cogs)
+
     return total
 
 

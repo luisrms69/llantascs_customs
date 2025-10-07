@@ -31,22 +31,26 @@
   {
    "fieldname": "ingreso",
    "fieldtype": "Currency",
-   "label": "Ingreso"
+   "label": "Ingreso",
+   "precision": "2"
   },
   {
    "fieldname": "costo_de_ventas",
    "fieldtype": "Currency",
-   "label": "Costo de Ventas"
+   "label": "Costo de Ventas",
+   "precision": "2"
   },
   {
    "fieldname": "utilidad_transaccion",
    "fieldtype": "Currency",
-   "label": "Utilidad Transaccion"
+   "label": "Utilidad Transaccion",
+   "precision": "2"
   },
   {
    "fieldname": "total_comision",
    "fieldtype": "Currency",
-   "label": "Total Comision"
+   "label": "Total Comision",
+   "precision": "2"
   },
   {
    "fieldname": "porcentaje_comision",
