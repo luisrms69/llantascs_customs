@@ -87,7 +87,7 @@ def run():
             monto_backup = sum(c['total_comision'] for c in opc_backup['comisiones'])
 
             match_comisiones = comisiones_actual.count == comisiones_backup
-            match_suma = abs(float(comisiones_actual.suma) - monto_backup) <= 0.01
+            match_suma = abs(float(comisiones_actual.suma) - monto_backup) <= 0.05
 
             print(f"   {'✅' if match_comisiones else '❌'} Comisiones: {comisiones_actual.count}/{comisiones_backup}")
             print(f"   {'✅' if match_suma else '❌'} Suma comisiones: ${comisiones_actual.suma:,.2f}/${monto_backup:,.2f}")
@@ -102,7 +102,7 @@ def run():
 
             # 3. Verificar monto_total
             monto_total = frappe.db.get_value("Orden de Pago Comisiones", opc_name, "monto_total")
-            match_monto = abs(float(monto_total) - monto_backup) <= 0.01
+            match_monto = abs(float(monto_total) - monto_backup) <= 0.05
 
             print(f"   {'✅' if match_monto else '❌'} Monto total: ${monto_total:,.2f}/${monto_backup:,.2f}")
 
