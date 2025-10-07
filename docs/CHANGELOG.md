@@ -11,6 +11,100 @@
 
 ---
 
+## [v2.8.0] - 2025-10-07 - COGS RESOLVER FIX: Corrección cálculo costos DN con link inverso + Migración 9 OPC históricas 🔧
+
+### 🎯 TRABAJO DE SESIÓN: Fix crítico resolver COGS + Migración OPC pendientes
+
+**Problema Abordado**:
+- Resolver COGS no encontraba DN cuando `SI Item.delivery_note` está vacío (link unidireccional)
+- 9 OPC históricas en draft sin `sucursales_multi` (campo requerido), pagadas pero no validadas
+
+**Solución Aplicada**:
+1. Resolver COGS ahora busca DN por ambas rutas (directo + inverso)
+2. Scripts de migración one-off para restaurar y validar 9 OPC usando backup SQL
+
+**Resultado**:
+- 17 facturas corregidas de costo $0 → costo real ($1,030,396.29)
+- 100% match con ERPNext GL Entries
+- 9 OPC migradas exitosamente (147 comisiones, $72,885.97)
+
+### 🔧 Cambios Técnicos - Resolver COGS
+
+**ACTUALIZADO**: `llantascs_customs/api.py`
+- `_cost_from_dn_items()`: Busca DN por dos rutas:
+  * **Ruta 1**: `SI Item.delivery_note` (link directo - flujo normal)
+  * **Ruta 2**: `DN Item.against_sales_invoice` (link inverso - DN creado después)
+- Deduplica DN para evitar doble conteo
+- Obtiene COGS desde GL Entries (no `base_net_rate` que es precio de venta)
+- Soporta múltiples DN por SI (entregas parciales)
+
+**ACTUALIZADO**: `llantascs_customs/doctype/comision_llcs/comision_llcs.json`
+- Campos Currency ahora con `precision: 2` para mostrar solo 2 decimales:
+  * `ingreso`, `costo_de_ventas`, `utilidad_transaccion`, `total_comision`
+
+### 🔧 Scripts Migración 9 OPC (one_offs)
+
+**NUEVOS SCRIPTS**:
+- `validar_backup.py` - Validación estructura backup OPC
+- `restaurar_opc_completo.py` - Restauración sucursales + comisiones + monto vía SQL bypass
+- `marcar_sales_invoices.py` - Marcado correcto SI como "Enviado" + limpieza adicionales
+- `validar_opc_final.py` - Validación OPC (docstatus 0→1) vía SQL bypass
+- `verificacion_final_completa.py` - Reporte final con verificación completa
+
+**DATOS CRÍTICOS**:
+- `opc_backup.json` - Backup autorizado de 9 OPC con datos originales
+
+**SCRIPTS VERIFICACIÓN**:
+- `verificar_costos_vs_gl.py` - Verificación resolver vs GL Entries ERPNext
+- `comparacion_17_facturas.py` - Comparación detallada 17 facturas corregidas
+- `analizar_25_facturas_costo_cero.py` - Análisis facturas problemáticas en OPC-08552
+
+### ✅ Impacto Resolver COGS
+
+**Facturas Corregidas**: 17 facturas en OPC-08552
+- **Antes**: COGS = $0 (resolver no encontraba DN)
+- **Después**: COGS real desde GL Entries
+- **Total corregido**: $1,030,396.29
+- **Verificación**: 100% match con ERPNext
+
+**Ejemplos**:
+- ACC-SINV-2025-03905: $0 → $362,893.69 (DN: MAT-DN-2025-00291)
+- ACC-SINV-2025-05650: $0 → $133,919.66 (DN: MAT-DN-2025-00676, MAT-DN-2025-00677)
+- ACC-SINV-2025-05770: $0 → $49,584.63 (DN: MAT-DN-2025-00664, MAT-DN-2025-00624)
+
+### ✅ Impacto Migración 9 OPC
+
+**OPC Migradas**: 9 OPC históricas (2025-09-30)
+- Total comisiones: 147
+- Monto total: $72,885.97
+- Todas validadas exitosamente (docstatus=1)
+- Sales Invoices: 147/147 correctamente marcadas como "Enviado"
+
+**OPC Migradas**:
+- COMISIONES-2025-09-30-08308: 19 comisiones, $3,904.97
+- COMISIONES-2025-09-30-08309: 21 comisiones, $3,651.63
+- COMISIONES-2025-09-30-08310: 33 comisiones, $26,261.72
+- COMISIONES-2025-09-30-08311: 6 comisiones, $7,008.53
+- COMISIONES-2025-09-30-08312: 8 comisiones, $3,152.56
+- COMISIONES-2025-09-30-08313: 13 comisiones, $3,500.98
+- COMISIONES-2025-09-30-08314: 15 comisiones, $11,049.06
+- COMISIONES-2025-09-30-08315: 5 comisiones, $10,086.86
+- COMISIONES-2025-09-30-08316: 27 comisiones, $4,269.67
+
+### 📋 Deployment
+
+**Staging/Producción**:
+1. Aplicar código: `git pull` + `bench migrate`
+2. Ejecutar scripts migración OPC (solo si hay OPC pendientes):
+   - Validar backup → Restaurar → Marcar SI → Validar → Verificar
+3. Verificar resolver COGS con `verificar_costos_vs_gl.py`
+
+**Validación**:
+- Crear nueva OPC y verificar que facturas con DN muestren COGS correcto
+- Verificar campos Currency muestran solo 2 decimales
+
+---
+
 ## [v2.7.22] - 2025-09-16 - UTILIDAD DATA FIX: Corrección masiva datos históricos utilidad_transaccion 🔧
 
 ### 🎯 TRABAJO DE SESIÓN: Fix crítico para reportes con utilidad en cero
