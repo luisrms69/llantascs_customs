@@ -290,8 +290,10 @@ fixtures = [
         "chart_dg_gp_by_branch_12m",
         "chart_op_sales_by_branch_12m",
         "chart_op_gp_by_branch_12m",
+        "chart_op_warehouse_stock_value",
         "chart_cfo_gp_by_branch_12m",
         "chart_cfo_sales_trend_12m",
+        "chart_cfo_purchase_order_trends_12m",
         "chart_sucursal_sales_12m",
         "chart_sucursal_gp_12m",
         "chart_sucursal_stock_by_group"
@@ -315,7 +317,9 @@ fixtures = [
         "Compras Corporativas Mes",
         "Cartera Vencida Corporativa",
         "Cuentas por Pagar Pendientes",
-        "Clientes Nuevos del Mes"
+        "Clientes Nuevos del Mes",
+        "Recepciones Pendientes Corporativo",
+        "Órdenes Compra Pendientes Recibir"
     ]]]},
 ]
 

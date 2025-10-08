@@ -148,12 +148,14 @@
     "chart_type": "Report",
     "report_name": "Sales Analytics",
     "type": "Bar",
+    "use_report_chart": 1,
     "time_interval": "Monthly",
     "timeseries": 1,
     "group_by_type": "Group By",
     "group_by_based_on": "branch",
     "is_stacked": 1,
-    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\",\"group_by\":\"Month\",\"docstatus\":1}",
+    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"group_by\":\"Month\",\"docstatus\":1}",
+    "dynamic_filters_json": "{\"from_date\":\"frappe.utils.add_days(frappe.utils.nowdate(), -365)\",\"to_date\":\"frappe.utils.nowdate()\"}",
     "is_public": 1
   },
   {
@@ -163,12 +165,14 @@
     "chart_type": "Report",
     "report_name": "Gross Profit",
     "type": "Line",
+    "use_report_chart": 1,
     "time_interval": "Monthly",
     "timeseries": 1,
     "group_by_type": "Group By",
     "group_by_based_on": "branch",
     "is_stacked": 0,
-    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\",\"docstatus\":1}",
+    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"docstatus\":1}",
+    "dynamic_filters_json": "{\"from_date\":\"frappe.utils.add_days(frappe.utils.nowdate(), -365)\",\"to_date\":\"frappe.utils.nowdate()\"}",
     "is_public": 1
   },
   {
@@ -265,6 +269,31 @@
     "group_by_based_on": "item_group",
     "is_stacked": 0,
     "filters_json": "{\"company\":\"Llantas de Calidad Star\"}",
+    "is_public": 1
+  },
+  {
+    "doctype": "Dashboard Chart",
+    "name": "chart_op_warehouse_stock_value",
+    "chart_name": "OP | Valor Existencias por Almacén",
+    "chart_type": "Report",
+    "report_name": "Warehouse Wise Stock Balance",
+    "type": "Bar",
+    "timeseries": 0,
+    "group_by_type": "Group By",
+    "group_by_based_on": "warehouse",
+    "filters_json": "{\"company\":\"Llantas de Calidad Star\"}",
+    "is_public": 1
+  },
+  {
+    "doctype": "Dashboard Chart",
+    "name": "chart_cfo_purchase_order_trends_12m",
+    "chart_name": "CFO | Tendencia Órdenes Compra (12M)",
+    "chart_type": "Report",
+    "report_name": "Purchase Order Trends",
+    "type": "Line",
+    "time_interval": "Monthly",
+    "timeseries": 1,
+    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\"}",
     "is_public": 1
   }
 ]
