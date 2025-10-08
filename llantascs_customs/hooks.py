@@ -319,7 +319,17 @@ fixtures = [
         "Cuentas por Pagar Pendientes",
         "Clientes Nuevos del Mes",
         "Recepciones Pendientes Corporativo",
-        "Órdenes Compra Pendientes Recibir"
+        "Órdenes Compra Pendientes Recibir",
+        "Ventas Corporativas Mes Anterior",
+        "Promedio Ticket Mes",
+        "Entregas del Mes",
+        "Devoluciones de Entrega Mes",
+        "Devoluciones de Venta Mes",
+        "Cobros del Mes",
+        "Pagos del Mes",
+        "Facturas Venta Mes",
+        "Facturas Compra Mes",
+        "Valor Total Inventario"
     ]]]},
 ]
 

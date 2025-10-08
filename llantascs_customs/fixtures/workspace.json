@@ -222,9 +222,16 @@
     "parent": "Direccion General",
     "parentfield": "charts",
     "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "Accounts Receivable Ageing",
+    "label": "Antigüedad Cuentas por Cobrar",
+    "parent": "Direccion General",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
    }
   ],
-  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Principales</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes\",\"col\":6}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cartera Vencida\",\"col\":6}},{\"id\":\"h-charts\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis Temporal</span>\",\"col\":12}},{\"id\":\"chart-0\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Estado de Resultados\",\"col\":12}},{\"id\":\"h-reports-finanzas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Finanzas</span>\",\"col\":12}},{\"id\":\"sc-fin-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Estado de Resultados\",\"col\":6}},{\"id\":\"sc-fin-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance General\",\"col\":6}},{\"id\":\"h-reports-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-ven-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas\",\"col\":4}},{\"id\":\"sc-ven-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto\",\"col\":4}},{\"id\":\"sc-ven-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Transacciones Vendedor\",\"col\":4}},{\"id\":\"sc-ven-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Facturas Venta\",\"col\":4}},{\"id\":\"h-reports-ar\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-ar-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar\",\"col\":6}},{\"id\":\"sc-ar-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Cobrar\",\"col\":6}},{\"id\":\"h-reports-ap\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Pagar</span>\",\"col\":12}},{\"id\":\"sc-ap-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Pagar\",\"col\":6}},{\"id\":\"sc-ap-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Pagar\",\"col\":6}}]",
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Principales</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes\",\"col\":4}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cartera Vencida\",\"col\":4}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas Corporativas Mes Anterior\",\"col\":4}},{\"id\":\"card-4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Promedio Ticket Mes\",\"col\":6}},{\"id\":\"card-5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Clientes Nuevos del Mes\",\"col\":6}},{\"id\":\"h-charts\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis Temporal</span>\",\"col\":12}},{\"id\":\"chart-0\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Estado de Resultados\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Antigüedad Cuentas por Cobrar\",\"col\":12}},{\"id\":\"h-reports-finanzas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Finanzas</span>\",\"col\":12}},{\"id\":\"sc-fin-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Estado de Resultados\",\"col\":6}},{\"id\":\"sc-fin-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance General\",\"col\":6}},{\"id\":\"h-reports-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-ven-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas\",\"col\":4}},{\"id\":\"sc-ven-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto\",\"col\":4}},{\"id\":\"sc-ven-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Transacciones Vendedor\",\"col\":4}},{\"id\":\"sc-ven-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Facturas Venta\",\"col\":4}},{\"id\":\"h-reports-ar\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-ar-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar\",\"col\":6}},{\"id\":\"sc-ar-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Cobrar\",\"col\":6}},{\"id\":\"h-reports-ap\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Pagar</span>\",\"col\":12}},{\"id\":\"sc-ap-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Pagar\",\"col\":6}},{\"id\":\"sc-ap-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Pagar\",\"col\":6}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -246,6 +253,24 @@
    },
    {
     "number_card_name": "Cartera Vencida",
+    "parent": "Direccion General",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Ventas Corporativas Mes Anterior",
+    "parent": "Direccion General",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Promedio Ticket Mes",
+    "parent": "Direccion General",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Clientes Nuevos del Mes",
     "parent": "Direccion General",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
@@ -533,7 +558,7 @@
     "parenttype": "Workspace"
    }
   ],
-  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Operativos</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes OP\",\"col\":6}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Órdenes Compra Pendientes Recibir\",\"col\":6}},{\"id\":\"h-charts-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Ventas</span>\",\"col\":12}},{\"id\":\"chart-0\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Ventas\",\"col\":12}},{\"id\":\"h-inventarios-chart\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Valor de Inventarios</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Inventario por Sucursal\",\"col\":12}},{\"id\":\"h-compras-chart\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tendencias de Compras</span>\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Recibos de Mercancía (Compra)\",\"col\":12}},{\"id\":\"h-inventarios\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Inventarios</span>\",\"col\":12}},{\"id\":\"sc-inv-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Inventarios\",\"col\":3}},{\"id\":\"sc-inv-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mayor de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inventario Proyectado\",\"col\":3}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-ven-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas OP\",\"col\":3}},{\"id\":\"sc-ven-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto OP\",\"col\":3}},{\"id\":\"sc-ven-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Ventas\",\"col\":3}},{\"id\":\"sc-ven-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto\",\"col\":3}},{\"id\":\"h-cobranza\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-ar-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar OP\",\"col\":6}},{\"id\":\"sc-ar-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cobros\",\"col\":6}},{\"id\":\"h-tendencias-sc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tendencias y Cumplimiento</span>\",\"col\":12}},{\"id\":\"sc-ten-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Entregas\",\"col\":6}},{\"id\":\"sc-ten-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Recepciones\",\"col\":6}}]",
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Operativos</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes OP\",\"col\":4}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Órdenes Compra Pendientes Recibir\",\"col\":4}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Valor Total Inventario\",\"col\":4}},{\"id\":\"card-4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Entregas del Mes\",\"col\":3}},{\"id\":\"card-5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Devoluciones de Entrega Mes\",\"col\":3}},{\"id\":\"card-6\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Devoluciones de Venta Mes\",\"col\":3}},{\"id\":\"h-charts-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Ventas</span>\",\"col\":12}},{\"id\":\"chart-0\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Ventas\",\"col\":12}},{\"id\":\"h-inventarios-chart\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Valor de Inventarios</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Inventario por Sucursal\",\"col\":12}},{\"id\":\"h-compras-chart\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tendencias de Compras</span>\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Recibos de Mercancía (Compra)\",\"col\":12}},{\"id\":\"h-inventarios\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Inventarios</span>\",\"col\":12}},{\"id\":\"sc-inv-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Inventarios\",\"col\":3}},{\"id\":\"sc-inv-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mayor de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inventario Proyectado\",\"col\":3}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-ven-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas OP\",\"col\":3}},{\"id\":\"sc-ven-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto OP\",\"col\":3}},{\"id\":\"sc-ven-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Ventas\",\"col\":3}},{\"id\":\"sc-ven-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto\",\"col\":3}},{\"id\":\"h-cobranza\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-ar-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar OP\",\"col\":6}},{\"id\":\"sc-ar-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cobros\",\"col\":6}},{\"id\":\"h-tendencias-sc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tendencias y Cumplimiento</span>\",\"col\":12}},{\"id\":\"sc-ten-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Entregas\",\"col\":6}},{\"id\":\"sc-ten-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Recepciones\",\"col\":6}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -555,6 +580,30 @@
    },
    {
     "number_card_name": "Órdenes Compra Pendientes Recibir",
+    "parent": "Direccion Operativa",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Valor Total Inventario",
+    "parent": "Direccion Operativa",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Entregas del Mes",
+    "parent": "Direccion Operativa",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Devoluciones de Entrega Mes",
+    "parent": "Direccion Operativa",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Devoluciones de Venta Mes",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
@@ -797,9 +846,16 @@
     "parent": "Direccion Financiera",
     "parentfield": "charts",
     "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "Incoming Bills (Purchase Invoice)",
+    "label": "Compras",
+    "parent": "Direccion Financiera",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
    }
   ],
-  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Financieros</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes CFO\",\"col\":3}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Compras del Mes CFO\",\"col\":3}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cartera Vencida CFO\",\"col\":3}},{\"id\":\"card-4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cuentas por Pagar Vencidas\",\"col\":3}},{\"id\":\"card-5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Recepciones Pendientes\",\"col\":12}},{\"id\":\"h-charts-rentabilidad\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Rentabilidad</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Estado de Resultados\",\"col\":12}},{\"id\":\"chart-1b\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Ventas\",\"col\":12}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Ventas</span>\",\"col\":12}},{\"id\":\"sc-rent-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto CFO\",\"col\":3}},{\"id\":\"sc-rent-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto CFO\",\"col\":3}},{\"id\":\"sc-rent-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Ventas por Cliente\",\"col\":3}},{\"id\":\"sc-rent-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas CFO\",\"col\":3}},{\"id\":\"h-cartera\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Cartera</span>\",\"col\":12}},{\"id\":\"sc-car-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar CFO\",\"col\":3}},{\"id\":\"sc-car-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Cobrar CFO\",\"col\":3}},{\"id\":\"sc-car-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Pagar CFO\",\"col\":3}},{\"id\":\"sc-car-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Pagar CFO\",\"col\":3}},{\"id\":\"h-estados-fin\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Estados Financieros</span>\",\"col\":12}},{\"id\":\"sc-ef-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Estado de Resultados CFO\",\"col\":3}},{\"id\":\"sc-ef-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance General CFO\",\"col\":3}},{\"id\":\"sc-ef-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balanza de Comprobación\",\"col\":3}},{\"id\":\"sc-ef-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Libro Mayor\",\"col\":3}},{\"id\":\"h-compras\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Compras</span>\",\"col\":12}},{\"id\":\"sc-comp-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Compras\",\"col\":4}},{\"id\":\"sc-comp-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Historial Compras por Producto\",\"col\":4}},{\"id\":\"sc-comp-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Compras\",\"col\":4}}]",
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Financieros</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes CFO\",\"col\":3}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Compras del Mes CFO\",\"col\":3}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cartera Vencida CFO\",\"col\":3}},{\"id\":\"card-4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cuentas por Pagar Vencidas\",\"col\":3}},{\"id\":\"card-5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Recepciones Pendientes\",\"col\":3}},{\"id\":\"card-6\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cobros del Mes\",\"col\":3}},{\"id\":\"card-7\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pagos del Mes\",\"col\":3}},{\"id\":\"card-8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Facturas Venta Mes\",\"col\":3}},{\"id\":\"card-9\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Facturas Compra Mes\",\"col\":3}},{\"id\":\"h-charts-rentabilidad\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Rentabilidad</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Estado de Resultados\",\"col\":12}},{\"id\":\"chart-1b\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Ventas\",\"col\":12}},{\"id\":\"chart-1c\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Compras\",\"col\":12}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Ventas</span>\",\"col\":12}},{\"id\":\"sc-rent-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto CFO\",\"col\":3}},{\"id\":\"sc-rent-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto CFO\",\"col\":3}},{\"id\":\"sc-rent-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Ventas por Cliente\",\"col\":3}},{\"id\":\"sc-rent-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas CFO\",\"col\":3}},{\"id\":\"h-cartera\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Cartera</span>\",\"col\":12}},{\"id\":\"sc-car-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar CFO\",\"col\":3}},{\"id\":\"sc-car-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Cobrar CFO\",\"col\":3}},{\"id\":\"sc-car-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Pagar CFO\",\"col\":3}},{\"id\":\"sc-car-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cuentas por Pagar CFO\",\"col\":3}},{\"id\":\"h-estados-fin\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Estados Financieros</span>\",\"col\":12}},{\"id\":\"sc-ef-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Estado de Resultados CFO\",\"col\":3}},{\"id\":\"sc-ef-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance General CFO\",\"col\":3}},{\"id\":\"sc-ef-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balanza de Comprobación\",\"col\":3}},{\"id\":\"sc-ef-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Libro Mayor\",\"col\":3}},{\"id\":\"h-compras\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Compras</span>\",\"col\":12}},{\"id\":\"sc-comp-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Compras\",\"col\":4}},{\"id\":\"sc-comp-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Historial Compras por Producto\",\"col\":4}},{\"id\":\"sc-comp-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Compras\",\"col\":4}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -839,6 +895,30 @@
    },
    {
     "number_card_name": "Recepciones Pendientes",
+    "parent": "Direccion Financiera",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Cobros del Mes",
+    "parent": "Direccion Financiera",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Pagos del Mes",
+    "parent": "Direccion Financiera",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Facturas Venta Mes",
+    "parent": "Direccion Financiera",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Facturas Compra Mes",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"

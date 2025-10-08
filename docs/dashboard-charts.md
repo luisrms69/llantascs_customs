@@ -800,8 +800,160 @@ Workspace raíz con KPIs corporativos consolidados (sin filtros de sucursal).
    - Usar nombres en español como primary key para display correcto
    - Ejemplo: `"name": "Ventas Corporativas Mes"` (no solo en `label`)
 
+## Metodología Comprobada: Reutilizar Charts Nativos de ERPNext (v2.12.0)
+
+### Problema Resuelto
+
+Anteriormente se intentaba crear charts con `dynamic_filters_json` que causaban errores "Invalid expression set in filter" en ERPNext v15.
+
+### Solución: Duplicar Charts Nativos Funcionales
+
+**Metodología que FUNCIONA**:
+
+1. **Identificar chart nativo que funciona** en otro workspace
+2. **Duplicar exactamente** la configuración del chart
+3. **Agregar referencias al nuevo workspace** sin modificar el chart original
+4. **Usar LABEL (no chart_name técnico)** en content JSON
+
+### Implementación Paso a Paso
+
+#### Paso 1: Encontrar Chart Funcional
+
+Buscar en workspace que ya tenga charts funcionando (ej: "Reportes Direccion"):
+
+```bash
+bench --site llantascs.dev execute "llantascs_customs.one_offs.investigar_reportes_direccion.run"
+```
+
+**Características de charts que SÍ funcionan**:
+- ✅ `chart_type: "Sum"` con `timespan: "Last Year"`
+- ✅ `chart_type: "Report"` con `filters_json` estáticos (sin `dynamic_filters_json`)
+- ✅ Charts nativos de ERPNext como "Accounts Receivable Ageing", "Profit and Loss"
+
+**Características de charts que NO funcionan en v15**:
+- ❌ `dynamic_filters_json` con expresiones Python
+- ❌ `filters_json` con tokens `auto:today-365`
+
+#### Paso 2: Duplicar en Workspace Fixture
+
+**Ejemplo Real - Accounts Receivable Ageing**:
+
+Original en "Reportes Direccion":
+```json
+{
+  "chart_name": "Accounts Receivable Ageing",
+  "label": "Cuentas por cobrar",
+  "parent": "Reportes Dirección"
+}
+```
+
+Duplicado en "Direccion General":
+```json
+{
+  "charts": [
+    {
+      "chart_name": "Accounts Receivable Ageing",
+      "label": "Antigüedad Cuentas por Cobrar",
+      "parent": "Direccion General",
+      "parentfield": "charts",
+      "parenttype": "Workspace"
+    }
+  ]
+}
+```
+
+**Ejemplo Real - Incoming Bills (Purchase Invoice)**:
+
+Chart nativo funcional:
+```json
+{
+  "chart_name": "Incoming Bills (Purchase Invoice)",
+  "label": "cuentas por pagar",
+  "parent": "Reportes Dirección"
+}
+```
+
+Duplicado en "Direccion Financiera":
+```json
+{
+  "charts": [
+    {
+      "chart_name": "Incoming Bills (Purchase Invoice)",
+      "label": "Compras",
+      "parent": "Direccion Financiera",
+      "parentfield": "charts",
+      "parenttype": "Workspace"
+    }
+  ]
+}
+```
+
+#### Paso 3: Actualizar Content JSON
+
+**CRÍTICO**: En el content JSON, usar el LABEL, NO el chart_name técnico:
+
+```json
+{
+  "content": "[{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Antigüedad Cuentas por Cobrar\",\"col\":12}}]"
+}
+```
+
+**NO usar**:
+```json
+// ❌ INCORRECTO
+{"chart_name":"Accounts Receivable Ageing"}
+```
+
+#### Paso 4: Ejecutar Migrate
+
+```bash
+bench --site llantascs.dev migrate
+```
+
+### Charts Implementados con Esta Metodología (2025-10-08)
+
+**Direccion General**:
+1. **Profit and Loss** → "Estado de Resultados"
+2. **Accounts Receivable Ageing** → "Antigüedad Cuentas por Cobrar" (NUEVO)
+
+**Direccion Financiera**:
+1. **Profit and Loss** → "Estado de Resultados"
+2. **Outgoing Bills (Sales Invoice)** → "Ventas"
+3. **Incoming Bills (Purchase Invoice)** → "Compras" (NUEVO)
+
+**Direccion Operativa**:
+1. **Outgoing Bills (Sales Invoice)** → "Ventas"
+2. **Warehouse wise Stock Value** → "Inventario por Sucursal"
+3. **Purchase Receipt Trends** → "Recibos de Mercancía (Compra)"
+
+### Ventajas de esta Metodología
+
+✅ **Sin errores de dynamic_filters_json**: Usa solo charts nativos comprobados
+✅ **Portable**: Mismo chart funciona en múltiples workspaces
+✅ **Fácil mantenimiento**: No requiere crear nuevos Dashboard Chart fixtures
+✅ **Compatible v15**: Solo usa funcionalidades completamente implementadas
+
+### Lecciones Aprendidas
+
+1. **NO crear nuevos Dashboard Charts con dynamic_filters_json**
+   - ERPNext v15 no los soporta completamente
+   - Causa "Invalid expression set in filter" en producción
+
+2. **SÍ reutilizar charts nativos funcionales**
+   - Ya están probados y validados
+   - Funcionan en todos los workspaces
+
+3. **Content JSON usa LABEL**
+   - Patrón: `{"chart_name": "LABEL", "col": 12}`
+   - NO usar chart_name técnico como "Accounts Receivable Ageing"
+   - SÍ usar label asignado como "Antigüedad Cuentas por Cobrar"
+
+4. **Un chart, múltiples workspaces**
+   - No es necesario duplicar Dashboard Chart DocType
+   - Solo agregar referencias en workspace fixtures
+
 ## Referencias
 
 - **Fixtures**: `/llantascs_customs/fixtures/`
 - **Workspace Analysis**: `/llantascs_customs/one_offs/complete_workspace_analysis.py`
-- **Documentation**: `docs/CHANGELOG.md` v2.7.2, v2.9.0, v2.10.0, v2.11.0 para detalles completos de mejoras
+- **Documentation**: `docs/CHANGELOG.md` v2.7.2, v2.9.0, v2.10.0, v2.11.0, v2.12.0 para detalles completos de mejoras
