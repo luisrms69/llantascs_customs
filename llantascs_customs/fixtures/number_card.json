@@ -202,5 +202,29 @@
     "filters_json": "[[\"Customer\",\"creation\",\"Timespan\",\"this month\",false]]",
     "is_public": 1,
     "color": "Purple"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Recepciones Pendientes Corporativo",
+    "label": "Recepciones Pendientes Corporativo",
+    "type": "Document Type",
+    "document_type": "Purchase Receipt",
+    "function": "Count",
+    "aggregate_function_based_on": "name",
+    "filters_json": "[[\"Purchase Receipt\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Purchase Receipt\",\"status\",\"=\",\"To Bill\",false],[\"Purchase Receipt\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Orange"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Órdenes Compra Pendientes Recibir",
+    "label": "Órdenes Compra Pendientes Recibir",
+    "type": "Document Type",
+    "document_type": "Purchase Order",
+    "function": "Count",
+    "aggregate_function_based_on": "name",
+    "filters_json": "[[\"Purchase Order\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Purchase Order\",\"status\",\"in\",[\"To Receive and Bill\",\"To Receive\"],false],[\"Purchase Order\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Blue"
   }
 ]
