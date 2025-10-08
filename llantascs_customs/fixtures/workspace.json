@@ -454,20 +454,51 @@
  },
  {
   "charts": [],
-  "content": "[]",
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Indicadores Corporativos</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas Corporativas Mes\",\"col\":3}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Compras Corporativas Mes\",\"col\":3}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cartera Vencida Corporativa\",\"col\":3}},{\"id\":\"card-4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cuentas por Pagar Pendientes\",\"col\":3}},{\"id\":\"card-5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Clientes Nuevos del Mes\",\"col\":12}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
   "for_user": null,
   "hide_custom": 0,
-  "icon": "folder-open",
+  "icon": "activity",
   "indicator_color": null,
   "is_hidden": 0,
   "label": "Cockpit",
   "links": [],
   "module": "",
   "name": "Cockpit",
-  "number_cards": [],
+  "number_cards": [
+   {
+    "number_card_name": "Ventas Corporativas Mes",
+    "parent": "Cockpit",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Compras Corporativas Mes",
+    "parent": "Cockpit",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Cartera Vencida Corporativa",
+    "parent": "Cockpit",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Cuentas por Pagar Pendientes",
+    "parent": "Cockpit",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Clientes Nuevos del Mes",
+    "parent": "Cockpit",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   }
+  ],
   "parent_page": null,
   "public": 1,
   "quick_lists": [],
@@ -502,7 +533,7 @@
     "parenttype": "Workspace"
    }
   ],
-  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Operativos</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes OP\",\"col\":6}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Entregas Pendientes Facturar\",\"col\":6}},{\"id\":\"h-charts\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis Temporal por Sucursal</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_op_sales_by_branch_12m\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_op_gp_by_branch_12m\",\"col\":12}},{\"id\":\"h-inventarios\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Inventarios</span>\",\"col\":12}},{\"id\":\"sc-inv-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Inventarios\",\"col\":3}},{\"id\":\"sc-inv-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Kardex Inventarios\",\"col\":3}},{\"id\":\"sc-inv-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inventario Proyectado\",\"col\":3}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-ven-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas OP\",\"col\":3}},{\"id\":\"sc-ven-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto OP\",\"col\":3}},{\"id\":\"sc-ven-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Ventas\",\"col\":3}},{\"id\":\"sc-ven-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto\",\"col\":3}},{\"id\":\"h-cobranza\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-ar-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar OP\",\"col\":6}},{\"id\":\"sc-ar-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cobros\",\"col\":6}},{\"id\":\"h-tendencias\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tendencias y Cumplimiento</span>\",\"col\":12}},{\"id\":\"sc-ten-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Entregas\",\"col\":4}},{\"id\":\"sc-ten-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Recepciones\",\"col\":4}},{\"id\":\"sc-ten-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis Órdenes Venta\",\"col\":4}}]",
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs Operativos</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes OP\",\"col\":6}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Entregas Pendientes Facturar\",\"col\":6}},{\"id\":\"h-charts\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis Temporal por Sucursal</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_op_sales_by_branch_12m\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_op_gp_by_branch_12m\",\"col\":12}},{\"id\":\"h-inventarios\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Inventarios</span>\",\"col\":12}},{\"id\":\"sc-inv-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Inventarios\",\"col\":3}},{\"id\":\"sc-inv-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mayor de Inventarios\",\"col\":3}},{\"id\":\"sc-inv-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inventario Proyectado\",\"col\":3}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-ven-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas OP\",\"col\":3}},{\"id\":\"sc-ven-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto OP\",\"col\":3}},{\"id\":\"sc-ven-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Ventas\",\"col\":3}},{\"id\":\"sc-ven-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto\",\"col\":3}},{\"id\":\"h-cobranza\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-ar-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar OP\",\"col\":6}},{\"id\":\"sc-ar-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cobros\",\"col\":6}},{\"id\":\"h-tendencias\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tendencias y Cumplimiento</span>\",\"col\":12}},{\"id\":\"sc-ten-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Entregas\",\"col\":4}},{\"id\":\"sc-ten-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Recepciones\",\"col\":4}},{\"id\":\"sc-ten-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis Órdenes Venta\",\"col\":4}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -583,7 +614,7 @@
     "format": null,
     "icon": null,
     "kanban_board": null,
-    "label": "Kardex Inventarios",
+    "label": "Mayor de Inventarios",
     "link_to": "Stock Ledger",
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
@@ -1095,6 +1126,217 @@
    }
   ],
   "title": "Direccion Financiera",
+  "type": "Module"
+ },
+ {
+  "charts": [
+   {
+    "chart_name": "chart_sucursal_sales_12m",
+    "label": "Ventas Mensuales (12M)",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "chart_sucursal_gp_12m",
+    "label": "Margen Mensual (12M)",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "chart_sucursal_stock_by_group",
+    "label": "Inventario por Familia",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   }
+  ],
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KPIs de Sucursal</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes Sucursal\",\"col\":4}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Recepciones por Facturar Sucursal\",\"col\":4}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Cartera Vencida Sucursal\",\"col\":4}},{\"id\":\"h-charts\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Análisis de Tendencias</span>\",\"col\":12}},{\"id\":\"chart-1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_sucursal_sales_12m\",\"col\":6}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_sucursal_gp_12m\",\"col\":6}},{\"id\":\"chart-3\",\"type\":\"chart\",\"data\":{\"chart_name\":\"chart_sucursal_stock_by_group\",\"col\":12}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen</span>\",\"col\":12}},{\"id\":\"sc-v-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas Sucursal\",\"col\":4}},{\"id\":\"sc-v-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto Sucursal\",\"col\":4}},{\"id\":\"sc-v-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tendencias Ventas Sucursal\",\"col\":4}},{\"id\":\"h-inventarios\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Inventarios</span>\",\"col\":12}},{\"id\":\"sc-inv-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance Inventarios\",\"col\":4}},{\"id\":\"sc-inv-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Inventarios\",\"col\":4}},{\"id\":\"sc-inv-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mayor de Inventarios\",\"col\":4}},{\"id\":\"h-cobranza\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Cobranza</span>\",\"col\":12}},{\"id\":\"sc-cob-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen CxC Sucursal\",\"col\":6}},{\"id\":\"sc-cob-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cobros Sucursal\",\"col\":6}}]",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": null,
+  "hide_custom": 0,
+  "icon": "branch",
+  "indicator_color": null,
+  "is_hidden": 0,
+  "label": "Gerente de Sucursal",
+  "links": [],
+  "module": "",
+  "name": "Gerente de Sucursal",
+  "number_cards": [
+   {
+    "number_card_name": "Ventas del Mes Sucursal",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Recepciones por Facturar Sucursal",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "number_card_name": "Cartera Vencida Sucursal",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   }
+  ],
+  "parent_page": "Cockpit",
+  "public": 1,
+  "quick_lists": [],
+  "restrict_to_domain": null,
+  "roles": [
+   {
+    "parent": "Gerente de Sucursal",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "System Manager"
+   }
+  ],
+  "sequence_id": 4.0,
+  "shortcuts": [
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Análisis de Ventas Sucursal",
+    "link_to": "Sales Analytics",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Margen Bruto Sucursal",
+    "link_to": "Gross Profit",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Tendencias Ventas Sucursal",
+    "link_to": "Sales Invoice Trends",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Balance Inventarios",
+    "link_to": "Stock Balance",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Antigüedad Inventarios",
+    "link_to": "Stock Ageing",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Mayor de Inventarios",
+    "link_to": "Stock Ledger",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Resumen CxC Sucursal",
+    "link_to": "Accounts Receivable Summary",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Antigüedad Cobros Sucursal",
+    "link_to": "Accounts Receivable",
+    "parent": "Gerente de Sucursal",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   }
+  ],
+  "title": "Gerente de Sucursal",
   "type": "Module"
  }
 ]

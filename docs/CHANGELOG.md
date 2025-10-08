@@ -11,6 +11,308 @@
 
 ---
 
+## [v2.11.0] - 2025-10-07 - COCKPIT Phase 1 COMPLETE: Gerente Sucursal + Cockpit Principal 🎯✅
+
+### 🎯 TRABAJO DE SESIÓN: Completar Cockpit Phase 1 con Gerente de Sucursal y Cockpit Principal
+
+**Problema Abordado**:
+- Necesidad de dashboard operativo para Gerentes de Sucursal con filtrado por sucursal
+- Workspace raíz Cockpit vacío sin KPIs consolidados corporativos
+- Nomenclatura inconsistente en reportes de inventarios ("Kardex" vs "Valoración" vs "Mayor")
+- Shortcuts innecesarios para empresa que no usa Sales Orders
+
+**Solución Aplicada**:
+1. **Gerente de Sucursal**: Workspace operativo con filtrado automático vía User Permissions (Branch)
+2. **Cockpit Principal**: Workspace raíz con 5 KPIs corporativos consolidados (100% nativos)
+3. Estandarización de nomenclatura: "Mayor de Inventarios" en todos los workspaces
+4. Eliminación de funcionalidades no utilizadas (Sales Order shortcuts)
+
+**Resultado**:
+- ✅ 5 workspaces Cockpit completos (raíz + 4 hijos)
+- ✅ 17 Number Cards funcionales (5 corporativas + 12 específicas)
+- ✅ 11 Dashboard Charts validados
+- ✅ Nomenclatura consistente en todos los workspaces
+- ✅ Cockpit Phase 1 100% completado
+
+### 🔧 Cambios Técnicos - Gerente de Sucursal
+
+**NUEVO**: Workspace "Gerente de Sucursal" (sequence_id: 4.0)
+- Parent: Cockpit
+- Icon: "branch"
+- **Filtrado automático**: User Permissions (Branch) - NO hardcoded
+- 3 Number Cards:
+  * **Ventas del Mes Sucursal**: `SUM(Sales Invoice.base_net_total)` mes actual
+  * **Recepciones por Facturar Sucursal**: `COUNT(Purchase Receipt)` status "To Bill"
+  * **Cartera Vencida Sucursal**: `SUM(Sales Invoice.outstanding_amount)` Overdue
+- 3 Dashboard Charts:
+  * **chart_sucursal_sales_12m**: Ventas Mensuales 12M (Sales Analytics, Bar, Monthly)
+  * **chart_sucursal_gp_12m**: Margen Mensual 12M (Gross Profit, Line, Monthly)
+  * **chart_sucursal_stock_by_group**: Inventario por Familia (Stock Balance, Bar, Group by item_group)
+- 8 Shortcuts organizados en 4 secciones:
+  * **Ventas y Margen (3)**: Análisis de Ventas Sucursal, Margen Bruto Sucursal, Tendencias Ventas Sucursal
+  * **Inventarios (3)**: Balance Inventarios, Antigüedad Inventarios, **Mayor de Inventarios**
+  * **Cobranza (2)**: Resumen CxC Sucursal, Antigüedad Cobros Sucursal
+
+### 🔧 Cambios Técnicos - Cockpit Principal (raíz)
+
+**ACTUALIZADO**: Workspace "Cockpit" - De vacío a panel ejecutivo
+- parent_page: null (raíz)
+- sequence_id: 1.0
+- Icon: **"activity"** (actualizado de "folder-open")
+- Content: Header "Indicadores Corporativos" + 5 Number Cards
+- Layout: 4 cards col:3 superior + 1 card col:12 ancho completo
+
+**5 Number Cards Corporativas** (100% nativas):
+- **Ventas Corporativas Mes** (Blue): `SUM(Sales Invoice.base_net_total)` mes actual, consolidado
+- **Compras Corporativas Mes** (Green): `SUM(Purchase Invoice.base_net_total)` mes actual, consolidado
+- **Cartera Vencida Corporativa** (Red): `SUM(Sales Invoice.outstanding_amount)` status Overdue, global
+- **Cuentas por Pagar Pendientes** (Orange): `SUM(Purchase Invoice.outstanding_amount)` >0, global
+- **Clientes Nuevos del Mes** (Purple): `COUNT(Customer)` creation mes actual
+
+Todos usan `type: "Document Type"` nativo, sin código custom ni cálculos compuestos.
+
+### 📝 Correcciones Aplicadas
+
+**Gerente de Sucursal**:
+- ❌ Eliminada Number Card "Entregas por Facturar Sucursal" (por solicitud usuario)
+- ❌ Eliminados shortcuts de Cumplimiento: "Análisis Órdenes de Venta" y "Tendencias Entregas" (empresa no usa Sales Orders)
+- ✅ Cambiado "Valoración por Producto" → **"Mayor de Inventarios"** (estandarización)
+- ✅ Análisis de Tendencias muestra 3 charts correctamente
+
+**Dirección Operativa**:
+- ✅ Actualizado shortcut "Kardex Inventarios" → **"Mayor de Inventarios"** (consistencia)
+- ✅ Actualizado content JSON para reflejar nuevo nombre
+
+**Nomenclatura Estandarizada**:
+- Todos los workspaces ahora usan "Mayor de Inventarios" para Stock Ledger report
+- Eliminada confusión entre "Kardex", "Valoración por Producto", "Mayor de Inventarios"
+
+### 🗂️ Archivos Modificados
+
+**`llantascs_customs/fixtures/number_card.json`**:
+- Agregadas 8 Number Cards: 3 Gerente Sucursal + 5 Cockpit Principal
+- Eliminada "Entregas por Facturar Sucursal"
+- Total actual: 17 Number Cards (5 corporativas + 3 DG + 2 OP + 4 CFO + 3 Sucursal)
+
+**`llantascs_customs/fixtures/dashboard_chart.json`**:
+- Agregados 3 charts para Gerente Sucursal
+- Total actual: 11 Dashboard Charts (5 DG/OP/CFO + 3 Sucursal + 3 Comisiones existentes)
+
+**`llantascs_customs/fixtures/workspace.json`**:
+- Agregado workspace completo "Gerente de Sucursal" (líneas 1100-1310, 210 líneas)
+- Actualizado workspace "Cockpit" con content JSON y 5 number_cards (líneas 455-518)
+- Actualizado shortcut en "Direccion Operativa": "Mayor de Inventarios" (content JSON)
+- Total: 5 workspaces activos
+
+**`llantascs_customs/hooks.py`**:
+- Actualizado comentario fixtures: "Cockpit Principal, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal"
+- Agregados 5 Number Cards corporativos a filtros
+- Agregado "Gerente de Sucursal" a filtro Workspace (línea 273)
+- Agregados 3 charts Gerente Sucursal a filtro Dashboard Chart (líneas 295-297)
+- Agregadas 3 Number Cards Gerente Sucursal a filtro Number Card
+
+### 📈 Estado Final del Cockpit Phase 1 - COMPLETO
+
+**Estructura Jerárquica Final**:
+```
+Cockpit (raíz) - Panel Ejecutivo
+├── 5 Number Cards corporativas consolidadas
+│
+├── Direccion General (sequence_id: 1.0) - Vista Estratégica
+│   ├── 3 Number Cards
+│   ├── 2 Dashboard Charts (ventas/margen por sucursal 12M)
+│   └── 10 Shortcuts (Finanzas, Ventas/Margen, AR, AP)
+│
+├── Direccion Operativa (sequence_id: 2.0) - Gestión Operaciones
+│   ├── 2 Number Cards
+│   ├── 2 Dashboard Charts (ventas/margen por sucursal 12M)
+│   └── 13 Shortcuts (Inventarios, Ventas, Cobranza, Tendencias)
+│
+├── Direccion Financiera (sequence_id: 3.0) - Análisis Financiero
+│   ├── 4 Number Cards
+│   ├── 2 Dashboard Charts (margen sucursal, tendencia ventas)
+│   └── 15 Shortcuts (Rentabilidad, Cartera, Estados Financieros, Compras)
+│
+└── Gerente de Sucursal (sequence_id: 4.0) - Dashboard Operativo por Sucursal
+    ├── 3 Number Cards
+    ├── 3 Dashboard Charts (ventas, margen, inventario por familia)
+    └── 8 Shortcuts (Ventas/Margen, Inventarios, Cobranza)
+    └── Filtrado automático vía User Permissions (Branch)
+```
+
+**Totales Cockpit Phase 1**:
+- ✅ **5 Workspaces**: 1 raíz + 4 hijos (DG, OP, CFO, Gerente Sucursal)
+- ✅ **17 Number Cards**: 5 corporativas + 12 específicas
+- ✅ **11 Dashboard Charts**: 8 ejecutivos + 3 operativos sucursal
+- ✅ **46 Shortcuts**: organizados por categoría y rol
+- ✅ **100% fixtures nativos**, 0% código custom
+- ✅ **Portable vía `bench migrate`**
+
+### 🎓 Lecciones Aprendidas Adicionales
+
+1. **User Permissions pattern**: Filtrado por Branch sin hardcodear en fixtures - reutilizable para todas las sucursales
+2. **Primary key naming**: Usar nombres en español como `name` (no solo `label`) para display correcto
+3. **Nomenclatura consistente**: Estandarizar nombres de reportes en todos los workspaces (ej: "Mayor de Inventarios")
+4. **Validar uso real**: Eliminar shortcuts para funcionalidades no utilizadas (Sales Orders)
+5. **Content JSON structure**: Requiere `id`, `col` en todos los elementos para layout correcto
+
+### 🚀 Deployment
+
+```bash
+# Aplicar cambios (ya ejecutado)
+bench --site llantascs.dev migrate
+bench --site llantascs.dev clear-cache
+
+# Verificar workspaces creados
+# UI: Cockpit (raíz) → 5 Number Cards corporativas
+# UI: Cockpit → Ver 4 child workspaces (DG, OP, CFO, Gerente Sucursal)
+# Validar: Charts muestran datos, shortcuts abren reportes
+# Validar: User Permissions filtran correctamente por sucursal en Gerente Sucursal
+```
+
+**Cockpit Phase 1 - STATUS: ✅ COMPLETE**
+
+---
+
+## [v2.10.0] - 2025-10-07 - COCKPIT Phase 1 Complete: 3 Executive Workspaces (DG, OP, CFO) 🎯
+
+### 🎯 TRABAJO DE SESIÓN: Completar Cockpit Phase 1 con Dirección Operativa y Dirección Financiera
+
+**Problema Abordado**:
+- Necesidad de workspaces ejecutivos para Director Operativo (OP) y Director Financiero (CFO)
+- Charts propuestos inicialmente no compatibles con ERPNext v15 (P&L, AR/AP Summary)
+- Reportes tipo "Statement" no soportan Dashboard Charts nativamente
+
+**Solución Aplicada**:
+1. **Dirección Operativa**: Workspace operacional enfocado en inventarios, ventas y cobranza por sucursal
+2. **Dirección Financiera**: Workspace financiero con análisis de rentabilidad y cartera (charts corregidos)
+3. Validación técnica de compatibilidad de reportes con Dashboard Charts
+4. Uso de shortcuts directos para reportes Statement (AR/AP Summary)
+
+**Resultado**:
+- ✅ 3 workspaces ejecutivos completos bajo parent "Cockpit"
+- ✅ 9 Number Cards funcionales (3 por workspace)
+- ✅ 8 Dashboard Charts validados y funcionales
+- ✅ 37 shortcuts organizados por categoría
+
+### 🔧 Cambios Técnicos - Dirección Operativa
+
+**NUEVO**: Workspace "Direccion Operativa" (sequence_id: 2.0)
+- Parent: Cockpit
+- 2 Number Cards:
+  * **Ventas del Mes OP**: `SUM(Sales Invoice.base_net_total)` mes actual
+  * **Entregas Pendientes Facturar**: `COUNT(Delivery Note)` status "To Bill"
+- 2 Dashboard Charts:
+  * **chart_op_sales_by_branch_12m**: Ventas por sucursal (Sales Analytics, Bar, 12M)
+  * **chart_op_gp_by_branch_12m**: Margen por sucursal (Gross Profit, Line, 12M)
+- 13 Shortcuts organizados en 4 secciones:
+  * **Inventarios (4)**: Stock Balance, Stock Ageing, Stock Ledger, Stock Projected Qty
+  * **Ventas y Margen (4)**: Sales Analytics, Gross Profit, Sales Invoice Trends, Item-wise Sales Register
+  * **Cuentas por Cobrar (2)**: Accounts Receivable Summary, Accounts Receivable
+  * **Tendencias y Cumplimiento (3)**: Delivery Note Trends, Purchase Receipt Trends, Sales Order Analysis
+
+### 🔧 Cambios Técnicos - Dirección Financiera
+
+**NUEVO**: Workspace "Direccion Financiera" (sequence_id: 3.0)
+- Parent: Cockpit
+- 4 Number Cards:
+  * **Ventas del Mes CFO**: `SUM(Sales Invoice.base_net_total)` mes actual
+  * **Compras del Mes CFO**: `SUM(Purchase Invoice.base_net_total)` mes actual
+  * **Cartera Vencida CFO**: `SUM(Sales Invoice.outstanding_amount)` Overdue
+  * **Cuentas por Pagar Vencidas**: `SUM(Purchase Invoice.outstanding_amount)` >0
+- 2 Dashboard Charts (corregidos, validados funcionales):
+  * **chart_cfo_gp_by_branch_12m**: Margen por sucursal (Gross Profit, Line, 12M)
+  * **chart_cfo_sales_trend_12m**: Tendencia ventas (Sales Analytics, Line, 12M)
+- 15 Shortcuts organizados en 5 secciones:
+  * **Análisis de Rentabilidad (4)**: Gross Profit, Item-wise Sales Register, Customer-wise Sales Summary, Sales Analytics
+  * **Análisis de Cartera (4)**: AR Summary, AR detailed, AP Summary, AP detailed
+  * **Estados Financieros (4)**: P&L Statement, Balance Sheet, Trial Balance, General Ledger
+  * **Análisis de Compras (3)**: Purchase Analytics, Item-wise Purchase History, Purchase Invoice Trends
+
+### 📊 Correcciones Técnicas Importantes - CFO
+
+**Charts ELIMINADOS** (incompatibles con ERPNext v15):
+- ❌ `chart_cfo_pnl_by_month` - Profit & Loss Statement no soporta Dashboard Charts (tipo Statement jerárquico)
+- ❌ `chart_cfo_ar_by_branch` - Accounts Receivable Summary no soporta charts (tipo Statement con buckets)
+- ❌ `chart_cfo_ap_by_branch` - Accounts Payable Summary no soporta charts (tipo Statement con buckets)
+
+**Charts AGREGADOS** (validados funcionales):
+- ✅ `chart_cfo_sales_trend_12m` - Sales Analytics, Line, Monthly timeseries
+
+**Aprendizaje Clave**:
+- Reportes tipo "Statement" (P&L, Balance Sheet, AR/AP Summary) → **NO grafican**, usar shortcuts
+- Reportes tipo "Analytics" (Sales Analytics, Purchase Analytics, Gross Profit) → **SÍ grafican**
+- Usar shortcuts directos para reportes Statement en lugar de intentar forzar charts
+
+### 🗂️ Archivos Modificados
+
+**`llantascs_customs/fixtures/workspace.json`**:
+- Agregado workspace "Direccion Operativa" (284 líneas, 13 shortcuts)
+- Agregado workspace "Direccion Financiera" (334 líneas, 15 shortcuts, correcciones aplicadas)
+- Estructura parent-child: Cockpit → [Direccion General, Direccion Operativa, Direccion Financiera]
+
+**`llantascs_customs/fixtures/number_card.json`**:
+- Agregados 6 Number Cards: 2 para OP, 4 para CFO
+- Total: 9 Number Cards activos (3 DG + 2 OP + 4 CFO)
+
+**`llantascs_customs/fixtures/dashboard_chart.json`**:
+- Agregados 4 charts: 2 para OP, 2 para CFO
+- Eliminados 3 charts incompatibles CFO (P&L, AR, AP)
+- Total: 8 Dashboard Charts funcionales
+
+**`llantascs_customs/hooks.py`**:
+- Actualizado fixture de Workspace: agregados "Direccion Operativa" y "Direccion Financiera"
+- Actualizado fixture Dashboard Chart: agregados chart_op_*, chart_cfo_* (solo los funcionales)
+- Actualizado fixture Number Card: agregadas todas las cards OP y CFO
+
+### 📈 Estado Final del Cockpit
+
+**Estructura Jerárquica**:
+```
+Cockpit (parent)
+├── Direccion General (sequence_id: 1.0)
+│   ├── 3 Number Cards
+│   ├── 2 Dashboard Charts
+│   └── 10 Shortcuts (Finanzas, Ventas/Margen, AR, AP)
+├── Direccion Operativa (sequence_id: 2.0)
+│   ├── 2 Number Cards
+│   ├── 2 Dashboard Charts
+│   └── 13 Shortcuts (Inventarios, Ventas, Cobranza, Tendencias)
+└── Direccion Financiera (sequence_id: 3.0)
+    ├── 4 Number Cards
+    ├── 2 Dashboard Charts (corregidos)
+    └── 15 Shortcuts (Rentabilidad, Cartera, Estados Financieros, Compras)
+```
+
+**Totales**:
+- 3 Workspaces ejecutivos
+- 9 Number Cards funcionales
+- 8 Dashboard Charts validados
+- 38 Shortcuts a reportes nativos ERPNext
+- 100% fixtures, 0% código custom
+- Portable vía `bench migrate`
+
+### 🎓 Lecciones Aprendidas
+
+1. **Number Cards tipo "Report" NO funcionan en v15** → Usar tipo "Document Type"
+2. **Primary key `name` se usa para display**, no `label` → Nombres en español como key
+3. **Reportes Statement NO grafican** → P&L, Balance Sheet, AR/AP Summary solo como shortcuts
+4. **Reportes Analytics SÍ grafican** → Sales/Purchase Analytics, Gross Profit funcionan perfectamente
+5. **Validar compatibilidad ANTES de implementar** → No todos los reportes nativos soportan charts
+
+### 🚀 Deployment
+
+```bash
+# Aplicar cambios (ya ejecutado)
+bench --site llantascs.dev migrate
+
+# Verificar workspaces creados
+# UI: Cockpit → Ver 3 child workspaces
+# Validar: Charts muestran datos, shortcuts abren reportes
+```
+
+---
+
 ## [v2.9.0] - 2025-10-07 - COCKPIT: Workspace Dirección General con Number Cards y Dashboard Charts 📊
 
 ### 🎯 TRABAJO DE SESIÓN: Implementación Cockpit Phase 1 - Dirección General

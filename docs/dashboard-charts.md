@@ -630,8 +630,178 @@ Si gráficos muestran ceros después de v2.7.2:
 3. Verificar SQL alias en script reports
 4. Validar que scripts retornan data con field names correctos
 
+## Cockpit Phase 1 - Complete Implementation (v2.11.0)
+
+### Dashboard Charts - Gerente de Sucursal
+
+Workspace operativo para gerentes de sucursal con filtrado automático vía User Permissions (Branch).
+
+**1. chart_sucursal_sales_12m - Ventas Mensuales 12M**
+```json
+{
+  "chart_type": "Report",
+  "report_name": "Sales Analytics",
+  "type": "Bar",
+  "time_interval": "Monthly",
+  "timeseries": 1,
+  "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\",\"group_by\":\"Month\",\"docstatus\":1}"
+}
+```
+
+**2. chart_sucursal_gp_12m - Margen Mensual 12M**
+```json
+{
+  "chart_type": "Report",
+  "report_name": "Gross Profit",
+  "type": "Line",
+  "time_interval": "Monthly",
+  "timeseries": 1,
+  "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\",\"docstatus\":1}"
+}
+```
+
+**3. chart_sucursal_stock_by_group - Inventario por Familia**
+```json
+{
+  "chart_type": "Report",
+  "report_name": "Stock Balance",
+  "type": "Bar",
+  "timeseries": 0,
+  "group_by_type": "Group By",
+  "group_by_based_on": "item_group",
+  "filters_json": "{\"company\":\"Llantas de Calidad Star\"}"
+}
+```
+
+### Number Cards - Gerente de Sucursal
+
+**1. Ventas del Mes Sucursal**
+- DocType: Sales Invoice
+- Function: Sum
+- Field: base_net_total
+- Filtros: company, docstatus=1, posting_date="this month"
+- **Filtrado automático**: User Permissions (Branch) aplica filtro por sucursal
+
+**2. Recepciones por Facturar Sucursal**
+- DocType: Purchase Receipt
+- Function: Count
+- Field: name
+- Filtros: company, docstatus=1, status="To Bill"
+
+**3. Cartera Vencida Sucursal**
+- DocType: Sales Invoice
+- Function: Sum
+- Field: outstanding_amount
+- Filtros: company, docstatus=1, status="Overdue", outstanding_amount>0
+
+### Number Cards - Cockpit Principal (raíz)
+
+Workspace raíz con KPIs corporativos consolidados (sin filtros de sucursal).
+
+**1. Ventas Corporativas Mes**
+```json
+{
+  "name": "Ventas Corporativas Mes",
+  "type": "Document Type",
+  "document_type": "Sales Invoice",
+  "function": "Sum",
+  "aggregate_function_based_on": "base_net_total",
+  "filters_json": "[[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false]]",
+  "color": "Blue"
+}
+```
+
+**2. Compras Corporativas Mes**
+```json
+{
+  "name": "Compras Corporativas Mes",
+  "type": "Document Type",
+  "document_type": "Purchase Invoice",
+  "function": "Sum",
+  "aggregate_function_based_on": "base_net_total",
+  "filters_json": "[[\"Purchase Invoice\",\"posting_date\",\"Timespan\",\"this month\",false],[\"Purchase Invoice\",\"docstatus\",\"=\",1,false]]",
+  "color": "Green"
+}
+```
+
+**3. Cartera Vencida Corporativa**
+```json
+{
+  "name": "Cartera Vencida Corporativa",
+  "type": "Document Type",
+  "document_type": "Sales Invoice",
+  "function": "Sum",
+  "aggregate_function_based_on": "outstanding_amount",
+  "filters_json": "[[\"Sales Invoice\",\"status\",\"=\",\"Overdue\",false],[\"Sales Invoice\",\"outstanding_amount\",\">\",0,false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false]]",
+  "color": "Red"
+}
+```
+
+**4. Cuentas por Pagar Pendientes**
+```json
+{
+  "name": "Cuentas por Pagar Pendientes",
+  "type": "Document Type",
+  "document_type": "Purchase Invoice",
+  "function": "Sum",
+  "aggregate_function_based_on": "outstanding_amount",
+  "filters_json": "[[\"Purchase Invoice\",\"outstanding_amount\",\">\",0,false],[\"Purchase Invoice\",\"docstatus\",\"=\",1,false]]",
+  "color": "Orange"
+}
+```
+
+**5. Clientes Nuevos del Mes**
+```json
+{
+  "name": "Clientes Nuevos del Mes",
+  "type": "Document Type",
+  "document_type": "Customer",
+  "function": "Count",
+  "aggregate_function_based_on": "name",
+  "filters_json": "[[\"Customer\",\"creation\",\"Timespan\",\"this month\",false]]",
+  "color": "Purple"
+}
+```
+
+### User Permissions Pattern - Filtrado por Sucursal
+
+**Concepto**: El workspace Gerente de Sucursal NO incluye filtros hardcoded de `branch` en los fixtures.
+
+**Implementación**:
+1. Number Cards y Dashboard Charts NO incluyen filtro `branch` en `filters_json`
+2. ERPNext aplica **automáticamente** User Permissions configuradas para el usuario
+3. Si usuario tiene `User Permission` para `Branch = "Sucursal Norte"`, todos los datos se filtran automáticamente
+4. Mismo workspace reutilizable para todos los gerentes de sucursal
+
+**Ventajas**:
+- ✅ Un solo workspace para todas las sucursales
+- ✅ Sin hardcoding de sucursales en fixtures
+- ✅ Configuración centralizada vía User Permissions
+- ✅ Fácil agregar/remover sucursales sin modificar código
+
+### Lecciones Aprendidas - v2.11.0
+
+1. **User Permissions vs Hardcoded Filters**
+   - NO incluir filtros de `branch` en fixtures si se usa User Permissions
+   - ERPNext aplica User Permissions automáticamente a queries
+   - Más flexible y mantenible que hardcoding
+
+2. **Nomenclatura Consistente**
+   - Estandarizar nombres de reportes en todos los workspaces
+   - Ejemplo: "Mayor de Inventarios" en lugar de "Kardex"/"Valoración por Producto"
+   - Evita confusión y facilita mantenimiento
+
+3. **Validar Funcionalidades Reales**
+   - Eliminar shortcuts para funcionalidades no utilizadas (ej: Sales Orders)
+   - Evita confusión de usuarios con opciones irrelevantes
+
+4. **Primary Key como Display**
+   - Campo `name` se muestra en UI, no `label`
+   - Usar nombres en español como primary key para display correcto
+   - Ejemplo: `"name": "Ventas Corporativas Mes"` (no solo en `label`)
+
 ## Referencias
 
 - **Fixtures**: `/llantascs_customs/fixtures/`
 - **Workspace Analysis**: `/llantascs_customs/one_offs/complete_workspace_analysis.py`
-- **Documentation**: `docs/CHANGELOG.md` v2.7.2 para detalles completos de mejoras
+- **Documentation**: `docs/CHANGELOG.md` v2.7.2, v2.9.0, v2.10.0, v2.11.0 para detalles completos de mejoras

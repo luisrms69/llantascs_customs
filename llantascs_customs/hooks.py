@@ -270,7 +270,7 @@ fixtures = [
     
 
     # Workspace: Incluye workspaces Comisiones, Vendedores, Cockpit y sus hijos
-    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa", "Direccion Financiera"]]]},
+    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa", "Direccion Financiera", "Gerente de Sucursal"]]]},
 
     # Roles custom para asegurar que existen en destino
     {"doctype": "Role", "filters": [["role_name", "in", [
@@ -280,7 +280,7 @@ fixtures = [
     # Print Format para reporte OPC detallado
     {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
 
-    # Dashboard Charts: Comisiones, Cockpit DG, Cockpit OP y Cockpit CFO
+    # Dashboard Charts: Comisiones, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal
     {"doctype": "Dashboard Chart", "filters": [["name", "in", [
         "comisiones_pagadas_por_mes",
         "CH - OPC por Vendedor",
@@ -291,10 +291,13 @@ fixtures = [
         "chart_op_sales_by_branch_12m",
         "chart_op_gp_by_branch_12m",
         "chart_cfo_gp_by_branch_12m",
-        "chart_cfo_sales_trend_12m"
+        "chart_cfo_sales_trend_12m",
+        "chart_sucursal_sales_12m",
+        "chart_sucursal_gp_12m",
+        "chart_sucursal_stock_by_group"
     ]]]},
 
-    # Number Cards: Cockpit DG, Cockpit OP y Cockpit CFO
+    # Number Cards: Cockpit Principal, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal
     {"doctype": "Number Card", "filters": [["name", "in", [
         "Ventas del Mes",
         "Cartera Vencida",
@@ -304,7 +307,15 @@ fixtures = [
         "Ventas del Mes CFO",
         "Compras del Mes CFO",
         "Cartera Vencida CFO",
-        "Cuentas por Pagar Vencidas"
+        "Cuentas por Pagar Vencidas",
+        "Ventas del Mes Sucursal",
+        "Recepciones por Facturar Sucursal",
+        "Cartera Vencida Sucursal",
+        "Ventas Corporativas Mes",
+        "Compras Corporativas Mes",
+        "Cartera Vencida Corporativa",
+        "Cuentas por Pagar Pendientes",
+        "Clientes Nuevos del Mes"
     ]]]},
 ]
 

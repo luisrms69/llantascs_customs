@@ -106,5 +106,101 @@
     "filters_json": "[[\"Purchase Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Purchase Invoice\",\"docstatus\",\"=\",1,false],[\"Purchase Invoice\",\"outstanding_amount\",\">\",0,false]]",
     "is_public": 1,
     "color": "Orange"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Ventas del Mes Sucursal",
+    "label": "Ventas del Mes Sucursal",
+    "type": "Document Type",
+    "document_type": "Sales Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "base_net_total",
+    "filters_json": "[[\"Sales Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false],[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false]]",
+    "is_public": 1,
+    "color": "Blue"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Recepciones por Facturar Sucursal",
+    "label": "Recepciones por Facturar Sucursal",
+    "type": "Document Type",
+    "document_type": "Purchase Receipt",
+    "function": "Count",
+    "aggregate_function_based_on": "name",
+    "filters_json": "[[\"Purchase Receipt\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Purchase Receipt\",\"docstatus\",\"=\",1,false],[\"Purchase Receipt\",\"status\",\"=\",\"To Bill\",false]]",
+    "is_public": 1,
+    "color": "Orange"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Cartera Vencida Sucursal",
+    "label": "Cartera Vencida Sucursal",
+    "type": "Document Type",
+    "document_type": "Sales Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "outstanding_amount",
+    "filters_json": "[[\"Sales Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false],[\"Sales Invoice\",\"status\",\"=\",\"Overdue\",false],[\"Sales Invoice\",\"outstanding_amount\",\">\",0,false]]",
+    "is_public": 1,
+    "color": "Red"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Ventas Corporativas Mes",
+    "label": "Ventas Corporativas Mes",
+    "type": "Document Type",
+    "document_type": "Sales Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "base_net_total",
+    "filters_json": "[[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Blue"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Compras Corporativas Mes",
+    "label": "Compras Corporativas Mes",
+    "type": "Document Type",
+    "document_type": "Purchase Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "base_net_total",
+    "filters_json": "[[\"Purchase Invoice\",\"posting_date\",\"Timespan\",\"this month\",false],[\"Purchase Invoice\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Green"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Cartera Vencida Corporativa",
+    "label": "Cartera Vencida Corporativa",
+    "type": "Document Type",
+    "document_type": "Sales Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "outstanding_amount",
+    "filters_json": "[[\"Sales Invoice\",\"status\",\"=\",\"Overdue\",false],[\"Sales Invoice\",\"outstanding_amount\",\">\",0,false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Red"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Cuentas por Pagar Pendientes",
+    "label": "Cuentas por Pagar Pendientes",
+    "type": "Document Type",
+    "document_type": "Purchase Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "outstanding_amount",
+    "filters_json": "[[\"Purchase Invoice\",\"outstanding_amount\",\">\",0,false],[\"Purchase Invoice\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Orange"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Clientes Nuevos del Mes",
+    "label": "Clientes Nuevos del Mes",
+    "type": "Document Type",
+    "document_type": "Customer",
+    "function": "Count",
+    "aggregate_function_based_on": "name",
+    "filters_json": "[[\"Customer\",\"creation\",\"Timespan\",\"this month\",false]]",
+    "is_public": 1,
+    "color": "Purple"
   }
 ]
