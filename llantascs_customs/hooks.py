@@ -269,8 +269,8 @@ fixtures = [
     },
     
 
-    # Workspace: Incluye AMBOS workspaces (Comisiones y Vendedores con charts)
-    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores"]]]},
+    # Workspace: Incluye workspaces Comisiones, Vendedores, Cockpit y sus hijos
+    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa", "Direccion Financiera", "Gerente de Sucursal"]]]},
 
     # Roles custom para asegurar que existen en destino
     {"doctype": "Role", "filters": [["role_name", "in", [
@@ -280,7 +280,56 @@ fixtures = [
     # Print Format para reporte OPC detallado
     {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
 
-    # Dashboard Chart para gráfico de comisiones por mes
-    {"doctype": "Dashboard Chart", "filters": [["name", "in", ["comisiones_pagadas_por_mes"]]]},
+    # Dashboard Charts: Comisiones, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal
+    {"doctype": "Dashboard Chart", "filters": [["name", "in", [
+        "comisiones_pagadas_por_mes",
+        "CH - OPC por Vendedor",
+        "CH - Comisión Total por Vendedor",
+        "CH - Margen Promedio por Vendedor",
+        "chart_dg_sales_by_branch_12m",
+        "chart_dg_gp_by_branch_12m",
+        "chart_op_sales_by_branch_12m",
+        "chart_op_gp_by_branch_12m",
+        "chart_op_warehouse_stock_value",
+        "chart_cfo_gp_by_branch_12m",
+        "chart_cfo_sales_trend_12m",
+        "chart_cfo_purchase_order_trends_12m",
+        "chart_sucursal_sales_12m",
+        "chart_sucursal_gp_12m",
+        "chart_sucursal_stock_by_group"
+    ]]]},
+
+    # Number Cards: Cockpit Principal, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal
+    {"doctype": "Number Card", "filters": [["name", "in", [
+        "Ventas del Mes",
+        "Cartera Vencida",
+        "Recepciones Pendientes",
+        "Ventas del Mes OP",
+        "Entregas Pendientes Facturar",
+        "Ventas del Mes CFO",
+        "Compras del Mes CFO",
+        "Cartera Vencida CFO",
+        "Cuentas por Pagar Vencidas",
+        "Ventas del Mes Sucursal",
+        "Recepciones por Facturar Sucursal",
+        "Cartera Vencida Sucursal",
+        "Ventas Corporativas Mes",
+        "Compras Corporativas Mes",
+        "Cartera Vencida Corporativa",
+        "Cuentas por Pagar Pendientes",
+        "Clientes Nuevos del Mes",
+        "Recepciones Pendientes Corporativo",
+        "Órdenes Compra Pendientes Recibir",
+        "Ventas Corporativas Mes Anterior",
+        "Promedio Ticket Mes",
+        "Entregas del Mes",
+        "Devoluciones de Entrega Mes",
+        "Devoluciones de Venta Mes",
+        "Cobros del Mes",
+        "Pagos del Mes",
+        "Facturas Venta Mes",
+        "Facturas Compra Mes",
+        "Valor Total Inventario"
+    ]]]},
 ]
 
