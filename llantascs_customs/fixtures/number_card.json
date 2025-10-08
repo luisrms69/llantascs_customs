@@ -25,18 +25,6 @@
   },
   {
     "doctype": "Number Card",
-    "name": "Entregas Pendientes",
-    "label": "Entregas Pendientes",
-    "type": "Document Type",
-    "document_type": "Delivery Note",
-    "function": "Count",
-    "aggregate_function_based_on": "name",
-    "filters_json": "[[\"Delivery Note\",\"status\",\"=\",\"To Bill\",false],[\"Delivery Note\",\"docstatus\",\"=\",1,false]]",
-    "is_public": 1,
-    "color": "Orange"
-  },
-  {
-    "doctype": "Number Card",
     "name": "Recepciones Pendientes",
     "label": "Recepciones Pendientes",
     "type": "Document Type",
@@ -44,6 +32,30 @@
     "function": "Count",
     "aggregate_function_based_on": "name",
     "filters_json": "[[\"Purchase Receipt\",\"status\",\"=\",\"To Bill\",false],[\"Purchase Receipt\",\"docstatus\",\"=\",1,false]]",
+    "is_public": 1,
+    "color": "Orange"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Ventas del Mes OP",
+    "label": "Ventas del Mes OP",
+    "type": "Document Type",
+    "document_type": "Sales Invoice",
+    "function": "Sum",
+    "aggregate_function_based_on": "base_net_total",
+    "filters_json": "[[\"Sales Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false],[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false]]",
+    "is_public": 1,
+    "color": "Blue"
+  },
+  {
+    "doctype": "Number Card",
+    "name": "Entregas Pendientes Facturar",
+    "label": "Entregas Pendientes Facturar",
+    "type": "Document Type",
+    "document_type": "Delivery Note",
+    "function": "Count",
+    "aggregate_function_based_on": "name",
+    "filters_json": "[[\"Delivery Note\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Delivery Note\",\"status\",\"=\",\"To Bill\",false],[\"Delivery Note\",\"docstatus\",\"=\",1,false]]",
     "is_public": 1,
     "color": "Orange"
   }
