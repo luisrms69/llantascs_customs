@@ -270,7 +270,7 @@ fixtures = [
     
 
     # Workspace: Incluye workspaces Comisiones, Vendedores, Cockpit y sus hijos
-    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa"]]]},
+    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa", "Direccion Financiera"]]]},
 
     # Roles custom para asegurar que existen en destino
     {"doctype": "Role", "filters": [["role_name", "in", [
@@ -280,7 +280,7 @@ fixtures = [
     # Print Format para reporte OPC detallado
     {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
 
-    # Dashboard Charts: Comisiones, Cockpit DG y Cockpit OP
+    # Dashboard Charts: Comisiones, Cockpit DG, Cockpit OP y Cockpit CFO
     {"doctype": "Dashboard Chart", "filters": [["name", "in", [
         "comisiones_pagadas_por_mes",
         "CH - OPC por Vendedor",
@@ -289,16 +289,22 @@ fixtures = [
         "chart_dg_sales_by_branch_12m",
         "chart_dg_gp_by_branch_12m",
         "chart_op_sales_by_branch_12m",
-        "chart_op_gp_by_branch_12m"
+        "chart_op_gp_by_branch_12m",
+        "chart_cfo_gp_by_branch_12m",
+        "chart_cfo_sales_trend_12m"
     ]]]},
 
-    # Number Cards: Cockpit DG y Cockpit OP
+    # Number Cards: Cockpit DG, Cockpit OP y Cockpit CFO
     {"doctype": "Number Card", "filters": [["name", "in", [
         "Ventas del Mes",
         "Cartera Vencida",
         "Recepciones Pendientes",
         "Ventas del Mes OP",
-        "Entregas Pendientes Facturar"
+        "Entregas Pendientes Facturar",
+        "Ventas del Mes CFO",
+        "Compras del Mes CFO",
+        "Cartera Vencida CFO",
+        "Cuentas por Pagar Vencidas"
     ]]]},
 ]
 

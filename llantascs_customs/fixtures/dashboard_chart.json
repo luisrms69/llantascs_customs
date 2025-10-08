@@ -200,5 +200,32 @@
     "is_stacked": 0,
     "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\",\"docstatus\":1}",
     "is_public": 1
+  },
+  {
+    "doctype": "Dashboard Chart",
+    "name": "chart_cfo_gp_by_branch_12m",
+    "chart_name": "CFO | Margen por Sucursal (12M)",
+    "chart_type": "Report",
+    "report_name": "Gross Profit",
+    "type": "Line",
+    "time_interval": "Monthly",
+    "timeseries": 1,
+    "group_by_type": "Group By",
+    "group_by_based_on": "branch",
+    "is_stacked": 0,
+    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\"}",
+    "is_public": 1
+  },
+  {
+    "doctype": "Dashboard Chart",
+    "name": "chart_cfo_sales_trend_12m",
+    "chart_name": "CFO | Tendencia Ventas (12M)",
+    "chart_type": "Report",
+    "report_name": "Sales Analytics",
+    "type": "Line",
+    "time_interval": "Monthly",
+    "timeseries": 1,
+    "filters_json": "{\"company\":\"Llantas de Calidad Star\",\"from_date\":\"auto:today-365\",\"to_date\":\"auto:today\",\"group_by\":\"Month\",\"docstatus\":1}",
+    "is_public": 1
   }
 ]
