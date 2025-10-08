@@ -1,8 +1,8 @@
-# Dashboard Charts Implementation Guide
+# Dashboard Charts & Number Cards Implementation Guide
 
 ## Resumen
 
-Este documento describe la implementación correcta de Dashboard Charts en ERPNext v15, incluyendo la solución al problema crítico de charts que desaparecían después de migrate operations.
+Este documento describe la implementación correcta de Dashboard Charts y Number Cards en ERPNext v15, incluyendo la solución al problema crítico de charts que desaparecían después de migrate operations y el descubrimiento de que Number Cards tipo "Report" no funcionan en v15.
 
 ## Problema Resuelto
 
@@ -394,6 +394,206 @@ WHERE c.sales_invoice_id IS NOT NULL
 # Y-field actualizado:
 "y_field": "invoice_count"  # Era: opc_count
 "label": "Facturas"        # Era: OPC
+```
+
+## Number Cards Implementation (v2.9.0)
+
+### Problema Identificado: Type "Report" No Funciona
+
+**Síntoma**: Number Cards con `type: "Report"` muestran "Cargando..." indefinidamente
+
+**Root Cause**: Frappe v15 tiene implementación parcial
+- ✅ Validación existe en `frappe/desk/doctype/number_card/number_card.py`
+- ❌ Ejecución NO implementada: `get_result()` solo maneja `type: "Document Type"`
+- ❌ No hay código que ejecute reportes para Number Cards tipo "Report"
+
+**Solución**: Usar `type: "Document Type"` exclusivamente
+
+### Implementación Correcta: Document Type Number Cards
+
+**Ubicación**: `fixtures/number_card.json`
+
+**Ejemplo Funcional**:
+```json
+{
+  "doctype": "Number Card",
+  "name": "Ventas del Mes",
+  "label": "Ventas del Mes",
+  "type": "Document Type",
+  "document_type": "Sales Invoice",
+  "function": "Sum",
+  "aggregate_function_based_on": "base_net_total",
+  "filters_json": "[[\"Sales Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false],[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false]]",
+  "is_public": 1,
+  "color": "Blue"
+}
+```
+
+**Campos Críticos**:
+- `type`: "Document Type" (NO "Report")
+- `document_type`: DocType a consultar (ej: "Sales Invoice")
+- `function`: Función de agregación ("Sum", "Count", "Average", etc.)
+- `aggregate_function_based_on`: Campo a agregar (ej: "base_net_total")
+- `filters_json`: Filtros en formato array JSON doble-encoded
+- `is_public`: 1 para visibilidad global
+
+**Funciones Disponibles**:
+- `Sum`: Suma de valores
+- `Count`: Conteo de registros
+- `Average`: Promedio
+- `Min`: Valor mínimo
+- `Max`: Valor máximo
+
+### Display de Labels en Number Cards
+
+**Problema**: ERPNext muestra `name` field (primary key), NO `label` field
+
+**Ejemplo del Problema**:
+```json
+// ❌ INCORRECTO (muestra "card_dg_ventas_mes" en UI)
+{
+  "name": "card_dg_ventas_mes",
+  "label": "Ventas del Mes"
+}
+
+// ✅ CORRECTO (muestra "Ventas del Mes" en UI)
+{
+  "name": "Ventas del Mes",
+  "label": "Ventas del Mes"
+}
+```
+
+**Solución**: Usar nombres amigables en español directamente como `name`
+
+### Filtros JSON en Number Cards
+
+**Formato**: Array de arrays JSON, double-encoded como string
+
+**Estructura**:
+```json
+[
+  ["DocType", "field", "operator", "value", show_in_ui],
+  ["DocType", "field", "operator", "value", show_in_ui]
+]
+```
+
+**Ejemplos**:
+
+```json
+// Filtro por company
+"[[\"Sales Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false]]"
+
+// Múltiples filtros (company + docstatus + timespan)
+"[[\"Sales Invoice\",\"company\",\"=\",\"Llantas de Calidad Star\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false],[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false]]"
+
+// Filtro con condición > (greater than)
+"[[\"Sales Invoice\",\"outstanding_amount\",\">\",0,false]]"
+```
+
+**Operadores Disponibles**:
+- `=`: Igual
+- `!=`: Diferente
+- `>`: Mayor que
+- `<`: Menor que
+- `>=`: Mayor o igual
+- `<=`: Menor o igual
+- `Timespan`: Rango temporal (valores: "this month", "this year", "last month", etc.)
+
+### Integración con Workspace
+
+**Workspace Fixture Requerido**:
+
+```json
+{
+  "doctype": "Workspace",
+  "name": "Direccion General",
+  "number_cards": [
+    {
+      "number_card_name": "Ventas del Mes",
+      "parent": "Direccion General",
+      "parentfield": "number_cards",
+      "parenttype": "Workspace"
+    }
+  ],
+  "content": "[{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Ventas del Mes\",\"col\":3}}]"
+}
+```
+
+**CRÍTICO**:
+- `number_cards` child table DEBE incluir todas las cards
+- `content` JSON DEBE referenciar cada card por `number_card_name`
+- Ambos nombres DEBEN coincidir exactamente
+
+### Hooks Configuration para Number Cards
+
+**hooks.py**:
+```python
+fixtures = [
+    {
+        "doctype": "Number Card",
+        "filters": [["name", "in", [
+            "Ventas del Mes",
+            "Cartera Vencida",
+            "Entregas Pendientes",
+            "Recepciones Pendientes"
+        ]]]
+    }
+]
+```
+
+### Number Cards Implementados (v2.9.0)
+
+**Cockpit - Dirección General**:
+
+1. **Ventas del Mes**
+   - DocType: Sales Invoice
+   - Function: Sum
+   - Field: base_net_total
+   - Filtros: company, docstatus=1, posting_date="this month"
+   - Color: Blue
+
+2. **Cartera Vencida**
+   - DocType: Sales Invoice
+   - Function: Sum
+   - Field: outstanding_amount
+   - Filtros: company, docstatus=1, status="Overdue", outstanding_amount>0
+   - Color: Red
+
+3. **Entregas Pendientes**
+   - DocType: Delivery Note
+   - Function: Count
+   - Field: name
+   - Filtros: status="To Bill", docstatus=1
+   - Color: Orange
+
+4. **Recepciones Pendientes**
+   - DocType: Purchase Receipt
+   - Function: Count
+   - Field: name
+   - Filtros: status="To Bill", docstatus=1
+   - Color: Orange
+
+### Validación y Testing
+
+**Después de migrate**:
+1. Abrir workspace que contiene las cards
+2. Verificar que cada card muestra un valor numérico (no "Cargando...")
+3. Confirmar que el título muestra el nombre en español
+4. Verificar color correcto de cada card
+
+**Script de Verificación**:
+```python
+# llantascs_customs/one_offs/verificar_number_cards.py
+import frappe
+
+def run():
+    cards = ["Ventas del Mes", "Cartera Vencida", "Entregas Pendientes", "Recepciones Pendientes"]
+    for card_name in cards:
+        if frappe.db.exists("Number Card", card_name):
+            card = frappe.get_doc("Number Card", card_name)
+            print(f"✅ {card_name}: {card.type} | {card.document_type} | {card.function}")
+        else:
+            print(f"❌ {card_name}: NO EXISTE")
 ```
 
 ## Troubleshooting

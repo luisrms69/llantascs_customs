@@ -11,6 +11,141 @@
 
 ---
 
+## [v2.9.0] - 2025-10-07 - COCKPIT: Workspace Dirección General con Number Cards y Dashboard Charts 📊
+
+### 🎯 TRABAJO DE SESIÓN: Implementación Cockpit Phase 1 - Dirección General
+
+**Problema Abordado**:
+- Necesidad de dashboards ejecutivos para Dirección General con KPIs y análisis visual
+- Implementación inicial errónea usando código Python programático (eliminado en refactor)
+- Number Cards tipo "Report" no funcionan en Frappe v15 (validación existe, ejecución no)
+
+**Solución Aplicada**:
+1. Workspace parent "Cockpit" con child "Direccion General" usando fixtures JSON
+2. 4 Number Cards tipo "Document Type" (funcional en v15)
+3. 2 Dashboard Charts basados en reportes nativos (Sales Analytics, Gross Profit)
+4. Estructura parent-child para jerarquía de workspaces
+
+**Resultado**:
+- ✅ Workspace funcional con 4 KPIs en tiempo real
+- ✅ 2 charts comparativos por sucursal (ventas y margen, 12 meses)
+- ✅ 3 shortcuts a reportes nativos
+- ✅ Labels en español correctamente mostrados en UI
+
+### 🔧 Cambios Técnicos
+
+**NUEVO**: `llantascs_customs/fixtures/number_card.json`
+- 4 Number Cards tipo "Document Type":
+  * **Ventas del Mes**: `SUM(Sales Invoice.base_net_total)` del mes actual
+  * **Cartera Vencida**: `SUM(Sales Invoice.outstanding_amount)` con status "Overdue"
+  * **Entregas Pendientes**: `COUNT(Delivery Note)` con status "To Bill"
+  * **Recepciones Pendientes**: `COUNT(Purchase Receipt)` con status "To Bill"
+- Usa nombres en español como primary key (`name`) para display correcto en UI
+- Field `aggregate_function_based_on` para agregación de valores
+- Filters JSON con company "Llantas de Calidad Star" y filtros de estado
+
+**ACTUALIZADO**: `llantascs_customs/fixtures/dashboard_chart.json`
+- Agregados 2 charts nuevos:
+  * **chart_dg_sales_by_branch_12m**: Bar chart de ventas por sucursal (12M)
+    - Source: Report "Sales Analytics"
+    - Timeseries mensual, stacked
+    - Group by: branch
+  * **chart_dg_gp_by_branch_12m**: Line chart de margen por sucursal (12M)
+    - Source: Report "Gross Profit"
+    - Timeseries mensual
+    - Group by: branch
+- Field correcto: `chart_type: "Report"` (NO `source`)
+- Filters: últimos 12 meses (auto:today-365 to auto:today)
+
+**ACTUALIZADO**: `llantascs_customs/fixtures/workspace.json`
+- Workspace "Cockpit" (parent, vacío):
+  * `parent_page: null` (top-level)
+  * `type: "Module"`
+  * Icon: "folder-open"
+- Workspace "Direccion General" (child):
+  * `parent_page: "Cockpit"` (jerarquía)
+  * `type: "Module"`
+  * Icon: "dashboard"
+  * Content JSON con estructura:
+    - Header "KPIs Principales"
+    - 4 Number Cards (col:3 cada una)
+    - Header "Análisis Temporal"
+    - 2 Dashboard Charts (col:12 cada uno)
+    - Header "Reportes Detallados"
+    - 3 Shortcuts (col:4 cada uno)
+  * Child tables:
+    - `number_cards`: Referencias a las 4 cards
+    - `charts`: Referencias a los 2 charts
+    - `shortcuts`: Sales Analytics, Gross Profit, AR Summary
+    - `roles`: System Manager
+
+**ACTUALIZADO**: `llantascs_customs/hooks.py`
+- Registra fixtures para instalación automática:
+  * Workspace: filters `["Comisiones", "Vendedores", "Cockpit", "Direccion General"]`
+  * Dashboard Chart: filters con los 6 charts (4 existentes + 2 nuevos DG)
+  * Number Card: filters con los 4 cards nuevos (nombres en español)
+
+### 🔍 Hallazgos Técnicos
+
+**Number Cards tipo "Report" NO funcional en v15**:
+- Validación existe en `frappe/desk/doctype/number_card/number_card.py`
+- Ejecución NO implementada: `get_result()` solo maneja `type: "Document Type"`
+- Solución: Usar Document Type con queries directas a DocTypes
+
+**Display de Labels**:
+- ERPNext muestra field `name` (primary key) como título, NO `label`
+- Solución: Usar nombres en español como `name` directamente
+- Antes: `name: "card_dg_ventas_mes"`, `label: "Ventas del Mes"` → mostraba "card_dg_ventas_mes"
+- Después: `name: "Ventas del Mes"`, `label: "Ventas del Mes"` → muestra "Ventas del Mes"
+
+**Enfoque Python Programático Inválido**:
+- Implementación inicial con 570 líneas de Python (commit ed817e0, eliminado en 6f8f0ff)
+- Frappe usa fixtures JSON para workspaces, NO creación programática
+- Workspace "Comisiones" existente confirmó el patrón correcto
+
+### 📋 Deployment
+
+**Instalación Automática**:
+```bash
+bench --site SITENAME migrate
+```
+
+**Validación**:
+1. Verificar workspace "Cockpit" visible en sidebar
+2. Abrir "Cockpit > Direccion General"
+3. Confirmar 4 Number Cards muestran valores correctos
+4. Verificar 2 charts renderizan correctamente
+5. Probar shortcuts abren reportes nativos
+
+**Rollback** (si necesario):
+```bash
+git revert <commit-hash>
+bench --site SITENAME migrate
+```
+
+### ⏭️ Próximos Pasos
+
+**Phase 1 Pendiente**:
+- Agregar 10 shortcuts adicionales a "Direccion General":
+  * Finanzas: Profit & Loss, Balance Sheet
+  * Ventas: Sales Person Summary, Sales Invoice Trends
+  * Cuentas por Cobrar: AR Aging
+  * Cuentas por Pagar: AP Summary, AP Aging
+
+**Phase 2** (Director de Operaciones):
+- Workspace "Operaciones" con KPIs de inventario
+- Stock Balance, Stock Ageing, Stock Ledger
+
+### 📚 Referencias
+
+- **ADR**: Pendiente (decisión de usar fixtures vs Python)
+- **Commits**:
+  * ed817e0: Implementación Python (eliminada)
+  * 6f8f0ff: Refactor a fixtures
+  * Este commit: Implementación final funcional
+
+---
+
 ## [v2.8.0] - 2025-10-07 - COGS RESOLVER FIX: Corrección cálculo costos DN con link inverso + Migración 9 OPC históricas 🔧
 
 ### 🎯 TRABAJO DE SESIÓN: Fix crítico resolver COGS + Migración OPC pendientes
