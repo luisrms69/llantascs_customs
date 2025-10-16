@@ -1,3 +1,40 @@
+# ⚠️⚠️⚠️ MULTI-APP MODE ⚠️⚠️⚠️
+**SITE:** llantascs.dev | **APP:** llantascs_customs
+**COMANDOS:** `bench --site llantascs.dev [comando]`
+**NO:** `bench start` (tmux) | `bench migrate` (sin --site)
+
+## 🚨 REGLAS ABSOLUTAS MULTI-APP (LEER PRIMERO)
+
+Este workspace comparte un bench con **facturacion_mexico** y **condominium_management**.
+
+### ✅ COMANDOS OBLIGATORIOS:
+```bash
+bench --site llantascs.dev migrate
+bench --site llantascs.dev export-fixtures --apps llantascs_customs
+bench --site llantascs.dev run-tests --app llantascs_customs
+bench build --apps llantascs_customs
+```
+
+### ❌ NUNCA EJECUTAR:
+```bash
+bench start                   # Ya corre en tmux global
+bench migrate                 # Sin --site (afectaría otros sites)
+bench --site facturacion.dev  # Site de OTRA app
+bench --site admin1.dev       # Site de OTRA app
+```
+
+### 📍 Sites en este Bench:
+- **llantascs.dev** ← **ESTE workspace** (llantascs_customs)
+- facturacion.dev (facturacion_mexico - OTRO workspace)
+- admin1.dev (condominium_management - OTRO workspace)
+
+### 🌐 URL Desarrollo:
+http://llantascs.dev:8000
+
+**Comando recordatorio:** `/remind-site` (slash command disponible)
+
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

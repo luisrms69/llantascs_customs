@@ -321,7 +321,6 @@ fixtures = [
         "Recepciones Pendientes Corporativo",
         "Órdenes Compra Pendientes Recibir",
         "Ventas Corporativas Mes Anterior",
-        "Promedio Ticket Mes",
         "Entregas del Mes",
         "Devoluciones de Entrega Mes",
         "Devoluciones de Venta Mes",
