@@ -241,30 +241,6 @@
   },
   {
     "doctype": "Number Card",
-    "name": "Promedio Ticket Mes",
-    "label": "Promedio Ticket Mes",
-    "type": "Document Type",
-    "document_type": "Sales Invoice",
-    "function": "Avg",
-    "aggregate_function_based_on": "base_net_total",
-    "filters_json": "[[\"Sales Invoice\",\"posting_date\",\"Timespan\",\"this month\",false],[\"Sales Invoice\",\"docstatus\",\"=\",1,false]]",
-    "is_public": 1,
-    "color": "Cyan"
-  },
-  {
-    "doctype": "Number Card",
-    "name": "Clientes Nuevos del Mes",
-    "label": "Clientes Nuevos del Mes",
-    "type": "Document Type",
-    "document_type": "Customer",
-    "function": "Count",
-    "aggregate_function_based_on": "name",
-    "filters_json": "[[\"Customer\",\"creation\",\"Timespan\",\"this month\",false]]",
-    "is_public": 1,
-    "color": "Purple"
-  },
-  {
-    "doctype": "Number Card",
     "name": "Entregas del Mes",
     "label": "Entregas del Mes",
     "type": "Document Type",

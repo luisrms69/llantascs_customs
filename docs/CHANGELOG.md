@@ -11,6 +11,102 @@
 
 ---
 
+## [v2.12.1] - 2025-10-16 - HOTFIX: Remove unsupported Avg function from Number Card 🔧
+
+### 🐛 PROBLEMA IDENTIFICADO: KeyError 'Avg' en Dirección General
+
+**Error Reportado**:
+```
+KeyError: 'Avg'
+  File "apps/frappe/frappe/desk/doctype/number_card/number_card.py", line 141
+  function = sql_function_map[doc.function]
+```
+
+Al cargar el workspace "Dirección General", el Number Card "Promedio Ticket Mes" causaba error porque ERPNext v15 no soporta la función `Avg` en Number Cards de tipo "Document Type".
+
+**Causa Raíz**:
+- ERPNext v15 `sql_function_map` solo incluye: `Sum`, `Count`, `Min`, `Max`
+- La función `Avg` no está implementada en Number Cards tipo "Document Type"
+- El card "Promedio Ticket Mes" usaba `function: "Avg"` sobre `Sales Invoice.base_net_total`
+
+### ✅ SOLUCIÓN APLICADA
+
+**Eliminación de Number Card no soportado**:
+- ❌ Eliminado "Promedio Ticket Mes" de `number_card.json`
+- ❌ Eliminada referencia duplicada de "Clientes Nuevos del Mes"
+- ✅ Actualizado layout de Dirección General: 4 cards en fila (col:3 cada uno)
+- ✅ Removida referencia en `hooks.py` filtro de fixtures
+
+**Layout actualizado - Dirección General**:
+```
+Fila KPIs: [Ventas del Mes] [Cartera Vencida] [Ventas Corporativas Mes Anterior] [Clientes Nuevos del Mes]
+           col:3              col:3             col:3                              col:3
+```
+
+### 🔧 Cambios Técnicos
+
+**Archivos Modificados**:
+- `llantascs_customs/fixtures/number_card.json`:
+  * Eliminado "Promedio Ticket Mes" (líneas 242-253)
+  * Eliminado duplicado de "Clientes Nuevos del Mes" (líneas 254-265)
+  * Total: 16 Number Cards (reducido de 18)
+
+- `llantascs_customs/fixtures/workspace.json`:
+  * Workspace "Dirección General" - Eliminada referencia en `number_cards` array
+  * Content JSON actualizado: 4 cards en lugar de 5, layout ajustado a col:3
+
+- `llantascs_customs/hooks.py`:
+  * Filtro de fixtures Number Card: removido "Promedio Ticket Mes"
+
+- `CLAUDE.md`:
+  * Agregada sección MULTI-APP MODE con reglas críticas
+  * Documentados comandos obligatorios con `--site llantascs.dev`
+  * Advertencias sobre ambiente compartido con otras apps
+
+### 📊 Estado Post-Fix
+
+**Dirección General - 4 Number Cards**:
+1. Ventas del Mes (col:3)
+2. Cartera Vencida (col:3)
+3. Ventas Corporativas Mes Anterior (col:3)
+4. Clientes Nuevos del Mes (col:3)
+
+**Workspace carga sin errores** ✅
+
+### 🧹 Limpieza Adicional
+
+**Directorio one_offs/**:
+- Eliminado `reportes_diagnostico/` (2 archivos markdown)
+- Eliminado `__pycache__/`
+- Conservado `__init__.py` (mantener estructura de módulo Python)
+
+**Directorio docs/instructions/** (nuevo):
+- Creado para organizar archivos de instrucciones de desarrollo
+- No se incluyen en commits (archivos temporales de workflow)
+
+### ⚠️ Lección Aprendida
+
+**Funciones soportadas en ERPNext v15 Number Cards (Document Type)**:
+- ✅ `Sum` - Suma de valores
+- ✅ `Count` - Conteo de registros
+- ✅ `Min` - Valor mínimo
+- ✅ `Max` - Valor máximo
+- ❌ `Avg` - NO SOPORTADO
+
+Para cálculos de promedio, alternativas:
+1. Usar 2 cards separadas (Sum + Count) y calcular manualmente
+2. Usar Custom Script Report con lógica de promedio
+3. Esperar actualización de ERPNext que agregue `Avg` al `sql_function_map`
+
+### 🗂️ Archivos Modificados
+- `llantascs_customs/fixtures/number_card.json` - Eliminación de 2 cards
+- `llantascs_customs/fixtures/workspace.json` - Layout actualizado
+- `llantascs_customs/hooks.py` - Filtro de fixtures actualizado
+- `CLAUDE.md` - Documentación MULTI-APP MODE
+- `docs/CHANGELOG.md` - Este registro
+
+---
+
 ## [v2.11.0] - 2025-10-07 - COCKPIT Phase 1 COMPLETE: Gerente Sucursal + Cockpit Principal 🎯✅
 
 ### 🎯 TRABAJO DE SESIÓN: Completar Cockpit Phase 1 con Gerente de Sucursal y Cockpit Principal
