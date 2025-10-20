@@ -1495,7 +1495,7 @@
     "icon": null,
     "kanban_board": null,
     "label": "Análisis de Ventas DG Suc",
-    "link_to": "Sales Analytics CC",
+    "link_to": "Sales Analytics",
     "parent": "DG Analisis Sucursales",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",

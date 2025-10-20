@@ -50,56 +50,6 @@
   "timeout": 0
  },
  {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2025-10-19 22:00:00",
-  "module": "llantascs_customs",
-  "name": "Sales Analytics CC",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Sales Invoice",
-  "reference_report": null,
-  "report_name": "Sales Analytics CC",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Sales Analytics CC",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "System Manager"
-   },
-   {
-    "parent": "Sales Analytics CC",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Llantas CS Manager"
-   },
-   {
-    "parent": "Sales Analytics CC",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales Manager"
-   },
-   {
-    "parent": "Sales Analytics CC",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales User"
-   }
-  ],
-  "timeout": 0
- },
- {
   "add_total_row": 0,
   "add_translate_data": 0,
   "columns": [],
