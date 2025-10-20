@@ -82,7 +82,8 @@
     "url": null
    }
   ],
-  "title": "Vendedores"
+  "title": "Vendedores",
+  "type": "Custom"
  },
  {
   "charts": [
@@ -210,7 +211,8 @@
     "url": null
    }
   ],
-  "title": "Comisiones"
+  "title": "Comisiones",
+  "type": "Custom"
  },
  {
   "charts": [
@@ -458,7 +460,8 @@
     "url": null
    }
   ],
-  "title": "Direccion General"
+  "title": "Direccion General",
+  "type": "Custom"
  },
  {
   "charts": [],
@@ -534,7 +537,8 @@
   ],
   "sequence_id": 1.0,
   "shortcuts": [],
-  "title": "Cockpit"
+  "title": "Cockpit",
+  "type": "Custom"
  },
  {
   "charts": [
@@ -837,7 +841,8 @@
     "url": null
    }
   ],
-  "title": "Direccion Operativa"
+  "title": "Direccion Operativa",
+  "type": "Custom"
  },
  {
   "charts": [
@@ -1212,7 +1217,8 @@
     "url": null
    }
   ],
-  "title": "Direccion Financiera"
+  "title": "Direccion Financiera",
+  "type": "Custom"
  },
  {
   "charts": [],
@@ -1404,7 +1410,8 @@
     "url": null
    }
   ],
-  "title": "Gerente de Sucursal"
+  "title": "Gerente de Sucursal",
+  "type": "Custom"
  },
  {
   "charts": [
@@ -1693,6 +1700,7 @@
     "url": null
    }
   ],
-  "title": "DG Analisis Sucursales"
+  "title": "DG Analisis Sucursales",
+  "type": "Custom"
  }
 ]
