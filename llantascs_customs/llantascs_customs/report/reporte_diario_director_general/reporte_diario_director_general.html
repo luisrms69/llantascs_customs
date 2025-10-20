@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Reporte Diario Director General</title>
+	<style>
+		@page {
+			size: Letter;
+			margin: 1cm;
+		}
+
+		body {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 10pt;
+			line-height: 1.4;
+			color: #333;
+		}
+
+		h1 {
+			color: #2c3e50;
+			border-bottom: 3px solid #3498db;
+			padding-bottom: 10px;
+			margin-bottom: 20px;
+			font-size: 24pt;
+		}
+
+		h2 {
+			color: #2c3e50;
+			border-bottom: 2px solid #95a5a6;
+			padding-bottom: 5px;
+			margin-top: 30px;
+			margin-bottom: 15px;
+			font-size: 18pt;
+			page-break-after: avoid;
+		}
+
+		h3 {
+			color: #34495e;
+			margin-top: 20px;
+			margin-bottom: 10px;
+			font-size: 14pt;
+			page-break-after: avoid;
+		}
+
+		.header {
+			text-align: center;
+			margin-bottom: 30px;
+		}
+
+		.filters {
+			background-color: #ecf0f1;
+			padding: 10px;
+			margin-bottom: 20px;
+			border-radius: 5px;
+		}
+
+		.filters strong {
+			color: #2c3e50;
+		}
+
+		.metrics-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 15px;
+			margin-bottom: 20px;
+		}
+
+		.metric-card {
+			background-color: #fff;
+			border: 1px solid #bdc3c7;
+			border-radius: 5px;
+			padding: 15px;
+			text-align: center;
+		}
+
+		.metric-label {
+			font-size: 9pt;
+			color: #7f8c8d;
+			text-transform: uppercase;
+			margin-bottom: 5px;
+		}
+
+		.metric-value {
+			font-size: 18pt;
+			font-weight: bold;
+			color: #2c3e50;
+		}
+
+		.metric-subvalue {
+			font-size: 9pt;
+			color: #95a5a6;
+			margin-top: 5px;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-bottom: 20px;
+			page-break-inside: avoid;
+		}
+
+		table thead {
+			background-color: #34495e;
+			color: white;
+		}
+
+		table th {
+			padding: 8px;
+			text-align: left;
+			font-weight: bold;
+			font-size: 9pt;
+		}
+
+		table td {
+			padding: 6px 8px;
+			border-bottom: 1px solid #ecf0f1;
+			font-size: 9pt;
+		}
+
+		table tbody tr:nth-child(even) {
+			background-color: #f8f9fa;
+		}
+
+		table tbody tr:hover {
+			background-color: #e8f4f8;
+		}
+
+		.text-right {
+			text-align: right;
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.currency {
+			font-family: "Courier New", monospace;
+		}
+
+		.positive {
+			color: #27ae60;
+		}
+
+		.negative {
+			color: #e74c3c;
+		}
+
+		.warning {
+			color: #f39c12;
+		}
+
+		.page-break {
+			page-break-before: always;
+		}
+
+		.section-spacer {
+			margin-bottom: 40px;
+		}
+
+		.footer {
+			margin-top: 50px;
+			padding-top: 20px;
+			border-top: 1px solid #bdc3c7;
+			text-align: center;
+			font-size: 8pt;
+			color: #95a5a6;
+		}
+
+		.branch-title {
+			background-color: #3498db;
+			color: white;
+			padding: 10px;
+			margin-top: 40px;
+			border-radius: 5px;
+			font-size: 16pt;
+			page-break-before: always;
+		}
+	</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+	<h1>📊 Reporte Diario Director General</h1>
+	<p><strong>{{ data.company }}</strong></p>
+	<p>Generado: {{ data.generated_at }}</p>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+	<strong>Período:</strong> {{ frappe.format(data.filters.from_date, {'fieldtype': 'Date'}) }} al {{ frappe.format(data.filters.to_date, {'fieldtype': 'Date'}) }}
+	{% if data.filters.cost_center %}
+	&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Centro de Costos:</strong> {{ data.filters.cost_center }}
+	{% else %}
+	&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Vista:</strong> Consolidada (Todas las Sucursales)
+	{% endif %}
+</div>
+
+<!-- ========================================================================== -->
+<!-- DATOS CONSOLIDADOS -->
+<!-- ========================================================================== -->
+
+<h2>📈 Resultados Consolidados</h2>
+
+{% set consolidated = data.consolidated %}
+
+<!-- SECCIÓN 1: RESULTADOS FINANCIEROS -->
+<h3>1. Resultados Financieros</h3>
+
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Ventas Acumuladas (Mes)</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.financials.sales_month.sales) }}</div>
+		<div class="metric-subvalue">{{ consolidated.financials.sales_month.invoice_count }} facturas</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">Ventas Día Anterior</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.financials.sales_yesterday.sales) }}</div>
+		<div class="metric-subvalue">{{ consolidated.financials.sales_yesterday.invoice_count }} facturas</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">Margen Bruto (Mes)</div>
+		<div class="metric-value currency positive">$ {{ "{:,.2f}".format(consolidated.financials.sales_month.gross_profit) }}</div>
+		<div class="metric-subvalue">{{ "{:.2f}".format(consolidated.financials.sales_month.gross_margin_pct) }}%</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">Margen Bruto (Ayer)</div>
+		<div class="metric-value currency positive">$ {{ "{:,.2f}".format(consolidated.financials.sales_yesterday.gross_profit) }}</div>
+		<div class="metric-subvalue">{{ "{:.2f}".format(consolidated.financials.sales_yesterday.gross_margin_pct) }}%</div>
+	</div>
+</div>
+
+<h4>Desglose de Ventas por Grupo de Productos (Mes Acumulado)</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Grupo de Productos</th>
+			<th class="text-right">Cantidad</th>
+			<th class="text-right">Monto</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.financials.sales_by_item_group %}
+		<tr>
+			<td>{{ row.item_group }}</td>
+			<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Desglose de Ventas por Grupo de Productos (Día Anterior)</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Grupo de Productos</th>
+			<th class="text-right">Cantidad</th>
+			<th class="text-right">Monto</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.financials.sales_by_item_group_yesterday %}
+		<tr>
+			<td>{{ row.item_group }}</td>
+			<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Ventas por Persona de Ventas (Mes Acumulado)</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Vendedor</th>
+			<th class="text-right">Facturas</th>
+			<th class="text-right">Monto</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.financials.sales_by_person %}
+		<tr>
+			<td>{{ row.sales_person }}</td>
+			<td class="text-right">{{ row.invoice_count }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!-- SECCIÓN 2: COBRANZA -->
+<h3 class="page-break">2. Cobranza</h3>
+
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Cuentas por Cobrar</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.receivables.total.amount) }}</div>
+		<div class="metric-subvalue">{{ consolidated.receivables.total.count }} facturas</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">CxC Vencidas</div>
+		<div class="metric-value currency warning">$ {{ "{:,.2f}".format(consolidated.receivables.overdue.amount) }}</div>
+		<div class="metric-subvalue">{{ consolidated.receivables.overdue.count }} facturas</div>
+	</div>
+</div>
+
+<h4>Top 10 Cuentas Más Antiguas</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Factura</th>
+			<th>Cliente</th>
+			<th>Fecha</th>
+			<th class="text-right">Días Vencido</th>
+			<th class="text-right">Monto Pendiente</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.receivables.oldest %}
+		<tr>
+			<td>{{ row.name }}</td>
+			<td>{{ row.customer }}</td>
+			<td>{{ frappe.format(row.due_date, {'fieldtype': 'Date'}) }}</td>
+			<td class="text-right warning">{{ row.days_overdue }} días</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.outstanding_amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Top 10 Clientes con Cuentas Más Grandes</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Cliente</th>
+			<th class="text-right">Facturas</th>
+			<th class="text-right">Monto Pendiente</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.receivables.largest_customers %}
+		<tr>
+			<td>{{ row.customer }}</td>
+			<td class="text-right">{{ row.invoice_count }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!-- SECCIÓN 3: CUENTAS POR PAGAR -->
+<h3 class="page-break">3. Cuentas por Pagar</h3>
+
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Cuentas por Pagar</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.payables.total.amount) }}</div>
+		<div class="metric-subvalue">{{ consolidated.payables.total.count }} facturas</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">Stock Recibido No Facturado</div>
+		<div class="metric-value currency warning">$ {{ "{:,.2f}".format(consolidated.payables.stock_not_billed.amount) }}</div>
+		<div class="metric-subvalue">{{ consolidated.payables.stock_not_billed.count }} recepciones</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">Total Adeudos</div>
+		<div class="metric-value currency negative">$ {{ "{:,.2f}".format(consolidated.payables.total_debt.amount) }}</div>
+		<div class="metric-subvalue">CxP + Stock No Facturado</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">CxP Vencidas</div>
+		<div class="metric-value currency warning">$ {{ "{:,.2f}".format(consolidated.payables.overdue.amount) }}</div>
+		<div class="metric-subvalue">{{ consolidated.payables.overdue.count }} facturas</div>
+	</div>
+</div>
+
+<h4>Top 10 Facturas Más Antiguas Sin Pago</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Factura</th>
+			<th>Proveedor</th>
+			<th>Fecha Vencimiento</th>
+			<th class="text-right">Días Vencido</th>
+			<th class="text-right">Monto Pendiente</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.payables.oldest %}
+		<tr>
+			<td>{{ row.name }}</td>
+			<td>{{ row.supplier }}</td>
+			<td>{{ frappe.format(row.due_date, {'fieldtype': 'Date'}) }}</td>
+			<td class="text-right warning">{{ row.days_overdue }} días</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.outstanding_amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Top 10 Facturas Más Grandes Sin Pago</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Factura</th>
+			<th>Proveedor</th>
+			<th>Fecha Vencimiento</th>
+			<th class="text-right">Monto Pendiente</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.payables.largest %}
+		<tr>
+			<td>{{ row.name }}</td>
+			<td>{{ row.supplier }}</td>
+			<td>{{ frappe.format(row.due_date, {'fieldtype': 'Date'}) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.outstanding_amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!-- SECCIÓN 4: INVENTARIO -->
+<h3 class="page-break">4. Stock / Inventario</h3>
+
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Valor Total Inventario</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.inventory.total.value) }}</div>
+		<div class="metric-subvalue">{{ "{:,.0f}".format(consolidated.inventory.total.qty) }} unidades</div>
+	</div>
+
+	<div class="metric-card">
+		<div class="metric-label">Cantidad Llantas</div>
+		<div class="metric-value">{{ "{:,.0f}".format(consolidated.inventory.llantas.qty) }}</div>
+		<div class="metric-subvalue">Valor: $ {{ "{:,.2f}".format(consolidated.inventory.llantas.value) }}</div>
+	</div>
+</div>
+
+<h4>Valor de Inventario por Grupo de Productos</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Grupo de Productos</th>
+			<th class="text-right">Cantidad</th>
+			<th class="text-right">Valor</th>
+			<th class="text-right">% Distribución</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% set total_value = consolidated.inventory.by_item_group | sum(attribute='value') %}
+		{% for row in consolidated.inventory.by_item_group %}
+		<tr>
+			<td>{{ row.item_group }}</td>
+			<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.value) }}</td>
+			<td class="text-right">{{ "{:.1f}".format((row.value / total_value * 100) if total_value > 0 else 0) }}%</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Top 10 Llantas con Mayor Valor en Inventario</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Código</th>
+			<th>Descripción</th>
+			<th>Almacén</th>
+			<th class="text-right">Cantidad</th>
+			<th class="text-right">Valor</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.inventory.top_llantas_value %}
+		<tr>
+			<td>{{ row.item_code }}</td>
+			<td>{{ row.item_name }}</td>
+			<td>{{ row.warehouse }}</td>
+			<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.value) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Top 10 Llantas con Mayor Antigüedad</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Código</th>
+			<th>Descripción</th>
+			<th>Almacén</th>
+			<th>Fecha Entrada</th>
+			<th class="text-right">Días</th>
+			<th class="text-right">Cantidad</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.inventory.oldest_llantas %}
+		<tr>
+			<td>{{ row.item_code }}</td>
+			<td>{{ row.item_name }}</td>
+			<td>{{ row.warehouse }}</td>
+			<td>{{ frappe.format(row.oldest_date, {'fieldtype': 'Date'}) }}</td>
+			<td class="text-right warning">{{ row.days_old }} días</td>
+			<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Desglose de Inventario por Almacén</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Almacén</th>
+			<th class="text-right">Cantidad</th>
+			<th class="text-right">Valor</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.inventory.by_warehouse %}
+		<tr>
+			<td>{{ row.warehouse }}</td>
+			<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.value) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<h4>Tendencia de Valor de Inventario (Últimos 12 Meses)</h4>
+<table>
+	<thead>
+		<tr>
+			<th>Mes</th>
+			<th class="text-right">Valor Inventario</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in consolidated.inventory.trend %}
+		<tr>
+			<td>{{ row.month }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(row.value) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!-- SECCIÓN 5: COMPRAS PENDIENTES -->
+<h3 class="page-break">5. Compras Pendientes</h3>
+
+<h4>Órdenes de Compra Pendientes</h4>
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Total Órdenes Pendientes</div>
+		<div class="metric-value">{{ consolidated.pending_purchases.purchase_orders.count }}</div>
+	</div>
+	<div class="metric-card">
+		<div class="metric-label">Monto Pendiente</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.pending_purchases.purchase_orders.total_amount) }}</div>
+	</div>
+</div>
+
+{% if consolidated.pending_purchases.purchase_orders.list|length > 0 %}
+<table>
+	<thead>
+		<tr>
+			<th>PO #</th>
+			<th>Proveedor</th>
+			<th>Fecha</th>
+			<th class="text-right">Total</th>
+			<th class="text-right">% Recibido</th>
+			<th class="text-right">Monto Pendiente</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for po in consolidated.pending_purchases.purchase_orders.list %}
+		<tr>
+			<td>{{ po.name }}</td>
+			<td>{{ po.supplier }}</td>
+			<td>{{ frappe.format_date(po.transaction_date) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(po.base_grand_total) }}</td>
+			<td class="text-right">{{ "{:.0f}".format(po.per_received or 0) }}%</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(po.pending_amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% else %}
+<p><em>No hay órdenes de compra pendientes.</em></p>
+{% endif %}
+
+<h4>Recibos de Compra por Facturar</h4>
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Total Recibos por Facturar</div>
+		<div class="metric-value">{{ consolidated.pending_purchases.purchase_receipts.count }}</div>
+	</div>
+	<div class="metric-card">
+		<div class="metric-label">Monto por Facturar</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.pending_purchases.purchase_receipts.total_amount) }}</div>
+	</div>
+</div>
+
+{% if consolidated.pending_purchases.purchase_receipts.list|length > 0 %}
+<table>
+	<thead>
+		<tr>
+			<th>PR #</th>
+			<th>Proveedor</th>
+			<th>Fecha</th>
+			<th class="text-right">Total</th>
+			<th class="text-right">% Facturado</th>
+			<th class="text-right">Monto Pendiente</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for pr in consolidated.pending_purchases.purchase_receipts.list %}
+		<tr>
+			<td>{{ pr.name }}</td>
+			<td>{{ pr.supplier }}</td>
+			<td>{{ frappe.format_date(pr.posting_date) }}</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(pr.base_grand_total) }}</td>
+			<td class="text-right">{{ "{:.0f}".format(pr.per_billed or 0) }}%</td>
+			<td class="text-right currency">$ {{ "{:,.2f}".format(pr.pending_amount) }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% else %}
+<p><em>No hay recibos de compra por facturar.</em></p>
+{% endif %}
+
+<!-- SECCIÓN 6: FACTURAS SIN ENTREGAR -->
+<h3 class="page-break">6. Facturas Sin Entregar</h3>
+
+<div class="metrics-grid">
+	<div class="metric-card">
+		<div class="metric-label">Total Facturas Sin Entregar</div>
+		<div class="metric-value warning">{{ consolidated.undelivered_invoices.count }}</div>
+	</div>
+	<div class="metric-card">
+		<div class="metric-label">Monto Total</div>
+		<div class="metric-value currency">$ {{ "{:,.2f}".format(consolidated.undelivered_invoices.total_amount) }}</div>
+	</div>
+</div>
+
+<p><em>Total de {{ consolidated.undelivered_invoices.count }} facturas submitted pendientes de entrega por ${{ "{:,.2f}".format(consolidated.undelivered_invoices.total_amount) }}</em></p>
+
+<!-- ========================================================================== -->
+<!-- DATOS POR SUCURSAL -->
+<!-- ========================================================================== -->
+
+{% if data.branches and data.branches|length > 0 %}
+	{% for branch in data.branches %}
+
+	<div class="branch-title">
+		🏢 SUCURSAL: {{ branch.cost_center_name or branch.cost_center }}
+	</div>
+
+	<!-- Repetir todas las secciones para cada sucursal -->
+
+	<h3>1. Resultados Financieros</h3>
+
+	<div class="metrics-grid">
+		<div class="metric-card">
+			<div class="metric-label">Ventas (Mes)</div>
+			<div class="metric-value currency">$ {{ "{:,.2f}".format(branch.financials.sales_month.sales) }}</div>
+			<div class="metric-subvalue">{{ branch.financials.sales_month.invoice_count }} facturas</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">Ventas (Ayer)</div>
+			<div class="metric-value currency">$ {{ "{:,.2f}".format(branch.financials.sales_yesterday.sales) }}</div>
+			<div class="metric-subvalue">{{ branch.financials.sales_yesterday.invoice_count }} facturas</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">Margen Bruto (Mes)</div>
+			<div class="metric-value currency positive">$ {{ "{:,.2f}".format(branch.financials.sales_month.gross_profit) }}</div>
+			<div class="metric-subvalue">{{ "{:.2f}".format(branch.financials.sales_month.gross_margin_pct) }}%</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">Margen Bruto (Ayer)</div>
+			<div class="metric-value currency positive">$ {{ "{:,.2f}".format(branch.financials.sales_yesterday.gross_profit) }}</div>
+			<div class="metric-subvalue">{{ "{:.2f}".format(branch.financials.sales_yesterday.gross_margin_pct) }}%</div>
+		</div>
+	</div>
+
+	<h4>Desglose de Ventas por Grupo de Productos (Mes Acumulado)</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>Grupo</th>
+				<th class="text-right">Cantidad</th>
+				<th class="text-right">Monto</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for row in branch.financials.sales_by_item_group %}
+			<tr>
+				<td>{{ row.item_group }}</td>
+				<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(row.amount) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<h4>Desglose de Ventas por Grupo de Productos (Día Anterior)</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>Grupo</th>
+				<th class="text-right">Cantidad</th>
+				<th class="text-right">Monto</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for row in branch.financials.sales_by_item_group_yesterday %}
+			<tr>
+				<td>{{ row.item_group }}</td>
+				<td class="text-right">{{ "{:,.0f}".format(row.qty) }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(row.amount) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<h3>2. Cobranza</h3>
+
+	<div class="metrics-grid">
+		<div class="metric-card">
+			<div class="metric-label">CxC Total</div>
+			<div class="metric-value currency">$ {{ "{:,.2f}".format(branch.receivables.total.amount) }}</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">CxC Vencidas</div>
+			<div class="metric-value currency warning">$ {{ "{:,.2f}".format(branch.receivables.overdue.amount) }}</div>
+		</div>
+	</div>
+
+	<h4>Top 10 Cuentas Más Antiguas</h4>
+	{% if branch.receivables.oldest|length > 0 %}
+	<table>
+		<thead>
+			<tr>
+				<th>Factura</th>
+				<th>Cliente</th>
+				<th>Vencimiento</th>
+				<th class="text-right">Días Vencida</th>
+				<th class="text-right">Monto Pendiente</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for inv in branch.receivables.oldest %}
+			<tr>
+				<td>{{ inv.name }}</td>
+				<td>{{ inv.customer[:40] }}</td>
+				<td>{{ frappe.format_date(inv.due_date) }}</td>
+				<td class="text-right">{{ inv.days_overdue }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(inv.outstanding_amount) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p><em>No hay cuentas vencidas.</em></p>
+	{% endif %}
+
+	<h4>Top 10 Clientes con Cuentas Más Grandes</h4>
+	{% if branch.receivables.largest_customers|length > 0 %}
+	<table>
+		<thead>
+			<tr>
+				<th>Cliente</th>
+				<th class="text-right">Facturas</th>
+				<th class="text-right">Monto Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for cust in branch.receivables.largest_customers %}
+			<tr>
+				<td>{{ cust.customer[:50] }}</td>
+				<td class="text-right">{{ cust.invoice_count }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(cust.amount) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p><em>No hay cuentas por cobrar.</em></p>
+	{% endif %}
+
+	<h3>3. Cuentas por Pagar</h3>
+
+	<div class="metrics-grid">
+		<div class="metric-card">
+			<div class="metric-label">CxP Total</div>
+			<div class="metric-value currency">$ {{ "{:,.2f}".format(branch.payables.total.amount) }}</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">Total Adeudos</div>
+			<div class="metric-value currency negative">$ {{ "{:,.2f}".format(branch.payables.total_debt.amount) }}</div>
+		</div>
+	</div>
+
+	<h3>4. Inventario</h3>
+
+	<div class="metrics-grid">
+		<div class="metric-card">
+			<div class="metric-label">Valor Total</div>
+			<div class="metric-value currency">$ {{ "{:,.2f}".format(branch.inventory.total.value) }}</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">Llantas</div>
+			<div class="metric-value">{{ "{:,.0f}".format(branch.inventory.llantas.qty) }}</div>
+			<div class="metric-subvalue">$ {{ "{:,.2f}".format(branch.inventory.llantas.value) }}</div>
+		</div>
+	</div>
+
+	<h3>5. Compras Pendientes</h3>
+
+	<div class="metrics-grid">
+		<div class="metric-card">
+			<div class="metric-label">Órdenes Compra Pendientes Recibo</div>
+			<div class="metric-value">{{ branch.pending_purchases.purchase_orders.count }}</div>
+			<div class="metric-subvalue">$ {{ "{:,.2f}".format(branch.pending_purchases.purchase_orders.total_amount) }}</div>
+		</div>
+
+		<div class="metric-card">
+			<div class="metric-label">Recibos Pendientes Facturar</div>
+			<div class="metric-value">{{ branch.pending_purchases.purchase_receipts.count }}</div>
+			<div class="metric-subvalue">$ {{ "{:,.2f}".format(branch.pending_purchases.purchase_receipts.total_amount) }}</div>
+		</div>
+	</div>
+
+	{% if branch.pending_purchases.purchase_orders.list|length > 0 %}
+	<h4>Órdenes de Compra Pendientes</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>PO #</th>
+				<th>Proveedor</th>
+				<th>Fecha</th>
+				<th class="text-right">Total</th>
+				<th class="text-right">Pendiente</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for po in branch.pending_purchases.purchase_orders.list[:10] %}
+			<tr>
+				<td>{{ po.name }}</td>
+				<td>{{ po.supplier[:30] }}</td>
+				<td>{{ frappe.format_date(po.transaction_date) }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(po.base_grand_total) }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(po.pending_amount) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
+
+	{% if branch.pending_purchases.purchase_receipts.list|length > 0 %}
+	<h4>Recibos de Compra Pendientes de Facturar</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>PR #</th>
+				<th>Proveedor</th>
+				<th>Fecha</th>
+				<th class="text-right">Total</th>
+				<th class="text-right">Pendiente</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for pr in branch.pending_purchases.purchase_receipts.list[:10] %}
+			<tr>
+				<td>{{ pr.name }}</td>
+				<td>{{ pr.supplier[:30] }}</td>
+				<td>{{ frappe.format_date(pr.posting_date) }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(pr.base_grand_total) }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(pr.pending_amount) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
+
+	<h3>6. Facturas Sin Entregar</h3>
+
+	<div class="metrics-grid">
+		<div class="metric-card">
+			<div class="metric-label">Facturas Sin Entregar</div>
+			<div class="metric-value warning">{{ branch.undelivered_invoices.count }}</div>
+			<div class="metric-subvalue">$ {{ "{:,.2f}".format(branch.undelivered_invoices.total_amount) }}</div>
+		</div>
+	</div>
+
+	{% if branch.undelivered_invoices.list|length > 0 %}
+	<h4>Listado de Facturas Sin Entregar</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>Factura #</th>
+				<th>Cliente</th>
+				<th>Fecha</th>
+				<th>Status</th>
+				<th class="text-right">Monto</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for inv in branch.undelivered_invoices.list %}
+			<tr>
+				<td>{{ inv.name }}</td>
+				<td>{{ inv.customer[:35] }}</td>
+				<td>{{ frappe.format_date(inv.posting_date) }}</td>
+				<td>{{ inv.status }}</td>
+				<td class="text-right currency">$ {{ "{:,.2f}".format(inv.base_grand_total) }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<p><em>No hay facturas sin entregar en esta sucursal.</em></p>
+	{% endif %}
+
+	{% endfor %}
+{% endif %}
+
+<!-- FOOTER -->
+<div class="footer">
+	<p>Este reporte fue generado automáticamente por el sistema ERPNext de Llantas de Calidad Star</p>
+	<p>{{ data.generated_at }}</p>
+</div>
+
+</body>
+</html>

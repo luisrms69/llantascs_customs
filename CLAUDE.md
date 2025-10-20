@@ -29,7 +29,7 @@ bench --site admin1.dev       # Site de OTRA app
 - admin1.dev (condominium_management - OTRO workspace)
 
 ### 🌐 URL Desarrollo:
-http://llantascs.dev:8000
+http://localhost:8408/
 
 **Comando recordatorio:** `/remind-site` (slash command disponible)
 
@@ -47,6 +47,91 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - No crear/modificar DocTypes, fixtures o campos salvo instrucción explícita.
 - No inventar lógica nueva: implementar **únicamente** lo que la tarea indica.
 - No mover este archivo (`CLAUDE.md`) a `docs/`; siempre vive en la raíz.
+
+## ⛔⛔⛔ PROHIBICIÓN TERMINAL - MODIFICACIÓN DIRECTA DE BASE DE DATOS ⛔⛔⛔
+
+### 🚨 REGLA ABSOLUTA INQUEBRANTABLE
+
+**CLAUDE ESTÁ 100% PROHIBIDO DE:**
+
+1. **Crear scripts one_offs que modifiquen la base de datos** (frappe.get_doc().save(), frappe.db.set_value(), frappe.db.sql() UPDATE/INSERT/DELETE)
+   - ❌ NUNCA: `card.save()` en scripts one_offs
+   - ❌ NUNCA: `frappe.db.set_value()`
+   - ❌ NUNCA: `frappe.db.sql("UPDATE ...")`
+   - ❌ NUNCA: Scripts que modifiquen DocTypes en BD
+
+2. **Usar `bench execute` con código que modifique BD**
+   - ❌ NUNCA: `bench --site llantascs.dev execute "frappe.get_doc(...).save()"`
+   - ❌ NUNCA: Inline code que guarde cambios
+
+3. **"Atajar" problemas de fixtures modificando BD**
+   - ❌ NUNCA: "El migrate no funcionó, voy a modificar la BD directamente"
+   - ❌ NUNCA: "El fixture tiene un error, lo arreglo en BD"
+
+### ✅ ÚNICA FORMA CORRECTA DE MODIFICAR FIXTURES
+
+1. Modificar el archivo JSON del fixture (`llantascs_customs/fixtures/*.json`)
+2. Ejecutar `bench --site llantascs.dev migrate`
+3. FIN. No hay paso 3.
+
+### 🔥 SI MIGRATE NO FUNCIONA
+
+1. REPORTAR: "Migrate falló con error X"
+2. PROPONER: "Puedo modificar el fixture JSON de esta forma..."
+3. ESPERAR: Autorización explícita del usuario
+4. NUNCA: Modificar BD como "workaround temporal"
+
+### ❌ SCRIPTS ONE_OFFS SOLO PARA:
+
+- ✅ **LECTURA**: Investigar, auditar, reportar estado
+- ✅ **ANÁLISIS**: Comparar datos, generar reportes
+- ❌ **NUNCA ESCRITURA**: Modificar, actualizar, insertar
+
+### 💀 CASTIGO POR VIOLACIÓN
+
+**Si Claude crea/ejecuta un script que modifique la BD:**
+- Violación CRÍTICA de instrucciones
+- Detener TODO trabajo inmediatamente
+- Esperar que el usuario decida si continuar o no
+
+### 📝 EJEMPLOS PROHIBIDOS (LO QUE NO DEBES HACER)
+
+```python
+# ❌ PROHIBIDO - Scripts que modifican BD directamente
+card = frappe.get_doc('Number Card', 'Inventario por Sucursal Total')
+card.label = 'Inventario Total'
+card.save(ignore_permissions=True)  # ← ESTO ESTÁ PROHIBIDO
+frappe.db.commit()  # ← ESTO ESTÁ PROHIBIDO
+```
+
+### ✅ FORMA CORRECTA (LO QUE DEBES HACER)
+
+```python
+# ✅ CORRECTO - Modificar el fixture JSON directamente
+import json
+
+with open('llantascs_customs/fixtures/number_card.json', 'r') as f:
+    cards = json.load(f)
+
+for card in cards:
+    if card['name'] == 'Inventario por Sucursal Total':
+        card['label'] = 'Inventario Total'  # ← Modificar JSON
+
+with open('llantascs_customs/fixtures/number_card.json', 'w') as f:
+    json.dump(cards, f, indent=1)  # ← Guardar JSON
+
+# Luego ejecutar: bench --site llantascs.dev migrate
+```
+
+### 🔐 CONFIRMACIÓN OBLIGATORIA
+
+Antes de CUALQUIER script one_offs, Claude DEBE preguntar:
+
+**🔐 CONFIRMACIÓN: Voy a crear script one_offs `nombre.py` que hará [LECTURA/ESCRITURA]. El script hará: [descripción exacta]. ¿Proceder? (si/no)**
+
+Si es ESCRITURA a BD → DETENER y REPORTAR en lugar de crear el script.
+
+---
 
 ## Autorización de Código - REGLAS ESTRICTAS ADICIONALES
 

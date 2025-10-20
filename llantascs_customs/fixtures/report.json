@@ -9,6 +9,94 @@
   "filters": [],
   "is_standard": "Yes",
   "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-10-19 22:00:00",
+  "module": "llantascs_customs",
+  "name": "Gross Profit CC",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Gross Profit CC",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Gross Profit CC",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Gross Profit CC",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Gross Profit CC",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Gross Profit CC",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": "{}",
+  "letter_head": null,
+  "modified": "2025-10-18 16:00:00",
+  "module": "Llantascs Customs",
+  "name": "Reporte Diario Director General",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Reporte Diario Director General",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Reporte Diario Director General",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Reporte Diario Director General",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
   "json": "{}",
   "letter_head": null,
   "modified": "2025-09-03 23:44:54.657235",
@@ -115,6 +203,99 @@
   "doctype": "Report",
   "filters": [
    {
+    "default": "2025-01-01",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "Desde",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": "Today",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "Hasta",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": null,
+    "fieldname": "cost_center",
+    "fieldtype": "Link",
+    "label": "Sucursal (raíz o hija)",
+    "mandatory": 0,
+    "options": "Cost Center",
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": null,
+    "fieldname": "sales_person",
+    "fieldtype": "Link",
+    "label": "Vendedor (raíz o hijo)",
+    "mandatory": 0,
+    "options": "Sales Person",
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-09-13 15:45:00",
+  "module": "Llantascs Customs",
+  "name": "Backlog Comisiones GP nativo",
+  "prepared_report": 1,
+  "query": null,
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Backlog Comisiones GP nativo",
+  "report_script": "llantascs_customs.llantascs_customs.report.backlog_comisiones_gp_nativo.backlog_comisiones_gp_nativo",
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS Manager"
+   },
+   {
+    "parent": "Backlog Comisiones GP nativo",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Llantas CS User"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [
+   {
     "default": null,
     "fieldname": "from_date",
     "fieldtype": "Date",
@@ -143,11 +324,11 @@
   "javascript": null,
   "json": null,
   "letter_head": "Letter head Llantascs",
-  "modified": "2025-09-11 14:56:58.342678",
+  "modified": "2025-10-19 16:43:48.186728",
   "module": "Llantascs Customs",
   "name": "Pagos OPC - Resumen",
   "prepared_report": 0,
-  "query": "/* Pagos OPC - Resumen: NO recalcula nada; usa lo que guard\u00f3 la OPC (Comision LLCS) */\nSELECT\n  c.parent                              AS \"OPC:Link/Orden de Pago Comisiones:200\",\n  MIN(si.posting_date)                  AS \"Primer D\u00eda:Date:110\",\n  MAX(si.posting_date)                  AS \"\u00daltimo D\u00eda:Date:110\",\n  COUNT(DISTINCT c.sales_invoice_id)    AS \"# Facturas:Int:90\",\n  SUM(c.ingreso)                        AS \"Ingreso:Currency:120\",\n  SUM(c.costo_de_ventas)                AS \"Costo:Currency:120\",\n  SUM(c.utilidad_transaccion)           AS \"Utilidad:Currency:120\",\n  SUM(c.total_comision)                 AS \"Comisi\u00f3n:Currency:120\"\nFROM `tabComision LLCS` c\nINNER JOIN `tabOrden de Pago Comisiones` opc\n  ON opc.name = c.parent AND opc.docstatus = 1\nLEFT JOIN `tabSales Invoice` si\n  ON si.name = c.sales_invoice_id AND si.docstatus = 1\nWHERE si.posting_date BETWEEN %(from_date)s AND %(to_date)s\nGROUP BY c.parent\nORDER BY MAX(si.posting_date) DESC, c.parent DESC;",
+  "query": "/* Pagos OPC - Resumen: NO recalcula nada; usa lo que guardó la OPC (Comision LLCS) */\nSELECT\n  c.parent                              AS \"OPC:Link/Orden de Pago Comisiones:200\",\n  MIN(si.posting_date)                  AS \"Primer Día:Date:110\",\n  MAX(si.posting_date)                  AS \"Último Día:Date:110\",\n  COUNT(DISTINCT c.sales_invoice_id)    AS \"# Facturas:Int:90\",\n  SUM(c.ingreso)                        AS \"Ingreso:Currency:120\",\n  SUM(c.costo_de_ventas)                AS \"Costo:Currency:120\",\n  SUM(c.utilidad_transaccion)           AS \"Utilidad:Currency:120\",\n  SUM(c.total_comision)                 AS \"Comisión:Currency:120\"\nFROM `tabComision LLCS` c\nINNER JOIN `tabOrden de Pago Comisiones` opc\n  ON opc.name = c.parent AND opc.docstatus = 1\nLEFT JOIN `tabSales Invoice` si\n  ON si.name = c.sales_invoice_id AND si.docstatus = 1\nWHERE si.posting_date BETWEEN %(from_date)s AND %(to_date)s\nGROUP BY c.parent\nORDER BY MAX(si.posting_date) DESC, c.parent DESC;",
   "ref_doctype": "Orden de Pago Comisiones",
   "reference_report": null,
   "report_name": "Pagos OPC - Resumen",
@@ -168,99 +349,6 @@
    },
    {
     "parent": "Pagos OPC - Resumen",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Llantas CS User"
-   }
-  ],
-  "timeout": 0
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "filters": [
-   {
-    "default": "2025-01-01",
-    "fieldname": "from_date",
-    "fieldtype": "Date",
-    "label": "Desde",
-    "mandatory": 0,
-    "options": null,
-    "parent": "Backlog Comisiones GP nativo",
-    "parentfield": "filters",
-    "parenttype": "Report",
-    "wildcard_filter": 0
-   },
-   {
-    "default": "Today",
-    "fieldname": "to_date",
-    "fieldtype": "Date",
-    "label": "Hasta",
-    "mandatory": 0,
-    "options": null,
-    "parent": "Backlog Comisiones GP nativo",
-    "parentfield": "filters",
-    "parenttype": "Report",
-    "wildcard_filter": 0
-   },
-   {
-    "default": null,
-    "fieldname": "cost_center",
-    "fieldtype": "Link",
-    "label": "Sucursal (ra\u00edz o hija)",
-    "mandatory": 0,
-    "options": "Cost Center",
-    "parent": "Backlog Comisiones GP nativo",
-    "parentfield": "filters",
-    "parenttype": "Report",
-    "wildcard_filter": 0
-   },
-   {
-    "default": null,
-    "fieldname": "sales_person",
-    "fieldtype": "Link",
-    "label": "Vendedor (ra\u00edz o hijo)",
-    "mandatory": 0,
-    "options": "Sales Person",
-    "parent": "Backlog Comisiones GP nativo",
-    "parentfield": "filters",
-    "parenttype": "Report",
-    "wildcard_filter": 0
-   }
-  ],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2025-09-13 15:45:00.000000",
-  "module": "Llantascs Customs",
-  "name": "Backlog Comisiones GP nativo",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Sales Invoice",
-  "reference_report": null,
-  "report_name": "Backlog Comisiones GP nativo",
-  "report_script": "llantascs_customs.llantascs_customs.report.backlog_comisiones_gp_nativo.backlog_comisiones_gp_nativo",
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Backlog Comisiones GP nativo",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "System Manager"
-   },
-   {
-    "parent": "Backlog Comisiones GP nativo",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Llantas CS Manager"
-   },
-   {
-    "parent": "Backlog Comisiones GP nativo",
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Llantas CS User"
