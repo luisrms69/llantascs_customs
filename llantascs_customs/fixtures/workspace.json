@@ -82,8 +82,7 @@
     "url": null
    }
   ],
-  "title": "Vendedores",
- "type": "Module"
+  "title": "Vendedores"
  },
  {
   "charts": [
@@ -211,8 +210,7 @@
     "url": null
    }
   ],
-  "title": "Comisiones",
-  "type": "Module"
+  "title": "Comisiones"
  },
  {
   "charts": [
@@ -242,28 +240,33 @@
   "is_hidden": 0,
   "label": "Direccion General",
   "links": [],
+  "modified": "2025-10-19 16:37:19.895098",
   "module": "",
   "name": "Direccion General",
   "number_cards": [
    {
+    "label": null,
     "number_card_name": "Ventas del Mes",
     "parent": "Direccion General",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cartera Vencida",
     "parent": "Direccion General",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Ventas Corporativas Mes Anterior",
     "parent": "Direccion General",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Clientes Nuevos del Mes",
     "parent": "Direccion General",
     "parentfield": "number_cards",
@@ -295,7 +298,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "GL Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -312,7 +315,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "GL Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -329,7 +332,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -346,7 +349,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -363,7 +366,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -380,7 +383,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -397,7 +400,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -414,7 +417,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -431,7 +434,7 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -448,15 +451,14 @@
     "parent": "Direccion General",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
     "url": null
    }
   ],
-  "title": "Direccion General",
-  "type": "Module"
+  "title": "Direccion General"
  },
  {
   "charts": [],
@@ -471,40 +473,47 @@
   "is_hidden": 0,
   "label": "Cockpit",
   "links": [],
+  "modified": "2025-10-19 16:37:19.917317",
   "module": "",
   "name": "Cockpit",
   "number_cards": [
    {
+    "label": null,
     "number_card_name": "Ventas Corporativas Mes",
     "parent": "Cockpit",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Compras Corporativas Mes",
     "parent": "Cockpit",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cartera Vencida Corporativa",
     "parent": "Cockpit",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cuentas por Pagar Pendientes",
     "parent": "Cockpit",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Recepciones Pendientes Corporativo",
     "parent": "Cockpit",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Clientes Nuevos del Mes",
     "parent": "Cockpit",
     "parentfield": "number_cards",
@@ -525,8 +534,7 @@
   ],
   "sequence_id": 1.0,
   "shortcuts": [],
-  "title": "Cockpit",
-  "type": "Module"
+  "title": "Cockpit"
  },
  {
   "charts": [
@@ -563,40 +571,47 @@
   "is_hidden": 0,
   "label": "Direccion Operativa",
   "links": [],
+  "modified": "2025-10-19 16:37:19.948404",
   "module": null,
   "name": "Direccion Operativa",
   "number_cards": [
    {
+    "label": null,
     "number_card_name": "Ventas del Mes OP",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Órdenes Compra Pendientes Recibir",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Valor Total Inventario",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Entregas del Mes",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Devoluciones de Entrega Mes",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Devoluciones de Venta Mes",
     "parent": "Direccion Operativa",
     "parentfield": "number_cards",
@@ -628,7 +643,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Stock Ledger Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -645,7 +660,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Item",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -662,7 +677,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Stock Ledger Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -679,7 +694,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Item",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -696,7 +711,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -713,7 +728,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -730,7 +745,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -747,7 +762,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -764,7 +779,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -781,7 +796,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -798,7 +813,7 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Delivery Note",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -815,15 +830,14 @@
     "parent": "Direccion Operativa",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Receipt",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
     "url": null
    }
   ],
-  "title": "Direccion Operativa",
-  "type": "Module"
+  "title": "Direccion Operativa"
  },
  {
   "charts": [
@@ -860,58 +874,68 @@
   "is_hidden": 0,
   "label": "Direccion Financiera",
   "links": [],
+  "modified": "2025-10-19 16:37:20.016694",
   "module": null,
   "name": "Direccion Financiera",
   "number_cards": [
    {
+    "label": null,
     "number_card_name": "Ventas del Mes CFO",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Compras del Mes CFO",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cartera Vencida CFO",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cuentas por Pagar Vencidas",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Recepciones Pendientes",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cobros del Mes",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Pagos del Mes",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Facturas Venta Mes",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Facturas Compra Mes",
     "parent": "Direccion Financiera",
     "parentfield": "number_cards",
@@ -943,7 +967,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "GL Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -960,7 +984,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "GL Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -977,7 +1001,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "GL Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -994,7 +1018,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "GL Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1011,7 +1035,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1028,7 +1052,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1045,7 +1069,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1062,7 +1086,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1079,7 +1103,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1113,7 +1137,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1130,7 +1154,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1147,7 +1171,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1164,7 +1188,7 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1181,15 +1205,14 @@
     "parent": "Direccion Financiera",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Purchase Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
     "url": null
    }
   ],
-  "title": "Direccion Financiera",
-  "type": "Module"
+  "title": "Direccion Financiera"
  },
  {
   "charts": [],
@@ -1204,22 +1227,26 @@
   "is_hidden": 0,
   "label": "Gerente de Sucursal",
   "links": [],
+  "modified": "2025-10-19 16:37:20.058200",
   "module": "",
   "name": "Gerente de Sucursal",
   "number_cards": [
    {
+    "label": null,
     "number_card_name": "Ventas del Mes Sucursal",
     "parent": "Gerente de Sucursal",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Recepciones por Facturar Sucursal",
     "parent": "Gerente de Sucursal",
     "parentfield": "number_cards",
     "parenttype": "Workspace"
    },
    {
+    "label": null,
     "number_card_name": "Cartera Vencida Sucursal",
     "parent": "Gerente de Sucursal",
     "parentfield": "number_cards",
@@ -1251,7 +1278,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Order",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1268,7 +1295,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1285,7 +1312,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1302,7 +1329,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Stock Ledger Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1319,7 +1346,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Item",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1336,7 +1363,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Stock Ledger Entry",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1353,7 +1380,7 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
@@ -1370,14 +1397,285 @@
     "parent": "Gerente de Sucursal",
     "parentfield": "shortcuts",
     "parenttype": "Workspace",
-    "report_ref_doctype": null,
+    "report_ref_doctype": "Sales Invoice",
     "restrict_to_domain": null,
     "stats_filter": null,
     "type": "Report",
     "url": null
    }
   ],
-  "title": "Gerente de Sucursal",
-  "type": "Module"
+  "title": "Gerente de Sucursal"
+ },
+ {
+  "charts": [
+   {
+    "chart_name": "Margen por sucursal",
+    "label": "Margen por Sucursal",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "Margen % por sucursal",
+    "label": "Margen % por Sucursal",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   },
+   {
+    "chart_name": "Warehouse wise Stock Value",
+    "label": "Inventario por Sucursal",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "charts",
+    "parenttype": "Workspace"
+   }
+  ],
+  "content": "[{\"id\":\"h-kpis\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Indicadores Operativos</span>\",\"col\":12}},{\"id\":\"card-1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Recepciones Pendientes\",\"col\":4}},{\"id\":\"card-2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Órdenes Compra Pendientes Recibir\",\"col\":4}},{\"id\":\"card-3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Facturas Sin Entrega Pendientes\",\"col\":4}},{\"id\":\"card-4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"CxC Vencida Total DG\",\"col\":6}},{\"id\":\"card-5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Inventario por Sucursal Total\",\"col\":6}},{\"id\":\"h-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Ventas y Margen por Sucursal</span>\",\"col\":12}},{\"id\":\"chart-2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Margen por Sucursal\",\"col\":12}},{\"id\":\"chart-2b\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Margen % por Sucursal\",\"col\":12}},{\"id\":\"h-inventarios\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Inventarios por Sucursal</span>\",\"col\":12}},{\"id\":\"chart-4\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Inventario por Sucursal\",\"col\":12}},{\"id\":\"h-reports-ventas\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reportes de Ventas</span>\",\"col\":12}},{\"id\":\"sc-v-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Análisis de Ventas DG Suc\",\"col\":4}},{\"id\":\"sc-v-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Margen Bruto DG Suc\",\"col\":4}},{\"id\":\"sc-v-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Registro Ventas por Producto DG Suc\",\"col\":4}},{\"id\":\"h-reports-inv\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reportes de Inventarios</span>\",\"col\":12}},{\"id\":\"sc-inv-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance Inventarios DG Suc\",\"col\":3}},{\"id\":\"sc-inv-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Inventarios DG Suc\",\"col\":3}},{\"id\":\"sc-inv-3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mayor de Inventarios DG Suc\",\"col\":3}},{\"id\":\"sc-inv-4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inventario Proyectado DG Suc\",\"col\":3}},{\"id\":\"h-reports-compras\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reportes de Compras</span>\",\"col\":12}},{\"id\":\"sc-comp-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Órdenes Compra Pendientes DG Suc\",\"col\":6}},{\"id\":\"sc-comp-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Recepciones Pendientes Factura DG Suc\",\"col\":6}},{\"id\":\"h-reports-cxc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reportes de Cuentas por Cobrar</span>\",\"col\":12}},{\"id\":\"sc-cxc-1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Resumen Cuentas por Cobrar DG Suc\",\"col\":6}},{\"id\":\"sc-cxc-2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Antigüedad Cobranza DG Suc\",\"col\":6}}]",
+  "custom_blocks": [],
+  "docstatus": 0,
+  "doctype": "Workspace",
+  "for_user": null,
+  "hide_custom": 0,
+  "icon": "branch",
+  "indicator_color": null,
+  "is_hidden": 0,
+  "label": "DG Analisis Sucursales",
+  "links": [],
+  "modified": "2025-10-19 16:37:20.123405",
+  "module": null,
+  "name": "DG Analisis Sucursales",
+  "number_cards": [
+   {
+    "label": null,
+    "number_card_name": "Recepciones Pendientes",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "label": null,
+    "number_card_name": "Órdenes Compra Pendientes Recibir",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "label": null,
+    "number_card_name": "Facturas Sin Entrega Pendientes",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   },
+   {
+    "label": null,
+    "number_card_name": "CxC Vencida Total DG",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "number_cards",
+    "parenttype": "Workspace"
+   }
+  ],
+  "parent_page": "Cockpit",
+  "public": 1,
+  "quick_lists": [],
+  "restrict_to_domain": null,
+  "roles": [
+   {
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "roles",
+    "parenttype": "Workspace",
+    "role": "System Manager"
+   }
+  ],
+  "sequence_id": 5.0,
+  "shortcuts": [
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Análisis de Ventas DG Suc",
+    "link_to": "Sales Analytics CC",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Margen Bruto DG Suc",
+    "link_to": "Gross Profit CC",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Registro Ventas por Producto DG Suc",
+    "link_to": "Item-wise Sales Register",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Balance Inventarios DG Suc",
+    "link_to": "Stock Balance",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Stock Ledger Entry",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Antigüedad Inventarios DG Suc",
+    "link_to": "Stock Ageing",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Item",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Mayor de Inventarios DG Suc",
+    "link_to": "Stock Ledger",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Stock Ledger Entry",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Inventario Proyectado DG Suc",
+    "link_to": "Stock Projected Qty",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Item",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": "List",
+    "format": "{\"filters\":[[\"Purchase Order\",\"status\",\"not in\",[\"Closed\",\"Cancelled\"],false],[\"Purchase Order\",\"docstatus\",\"=\",1,false]]}",
+    "icon": null,
+    "kanban_board": null,
+    "label": "Órdenes Compra Pendientes DG Suc",
+    "link_to": "Purchase Order",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "DocType",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": "List",
+    "format": "{\"filters\":[[\"Purchase Receipt\",\"status\",\"in\",[\"To Bill\",\"Partly Billed\"],false]]}",
+    "icon": null,
+    "kanban_board": null,
+    "label": "Recepciones Pendientes Factura DG Suc",
+    "link_to": "Purchase Receipt",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": null,
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "DocType",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Resumen Cuentas por Cobrar DG Suc",
+    "link_to": "Accounts Receivable Summary",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   },
+   {
+    "color": null,
+    "doc_view": null,
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "Antigüedad Cobranza DG Suc",
+    "link_to": "Accounts Receivable",
+    "parent": "DG Analisis Sucursales",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "report_ref_doctype": "Sales Invoice",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "Report",
+    "url": null
+   }
+  ],
+  "title": "DG Analisis Sucursales"
  }
 ]

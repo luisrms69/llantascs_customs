@@ -263,24 +263,24 @@ fixtures = [
                 "Pagos OPC - Resumen",
                 "Pagos OPC - Por Sucursal",
                 "Mis Comisiones Backlog",
-                "Detalle OPC - Por Documento"
+                "Detalle OPC - Por Documento",
+                "Reporte Diario Director General",
+                "Gross Profit CC",
+                "Sales Analytics CC"
             ]]
         }
     },
     
 
     # Workspace: Incluye workspaces Comisiones, Vendedores, Cockpit y sus hijos
-    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa", "Direccion Financiera", "Gerente de Sucursal"]]]},
+    {"doctype": "Workspace", "filters": [["name", "in", ["Comisiones", "Vendedores", "Cockpit", "Direccion General", "Direccion Operativa", "Direccion Financiera", "Gerente de Sucursal", "DG Analisis Sucursales"]]]},
 
     # Roles custom para asegurar que existen en destino
     {"doctype": "Role", "filters": [["role_name", "in", [
         "Llantas CS Manager", "Llantas CS User"
     ]]]},
 
-    # Print Format para reporte OPC detallado
-    {"doctype": "Print Format", "filters": [["name", "=", "opc_detallado"]]},
-
-    # Dashboard Charts: Comisiones, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal
+    # Dashboard Charts: Comisiones, Cockpit DG, Cockpit OP, Cockpit CFO, Gerente Sucursal y DG Analisis Sucursales
     {"doctype": "Dashboard Chart", "filters": [["name", "in", [
         "comisiones_pagadas_por_mes",
         "CH - OPC por Vendedor",
@@ -296,10 +296,13 @@ fixtures = [
         "chart_cfo_purchase_order_trends_12m",
         "chart_sucursal_sales_12m",
         "chart_sucursal_gp_12m",
-        "chart_sucursal_stock_by_group"
+        "chart_sucursal_stock_by_group",
+        "chart_dg_suc_sales_by_item_group",
+        "chart_dg_suc_stock_by_warehouse",
+        "Margen % por sucursal"
     ]]]},
 
-    # Number Cards: Cockpit Principal, Cockpit DG, Cockpit OP, Cockpit CFO y Gerente Sucursal
+    # Number Cards: Cockpit Principal, Cockpit DG, Cockpit OP, Cockpit CFO, Gerente Sucursal y DG Analisis Sucursales
     {"doctype": "Number Card", "filters": [["name", "in", [
         "Ventas del Mes",
         "Cartera Vencida",
@@ -328,7 +331,10 @@ fixtures = [
         "Pagos del Mes",
         "Facturas Venta Mes",
         "Facturas Compra Mes",
-        "Valor Total Inventario"
+        "Valor Total Inventario",
+        "Facturas Sin Entrega Pendientes",
+        "CxC Vencida Total DG",
+        "Inventario por Sucursal Total"
     ]]]},
 ]
 
