@@ -11,6 +11,16 @@
 
 ---
 
+## [v2.12.2] - 2026-03-23 - Campos DOT y Números de Serie en Sales Invoice Item
+
+- Agrega `custom_dot` (Data) y `custom_numeros_serie` (Data) al child table `Sales Invoice Item`
+- Campos visibles únicamente cuando `item_group == "Llantas"` (condicional via `depends_on`)
+- No editables tras submit del documento (`allow_on_submit: 0`)
+- `custom_numeros_serie` con `search_index: 1` para búsquedas eficientes en reportes
+- Captura vía edición de fila (lápiz); no se muestran como columnas por defecto
+
+---
+
 ## [v2.12.1] - 2025-10-16 - HOTFIX: Remove unsupported Avg function from Number Card 🔧
 
 ### 🐛 PROBLEMA IDENTIFICADO: KeyError 'Avg' en Dirección General
