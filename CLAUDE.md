@@ -1,512 +1,154 @@
-# ⚠️⚠️⚠️ MULTI-APP MODE ⚠️⚠️⚠️
-**SITE:** llantascs.dev | **APP:** llantascs_customs
-**COMANDOS:** `bench --site llantascs.dev [comando]`
-**NO:** `bench start` (tmux) | `bench migrate` (sin --site)
+# CLAUDE.md — llantascs_customs
 
-## 🚨 REGLAS ABSOLUTAS MULTI-APP (LEER PRIMERO)
+## Estado de migración
+- **Migrada a v16:** No
+- **Versión origen:** v15 (Frappe 15.97, ERPNext 15.95)
+- **En producción:** Sí — llantascs.dev (cliente LlantasCS)
+- **Branch activo:** feat/dot-numeros-serie-sales-invoice-item
+- **Sitio de desarrollo:** llantascs.dev
+- **Versión:** 2.7.21
 
-Este workspace comparte un bench con **facturacion_mexico** y **condominium_management**.
+## Entorno
+Ver contexto global en `frappe-infrastructure/.claude/CLAUDE.md`.
 
-### ✅ COMANDOS OBLIGATORIOS:
+**Bench:** /home/erpnext/frappe-bench  
+**Comandos siempre con --site:**
 ```bash
 bench --site llantascs.dev migrate
-bench --site llantascs.dev export-fixtures --apps llantascs_customs
+bench --site llantascs.dev export-fixtures --app llantascs_customs
 bench --site llantascs.dev run-tests --app llantascs_customs
-bench build --apps llantascs_customs
+bench build --app llantascs_customs
 ```
-
-### ❌ NUNCA EJECUTAR:
-```bash
-bench start                   # Ya corre en tmux global
-bench migrate                 # Sin --site (afectaría otros sites)
-bench --site facturacion.dev  # Site de OTRA app
-bench --site admin1.dev       # Site de OTRA app
-```
-
-### 📍 Sites en este Bench:
-- **llantascs.dev** ← **ESTE workspace** (llantascs_customs)
-- facturacion.dev (facturacion_mexico - OTRO workspace)
-- admin1.dev (condominium_management - OTRO workspace)
-
-### 🌐 URL Desarrollo:
-http://localhost:8408/
-
-**Comando recordatorio:** `/remind-site` (slash command disponible)
+**NUNCA:** `bench migrate` sin --site (afecta otros sitios del bench compartido)
 
 ---
 
-# CLAUDE.md
+## Qué hace esta app
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-
-## Non-Negotiables (Límites duros)
-- Operar **solo** sobre el sitio `llantascs.dev`.
-- Nunca usar `--no-verify` en commits.
-- Ningún commit o PR se considera válido sin autorización del dueño.
-- No crear/modificar DocTypes, fixtures o campos salvo instrucción explícita.
-- No inventar lógica nueva: implementar **únicamente** lo que la tarea indica.
-- No mover este archivo (`CLAUDE.md`) a `docs/`; siempre vive en la raíz.
-
-## ⛔⛔⛔ PROHIBICIÓN TERMINAL - MODIFICACIÓN DIRECTA DE BASE DE DATOS ⛔⛔⛔
-
-### 🚨 REGLA ABSOLUTA INQUEBRANTABLE
-
-**CLAUDE ESTÁ 100% PROHIBIDO DE:**
-
-1. **Crear scripts one_offs que modifiquen la base de datos** (frappe.get_doc().save(), frappe.db.set_value(), frappe.db.sql() UPDATE/INSERT/DELETE)
-   - ❌ NUNCA: `card.save()` en scripts one_offs
-   - ❌ NUNCA: `frappe.db.set_value()`
-   - ❌ NUNCA: `frappe.db.sql("UPDATE ...")`
-   - ❌ NUNCA: Scripts que modifiquen DocTypes en BD
-
-2. **Usar `bench execute` con código que modifique BD**
-   - ❌ NUNCA: `bench --site llantascs.dev execute "frappe.get_doc(...).save()"`
-   - ❌ NUNCA: Inline code que guarde cambios
-
-3. **"Atajar" problemas de fixtures modificando BD**
-   - ❌ NUNCA: "El migrate no funcionó, voy a modificar la BD directamente"
-   - ❌ NUNCA: "El fixture tiene un error, lo arreglo en BD"
-
-### ✅ ÚNICA FORMA CORRECTA DE MODIFICAR FIXTURES
-
-1. Modificar el archivo JSON del fixture (`llantascs_customs/fixtures/*.json`)
-2. Ejecutar `bench --site llantascs.dev migrate`
-3. FIN. No hay paso 3.
-
-### 🔥 SI MIGRATE NO FUNCIONA
-
-1. REPORTAR: "Migrate falló con error X"
-2. PROPONER: "Puedo modificar el fixture JSON de esta forma..."
-3. ESPERAR: Autorización explícita del usuario
-4. NUNCA: Modificar BD como "workaround temporal"
-
-### ❌ SCRIPTS ONE_OFFS SOLO PARA:
-
-- ✅ **LECTURA**: Investigar, auditar, reportar estado
-- ✅ **ANÁLISIS**: Comparar datos, generar reportes
-- ❌ **NUNCA ESCRITURA**: Modificar, actualizar, insertar
-
-### 💀 CASTIGO POR VIOLACIÓN
-
-**Si Claude crea/ejecuta un script que modifique la BD:**
-- Violación CRÍTICA de instrucciones
-- Detener TODO trabajo inmediatamente
-- Esperar que el usuario decida si continuar o no
-
-### 📝 EJEMPLOS PROHIBIDOS (LO QUE NO DEBES HACER)
-
-```python
-# ❌ PROHIBIDO - Scripts que modifican BD directamente
-card = frappe.get_doc('Number Card', 'Inventario por Sucursal Total')
-card.label = 'Inventario Total'
-card.save(ignore_permissions=True)  # ← ESTO ESTÁ PROHIBIDO
-frappe.db.commit()  # ← ESTO ESTÁ PROHIBIDO
-```
-
-### ✅ FORMA CORRECTA (LO QUE DEBES HACER)
-
-```python
-# ✅ CORRECTO - Modificar el fixture JSON directamente
-import json
-
-with open('llantascs_customs/fixtures/number_card.json', 'r') as f:
-    cards = json.load(f)
-
-for card in cards:
-    if card['name'] == 'Inventario por Sucursal Total':
-        card['label'] = 'Inventario Total'  # ← Modificar JSON
-
-with open('llantascs_customs/fixtures/number_card.json', 'w') as f:
-    json.dump(cards, f, indent=1)  # ← Guardar JSON
-
-# Luego ejecutar: bench --site llantascs.dev migrate
-```
-
-### 🔐 CONFIRMACIÓN OBLIGATORIA
-
-Antes de CUALQUIER script one_offs, Claude DEBE preguntar:
-
-**🔐 CONFIRMACIÓN: Voy a crear script one_offs `nombre.py` que hará [LECTURA/ESCRITURA]. El script hará: [descripción exacta]. ¿Proceder? (si/no)**
-
-Si es ESCRITURA a BD → DETENER y REPORTAR en lugar de crear el script.
+App de customización para cliente LlantasCS. Implementa el sistema de comisiones de vendedores sobre ERPNext: cálculo de comisiones por sucursal, generación de Órdenes de Pago de Comisiones (OPC), reportes de dirección general, y workspaces personalizados por rol.
 
 ---
 
-## Autorización de Código - REGLAS ESTRICTAS ADICIONALES
+## DocTypes principales
 
-### PROHIBICIONES ABSOLUTAS
-- NUNCA eliminar archivos sin autorización EXPLÍCITA con comando exacto
-- NUNCA cambiar frameworks/arquitecturas sin aprobación previa
-- NUNCA ejecutar consultas DB exploratorias sin permiso
-- NUNCA tomar decisiones técnicas unilateralmente
-- NUNCA modificar/crear/eliminar archivos "porque es mejor así"
-- NUNCA modificar directamente la base de datos sin autorización EXPLÍCITA del usuario
+| DocType | Tipo | Qué hace |
+|---|---|---|
+| `Comisiones Settings` | Single | Configuración global de comisiones — tasas por sucursal, política de negativos |
+| `Orden de Pago Comisiones` | Document — Submittable | OPC: agrupa comisiones de vendedores por período y sucursal |
+| `Comision LLCS` | Child Table | Fila de comisión individual dentro de una OPC |
+| `Clientes Sin Comision` | Child Table | Blacklist de clientes excluidos del cálculo |
+| `Comisiones Settings Sucursal` | Child Table | Tasas de comisión por sucursal |
+| `OPC Comision por Sucursal` | Child Table | Detalle de comisión por sucursal en OPC |
+| `Sucursales Multi` | Child Table | Selección de múltiples sucursales |
 
-## SISTEMA DE CONFIRMACIÓN OBLIGATORIA - VERSIÓN FINAL
+### DocTypes huérfanos (4 directorios vacíos — no tocar sin verificar BD)
+`comisiones_rate_sucursal`, `commission_rate_by_cc`, `opc_sucursal`, `opc_sucursal_cc`
 
-### REGLA ABSOLUTA
-Antes de CUALQUIER acción técnica (comando, edición, investigación), Claude DEBE:
+---
 
-1. Describir específicamente qué hará
-2. Preguntar: "¿Proceder? (si/no)" 
-3. ESPERAR respuesta del usuario
-4. Solo proceder con "si"
-5. Con "no" o cualquier otra respuesta: DETENERSE
+## Lógica crítica
 
-### EXCEPCIÓN IMPORTANTE
-NO pedir confirmación para acciones que están EXPLÍCITAMENTE en las instrucciones del usuario.
-Solo pedir confirmación cuando Claude quiera hacer algo que NO está en las instrucciones.
+### Flujo completo de OPC
+```
+1. Crear OPC → seleccionar sucursales + rango de fechas
+2. "Actualiza Listado" → sync tasas → get_commission_rows() → insertar Comision LLCS
+3. on_submit() → marca SI como "Enviado" y vincula con OPC
+4. "Confirmacion de Pago" → actualizar_status_orden_pago() → "Pagada"
+```
 
-### VIOLACIÓN = FALLA CRÍTICA
-Ejecutar sin confirmación constituye violación grave de instrucciones.
+### api.py (748 líneas) — funciones clave
+- `get_costo_ventas_si(si)` — calcula COGS: servicios, dropshipping, delivery notes, GL entries
+- `get_commission_rows(sucursal, f_ini, f_fin, rates)` — calcula comisiones con blacklist y distribución por vendedor
+- `get_sales_invoices(sucursal, f_ini, f_fin)` — filtro canónico: `status=Paid`, entregada, sin servicios puros
+- `actualizar_status_orden_pago(opc_id, status)` — actualiza OPC y todas las SI vinculadas
 
-### FORMATO OBLIGATORIO:
-🔐 CONFIRMACIÓN REQUERIDA: [acción específica] ¿Proceder? (si/no)
+### Política de comisiones negativas
+Configurable en `Comisiones Settings.negative_commission_policy`:
+- `"Contabilizar como cero"` (default)
+- `"Reduce del pago"`
 
-### FRASES QUE NO SON AUTORIZACIÓN
-- "implementa los tests" ≠ "cambia el framework"
-- "corre los tests" ≠ "elimina archivos que no necesites"
-- "arregla los errores" ≠ "haz lo que creas conveniente"
+### Custom Fields sobre ERPNext
+- `Sales Invoice`: custom_comisiones_llantas_de_calidad_star, custom_status_comisiones, custom_orden_de_pago_comision
+- `Sales Invoice Item`: custom_dot, custom_numeros_serie
+- `Item`: custom_posicion, custom_cubicaje
+- `Customer`: custom_sucursal_predeterminada
 
-### CUANDO HAY ERRORES TÉCNICOS
-1. REPORTAR el error exacto
-2. PROPONER soluciones específicas
-3. ESPERAR autorización literal: "autorizo hacer X"
-4. NO asumir que "arreglar" significa "hacer lo que sea"
+### Override de ERPNext
+`controllers/override.py` — override de `erpnext.controllers.item_variant.create_variant` para nomenclatura de variantes con abreviaciones de atributos.
 
-### VIOLACIÓN DE ESTAS REGLAS
-- Primera violación: Warning
-- Segunda violación: Parar toda actividad hasta instrucciones
-- Tercera violación: Usuario considerará reemplazar asistente
+---
 
-### EJEMPLOS DE AUTORIZACIÓN CORRECTA REQUERIDA
-Usuario: "autorizo eliminar conftest.py"
-Usuario: "autorizo cambiar de pytest a unittest"  
-Usuario: "autorizo consultar tabla Customer Group"
+## Fixtures
 
-### REGLAS BÁSICAS EXISTENTES
-- Claude NUNCA puede modificar código sin autorización EXPLÍCITA
-- "Revisar y proponer" ≠ "Implementar cambios"  
-- Si detecta mejoras: REPORTAR primero, esperar aprobación
-- Solo implementar cuando se diga EXACTAMENTE "implementa este código"
+6 archivos, 74 registros totales:
+- `custom_field.json` — 10 custom fields
+- `dashboard_chart.json` — 18 charts
+- `number_card.json` — 30 cards
+- `report.json` — 6 reportes
+- `role.json` — 2 roles (Llantas CS Manager, Llantas CS User)
+- `workspace.json` — 8 workspaces (Vendedores, Comisiones, Direccion General, Cockpit, etc.)
 
-## Stop Conditions (detener y preguntar)
-Claude debe detenerse y pedir confirmación si:
-- Aparece la necesidad de cambiar fixtures o Doctypes sin orden expresa.
-- Un cambio afecta filtros, totales o reportes sin que lo haya solicitado el dueño.
-- Los resultados de filtrado (ej. número de facturas) cambian en órdenes de magnitud.
-- Se detecta que la lógica de preview escribe en la base de datos.
+---
 
-## Project Overview
+## Reportes
 
-This is a Frappe/ERPNext custom app called "Llantascs Customs" for customizations specific to Llantas CS (a tire company). It provides commission management functionality, item variant creation customizations, and sales reporting features.
+9 Script Reports funcionales. El más crítico:
+- `reporte_diario_director_general` (966 líneas) — reporte principal de dirección
+- `backlog_comisiones_gp_nativo` (522 líneas) — **falta el .json de declaración, no se registra en sistema**
 
-## Architecture
+---
 
-### App Structure
-- **Main app directory**: `llantascs_customs/`
-- **Core module**: `llantascs_customs/llantascs_customs/`
-- **Custom doctypes**: Located in `llantascs_customs/llantascs_customs/doctype/`
-- **API functions**: Located in `llantascs_customs/llantascs_customs/api.py`
-- **Controllers/Overrides**: Located in `llantascs_customs/controllers/override.py`
+## Patches
 
-### Key Components
+3 patches en `patches.txt` sección `[post_model_sync]`. Todos idempotentes. Orden crítico:
+1. `v2_5_0.migrate_opc_v2` — migración estructura legacy → multisucursal
+2. `post.fix_opc_monto_total_corrected`
+3. `post.fix_utilidad_transaccion_historico_v2`
 
-#### Commission Management System
-- **Comisiones Settings**: Configuration doctype for commission rates
-- **Comision LLCS**: Individual commission records
-- **Orden de Pago Comisiones**: Commission payment orders
-- Commission calculation based on COGS (Cost of Goods Sold) and delivery status
-- Status tracking: "Sin Enviar", "Enviado", "Pagada"
+---
 
-#### Item Variant Customization
-- Custom item variant creation logic in `controllers/override.py`
-- Overrides ERPNext's standard variant creation to use custom naming conventions
-- Handles attribute-based variants with abbreviations
+## Problemas conocidos
 
-#### Sales Invoice Extensions  
-- Custom fields for commission tracking
-- Integration with delivery status validation
-- COGS calculation from both Sales Invoice and Delivery Note GL entries
+1. **4 directorios de DocTypes vacíos** — `comisiones_rate_sucursal`, `commission_rate_by_cc`, `opc_sucursal`, `opc_sucursal_cc`. Si existen tablas en BD de producción, `bench migrate` puede fallar. No eliminar sin verificar primero.
 
-## Development Commands
+2. **`backlog_comisiones_gp_nativo`** — tiene 522 líneas de Python pero **falta el `.json`**. No está registrado en el sistema.
 
-This is a standard Frappe app. Common development tasks should use Frappe's bench commands:
+3. **Sin tests reales** — 748 líneas de lógica en `api.py` sin ningún test automatizado. Los 2 archivos de test existentes tienen clases vacías.
+
+4. **Código deprecated** en `orden_de_pago_comisiones.js` líneas 27-81.
+
+5. **Directorio vacío** `report/ventas_por_sucursal_chart/`.
+
+---
+
+## Dependencias
+
+**Apps en el mismo bench:** erpnext, facturacion_mx, dfp_external_storage, hrms, wiki  
+**Dependencias externas:** Ninguna  
+**Sin `required_apps` declarado** en hooks.py (depende implícitamente de erpnext)
+
+---
+
+## Tests
 
 ```bash
-# Install/update app in site
-bench install-app llantascs_customs
-
-# Run tests
-bench run-tests --app llantascs_customs
-
-# Migrate after schema changes
-bench migrate
-
-# Build assets if JavaScript/CSS changes
-bench build
-
-# Clear cache during development
-bench clear-cache
+bench --site llantascs.dev run-tests --app llantascs_customs
 ```
 
+**Sin cobertura real.** Los 2 archivos de test existentes están vacíos. La lógica compleja de api.py no tiene tests.
 
-### Git & PR Policy (refuerzo)
-- Prohibido usar `--no-verify`.
-- Cada commit/PR debe estar autorizado por el dueño.
-- Todos los cambios deben venir acompañados de pruebas automáticas relacionadas.
-- Si el PR implica documentación, Claude solo debe modificar **los archivos y secciones indicados explícitamente** por el dueño.
+---
 
+## Antes de cada PR
 
-## Testing
+- [ ] Fixtures exportados si hubo cambios de Custom Fields, Roles, Workspaces, Dashboard Charts
+- [ ] Patch creado si hay cambios de esquema con datos
+- [ ] `bench --site llantascs.dev migrate` limpio
+- [ ] Verificar que los 4 DocTypes huérfanos no causan problemas
+- [ ] Ver checklist global en `frappe-infrastructure/CONTRIBUTING.md`
 
-Test files are located alongside their respective doctype files:
-- `test_comisiones_settings.py`
-- `test_orden_de_pago_comisiones.py`
+---
 
-## Configuration
+## Auditoría pre-migración
 
-### Hooks Configuration
-- Custom JavaScript for Sales Invoice: `core_doctype.js`
-- Method overrides defined in `hooks.py`
-- Custom field fixtures managed via `fixtures` configuration
-
-### Key Override
-- `erpnext.controllers.item_variant.create_variant` → `custom_create_variant`
-
-## Common Bench Command Errors and Corrections
-
-### Site-specific Commands
-- ❌ **WRONG**: `bench clear-cache` (applies to default site only)
-- ✅ **CORRECT**: `bench --site llantascs.dev clear-cache`
-
-- ❌ **WRONG**: `bench migrate`
-- ✅ **CORRECT**: `bench --site llantascs.dev migrate`
-
-- ❌ **WRONG**: `bench execute function`
-- ✅ **CORRECT**: `bench --site llantascs.dev execute function`
-
-- ❌ **WRONG**: `bench --site llantascs.dev restart` 
-- ✅ **CORRECT**: `bench restart` (no --site flag for restart command)
-
-### Module Import Paths for bench execute
-- ❌ **WRONG**: `llantascs_customs.llantascs_customs.module.function`
-- ✅ **CORRECT**: `llantascs_customs.module.function` (single app name)
-
-### Console and Execute Commands
-- `bench console` exits immediately - use `bench execute` instead
-- For temporary functions, use `one_offs` directory structure:
-  ```
-  apps/llantascs_customs/llantascs_customs/one_offs/
-  ├── __init__.py
-  └── script_name.py
-  ```
-- Execute with: `bench --site llantascs.dev execute llantascs_customs.one_offs.script_name.function`
-
-### One-offs Scripts - SUCCESS PATTERN ✅
-
-**Directory Structure:**
-```
-llantascs_customs/llantascs_customs/one_offs/
-├── __init__.py
-├── investigar_comision_llcs.py
-├── check_table_names.py
-├── investigar_campos_exactos.py
-├── clear_patch_log_v250.py
-├── verify_patch_v250_idempotency.py
-├── test_logger_patch_channel.py
-├── audit_all_patches.py
-└── verify_no_pending_legacy.py
-```
-
-**Execution Pattern:**
-- **Working Directory**: `/home/erpnext/frappe-bench/apps/llantascs_customs` 
-- **Command Format**: `bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.SCRIPT_NAME.run`
-- **Function Name**: All scripts use `run()` as the main function
-
-**Use Cases (All Successful):**
-1. **Database Investigation**: `investigar_comision_llcs.py` - Verify DocType and table existence
-2. **Schema Analysis**: `investigar_campos_exactos.py` - Find exact field names in metadata
-3. **Patch Management**: `clear_patch_log_v250.py` - Clean patch execution logs
-4. **Data Verification**: `verify_patch_v250_idempotency.py` - Confirm no duplicates after migration
-5. **System Auditing**: `audit_all_patches.py` - Complete patches inventory and consistency check
-6. **Functional Testing**: `test_logger_patch_channel.py` - Verify logger functionality
-
-**Success Metrics:**
-- **100% Success Rate**: All scripts executed without errors
-- **Reliable Pattern**: Consistent structure and execution method
-- **Fast Development**: Quick debugging and verification capabilities
-- **Safe Operations**: Read-only scripts for investigation, targeted scripts for specific actions
-
-**Example Successful Executions:**
-```bash
-# Investigation and debugging
-bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.investigar_campos_exactos.run
-
-# Patch management and verification
-bench --site llantascs.dev execute llantascs_customs.llantascs_customs.one_offs.verify_patch_v250_idempotency.run
-
-# System auditing
-bench --site llantascs_customs.llantascs_customs.one_offs.audit_all_patches.run
-```
-
-**Key Benefits:**
-- **Rapid Prototyping**: Quick script creation for specific tasks
-- **Safe Testing**: Isolated functions with clear boundaries
-- **Reusable**: Scripts can be re-run for verification
-- **Documented**: Each script has clear purpose and output
-
-## Cuándo debes actualizar `docs/`
-Actualiza la documentación en **cualquier PR** que haga alguno de estos cambios:
-- Campos nuevos o eliminados en DocTypes (JSON).
-- Cambios en lógica de negocio: `apply_reduction`, `evaluate_eligibility`, resolvers, hooks.
-- Nuevos toggles o defaults en **Comisiones Settings**.
-- Cambios en reportes (campos, SQL, columnas, KPIs).
-- Migraciones/patches que afecten datos de producción o interpretación de reportes.
-- Cambios en totales de Orden o políticas (márgenes negativos, elegibilidad).
-
-## Qué debes actualizar
-- `docs/settings.md`: nuevos campos, defaults y efectos.
-- `docs/commission-policy.md`: si cambia la política o su efecto en totales.
-- `docs/cogs-resolution.md`: si cambia el orden o metadatos del resolver.
-- `docs/eligibility.md`: si cambia alguna regla de gate (entrega/pago/persona/tolerancia).
-- `docs/reports.md`: si cambia qué se suma o cómo se presentan totales/KPIs.
-- `docs/operations.md`: si cambia el runbook (deploy/rollback).
-- `docs/migrations.md` y `docs/playbooks/*`: si se agregan pasos de backfill.
-- `docs/ADRs/*`: agrega una ADR por cada decisión de arquitectura relevante.
-
-## Estándar mínimo por PR
-- Incluir actualización de **al menos un archivo** en `docs/`.
-- Si el cambio es sustantivo, incluir **nueva ADR** en `docs/ADRs/`.
-- Actualizar `docs/CHANGELOG.md` con un bullet conciso.
-
-## Cómo validar
-- Revisa ortografía rápida.
-- Verifica rutas/archivos citados existen.
-- Si el cambio afecta tests, agrega/actualiza sección en `docs/testing.md`.
-
-## Anti-reglas
-- No merges a main sin tocar docs si cambiaste lógica o schema.
-- No dejes referencias a campos antiguos sin nota de transición.
-- No introduzcas siglas nuevas sin definir en `docs/glossary.md`.
-
-
-## Important Notes
-
-- Commission calculations depend on delivery status verification
-- COGS accounts are dynamically retrieved from Account master with type "Cost of Goods Sold"
-- The app uses both Sales Invoice and Delivery Note GL entries for accurate cost calculation
-- Custom fields are managed through fixtures for easy deployment
-- Implementaras cambios en este sistema, tu solo actuass como implementador, no tomaras decisiones, cualquier decision la consultaras conmigo
-- el nombre del sitio donde puedes operar es unicamente llantascs.dev no puedes ocupar ningun otro
-- no se permiten committs --no-verify bajo ninguna circunstancia
-- todos los committs seran autorizados por mi no puedes hacer committs sin mi autorizacion
-- claude code solo puede implementar codigo que se le entregue, cualquier codigo que quiera generar debe ser aprobado por el usuario
-- Claude NUNCA puede modificar código sin autorización EXPLÍCITA
-
-# ⛔ PROHIBICIÓN ABSOLUTA - FIXTURES VS BASE DE DATOS
-
-## 🚫 NUNCA REEMPLAZAR UN FIXTURE CON MODIFICACIÓN DIRECTA DE BD
-
-### ❌ PROHIBIDO TERMINANTEMENTE:
-Cuando se está implementando un **cambio de fixture**, NUNCA hacer modificación directa de BD como "atajo".
-
-```python
-# ESCENARIO: Fixture JSON roto, reporte no se actualiza
-# ❌ JAMÁS HACER ESTO COMO "SOLUCIÓN":
-frappe.db.sql("UPDATE `tabReport` SET query = %s WHERE name = 'Backlog Comisiones'", (new_query,))
-
-# ✅ HACER ESTO:
-# Arreglar el fixture JSON correctamente y usar migrate
-```
-
-### 🚨 POR QUÉ ES CATASTRÓFICO:
-1. **Siguiente migrate**: La modificación de BD se PERDERÁ (fixture sobrescribe)
-2. **Nuevos sitios**: Tendrán la versión del fixture (broken), no la de BD  
-3. **Inconsistencia total**: Cada sitio diferente configuración
-4. **Deploy imposible**: Fixture vs BD desincronizados
-
-### 🔥 REGLA ABSOLUTA:
-**SI EL CAMBIO VA EN UN FIXTURE → ARREGLAR EL FIXTURE**
-**NUNCA "ATAJAR" CON BD DIRECTA CUANDO HAY FIXTURE INVOLUCRADO**
-
-### ✅ PROCESO CORRECTO:
-1. Fixture roto → Arreglar fixture JSON
-2. Migrate → Aplica fixture corregido
-3. Nunca BD directa como reemplazo de fixture
-
-# ⛔ PROHIBICIÓN ABSOLUTA - NO IMPLEMENTAR CAMBIOS MANUALES PARA FALLAS DE MIGRACIÓN
-
-## 🚫 NUNCA IMPLEMENTAR SOLUCIONES MANUALES POR FALLAS EN MIGRATE
-
-### ❌ PROHIBIDO TERMINANTEMENTE:
-Cuando `bench migrate` falla o no aplica cambios correctamente, NUNCA implementar cambios manuales para "reparar" lo que migrate debería haber hecho.
-
-```python
-# ESCENARIO: migrate no creó DocType, tabla no existe
-# ❌ JAMÁS HACER ESTO COMO "SOLUCIÓN":
-frappe.db.sql("CREATE TABLE `tabDocType Name` ...")
-frappe.get_doc({"doctype": "DocType", ...}).insert()
-
-# ESCENARIO: migrate no aplicó fixture
-# ❌ JAMÁS HACER ESTO COMO "SOLUCIÓN":  
-frappe.db.sql("UPDATE `tabReport` SET query = %s WHERE name = 'Report Name'", (query,))
-
-# ✅ HACER ESTO:
-# 1. REPORTAR el problema exacto
-# 2. ESPERAR autorización del usuario
-# 3. Solo proceder con autorización explícita
-```
-
-### 🚨 POR QUÉ ES CATASTRÓFICO:
-1. **Inconsistencia**: Sitio funciona diferente a otros sitios
-2. **No reproducible**: Cambios manuales no están en código fuente
-3. **Deploy imposible**: Nuevas instalaciones fallarán igual
-4. **Debugging imposible**: Estado del sistema no corresponde al código
-
-### 🔥 REGLA ABSOLUTA:
-**SI MIGRATE FALLA → REPORTAR Y ESPERAR AUTORIZACIÓN**
-**NUNCA IMPLEMENTAR CAMBIOS MANUALES SIN AUTORIZACIÓN EXPLÍCITA**
-
-### ✅ PROCESO CORRECTO PARA FALLAS DE MIGRACIÓN:
-1. REPORTAR: "migrate falló, no creó X"
-2. ESPERAR: Autorización específica del usuario
-3. PROCEDER: Solo con autorización literal "autorizo hacer X"
-4. DOCUMENTAR: Qué cambios manuales fueron necesarios
-
-# ⛔ PROHIBICIÓN ABSOLUTA - NO FORZAR OPERACIONES DEL SISTEMA
-
-## 🚫 NUNCA FORZAR MIGRACIONES, CACHE CLEARING O OPERACIONES INCONSISTENTES
-
-### ❌ PROHIBIDO TERMINANTEMENTE:
-NUNCA ejecutar comandos que fuercen el estado del sistema sin autorización explícita:
-
-```bash
-# ❌ JAMÁS HACER ESTO SIN AUTORIZACIÓN:
-bench --site llantascs.dev import-doc apps/llantascs_customs/...
-bench --site llantascs.dev execute "frappe.get_doc('Workspace', 'X').save()"
-bench --site llantascs.dev clear-cache (repetidamente)
-bench restart (como "solución" a problemas)
-
-# ✅ HACER ESTO:
-# 1. REPORTAR el problema exacto
-# 2. ESPERAR autorización del usuario
-# 3. Solo proceder con autorización explícita
-```
-
-### 🚨 POR QUÉ ES CATASTRÓFICO:
-1. **Inconsistencia del sistema**: El sitio queda en estado no reproducible
-2. **Pérdida de tiempo**: Operaciones innecesarias que no solucionan el problema real
-3. **Debugging imposible**: Estado del sistema no corresponde al flujo normal
-4. **Violación de autorización**: Claude tomando decisiones sin permiso
-
-### 🔥 REGLA ABSOLUTA:
-**SOLO USAR EL FLUJO NORMAL DE ACTUALIZACIONES DEL SITIO**
-**NUNCA FORZAR OPERACIONES COMO "SOLUCIÓN" SIN AUTORIZACIÓN**
-
-### ✅ PROCESO CORRECTO:
-1. Usar solo `bench migrate` y operaciones estándar de ERPNext
-2. Si algo no funciona: REPORTAR y ESPERAR autorización
-3. No asumir que "forzar" es la solución
-4. Respetar el flujo normal de actualizaciones del sistema
+Ver `docs/adr/0000-estado-real-pre-migracion.md` — estado completo documentado el 2026-04-30.
