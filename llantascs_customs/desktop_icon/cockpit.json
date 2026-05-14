@@ -1,0 +1,17 @@
+{
+ "app": "llantascs_customs",
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "activity",
+ "icon_type": "Link",
+ "label": "Cockpit",
+ "link_to": "Cockpit",
+ "link_type": "Workspace Sidebar",
+ "name": "Cockpit",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "standard": 1
+}
