@@ -1,0 +1,75 @@
+{
+ "app": "llantascs_customs",
+ "doctype": "Workspace Sidebar",
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Comisiones",
+   "link_to": "Comisiones",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Vendedores",
+   "link_to": "Vendedores",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Pagos OPC (Por Sucursal)",
+   "link_to": "Pagos OPC - Por Sucursal",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Mis Comisiones",
+   "link_to": "Mis Comisiones Backlog",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Detalle de comisiones pagadas",
+   "link_to": "Comisiones por Vendedor Detalle",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Backlog Comisiones GP nativo",
+   "link_to": "Backlog Comisiones GP nativo",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "name": "Comisiones",
+ "standard": 1,
+ "title": "Comisiones"
+}

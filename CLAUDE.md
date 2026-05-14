@@ -1,5 +1,10 @@
 # CLAUDE.md — llantascs_customs
 
+> **Reglas de operación Claude Code** (commits, PRs, base de datos, flujo de trabajo, prohibiciones git):
+> Ver `/home/erpnext/Developer/frappe-infrastructure/.claude/CLAUDE.md`
+
+---
+
 ## Estado de migración
 - **Migrada a v16:** No
 - **Versión origen:** v15 (Frappe 15.97, ERPNext 15.95)
@@ -152,3 +157,44 @@ bench --site llantascs.dev run-tests --app llantascs_customs
 ## Auditoría pre-migración
 
 Ver `docs/adr/0000-estado-real-pre-migracion.md` — estado completo documentado el 2026-04-30.
+
+---
+
+## REGLAS GIT — LLANTASCS CUSTOMS
+
+### Antes de cada commit
+
+- Correr linters en archivos modificados:
+  ```bash
+  ruff format <archivos .py modificados>
+  npx prettier@2.7.1 --write <archivos .js modificados>
+  ```
+
+### Antes de cada PR
+
+- [ ] Linters pasados (ver arriba)
+- [ ] Fixtures exportados si hubo cambios de Custom Fields, Roles, Workspaces, Dashboard Charts
+- [ ] Patch creado si hay cambios de esquema — **requiere autorización explícita del usuario**
+- [ ] `bench --site llantascs-v16.dev migrate` limpio
+- [ ] Ver checklist global en `frappe-infrastructure/CONTRIBUTING.md`
+
+### PROHIBICIÓN ABSOLUTA — NUNCA TRABAJAR EN DEVELOP
+
+**`develop` es la rama protegida de llantascs_customs. Es el equivalente a `main` en otros proyectos del ecosistema.**
+
+- **Nunca implementar cambios estando en `develop`.**
+- **Nunca crear commits estando en `develop`.**
+- **Nunca preparar commits estando en `develop`.**
+- Todo cambio debe iniciar en una rama feature creada desde `develop` limpio.
+- Antes de tocar cualquier archivo, confirmar rama: `git branch --show-current`
+- Si la rama es `develop`, **detenerse inmediatamente** y crear rama feature.
+- Si ya hay cambios en `develop`, **detenerse** y pedir autorización para rescatarlos a rama.
+- `/ship commit` y `/ship commit-push` deben rechazar si la rama es `develop`.
+- `/ship pr` debe exigir rama distinta de `develop`.
+
+### Reglas específicas del proyecto
+
+- PRs siempre a `develop` — es la rama default/protegida de este repo
+- La rama `develop` es el equivalente a `main` (uniformizar nombre en el futuro)
+- Site de desarrollo v16: `llantascs-v16.dev`
+- Site de desarrollo v15 (producción activa): `llantascs.dev`

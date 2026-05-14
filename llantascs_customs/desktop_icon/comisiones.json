@@ -1,0 +1,25 @@
+{
+ "app": "llantascs_customs",
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon_type": "Link",
+ "label": "Comisiones",
+ "link_to": "Comisiones",
+ "link_type": "Workspace Sidebar",
+ "name": "Comisiones",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Llantas CS Manager"
+  },
+  {
+   "role": "Llantas CS User"
+  },
+  {
+   "role": "Employee"
+  }
+ ],
+ "standard": 1
+}

@@ -1,0 +1,42 @@
+{
+ "app": "llantascs_customs",
+ "doctype": "Workspace Sidebar",
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Comisiones",
+   "link_to": "Comisiones",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Vendedores",
+   "link_to": "Vendedores",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Comisiones por Vendedor Detalle",
+   "link_to": "Comisiones por Vendedor Detalle",
+   "link_type": "Report",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "name": "Vendedores",
+ "standard": 1,
+ "title": "Vendedores"
+}
