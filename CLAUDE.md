@@ -5,26 +5,42 @@
 
 ---
 
-## Estado de migración
-- **Migrada a v16:** No
-- **Versión origen:** v15 (Frappe 15.97, ERPNext 15.95)
-- **En producción:** Sí — llantascs.dev (cliente LlantasCS)
-- **Branch activo:** feat/dot-numeros-serie-sales-invoice-item
-- **Sitio de desarrollo:** llantascs.dev
+## Estado del proyecto
+
+- **Migración v15 → v16:** En curso
+- **Bench activo:** `/home/erpnext/frappe-bench-v16`
+- **Branch protegida:** `develop` (nunca commitear directamente)
 - **Versión:** 2.7.21
+- **En producción:** Sí — llantascs.dev (cliente LlantasCS, bench v15)
+
+---
+
+## Sites de desarrollo y prueba
+
+| Site | Bench | Propósito | Notas |
+|---|---|---|---|
+| `llantascs-v16.dev` | frappe-bench-v16 | Desarrollo activo v16 | Features, migrate, export-fixtures |
+| `test-llantascs.localhost` | frappe-bench-v16 | Tests unitarios | Solo para `bench run-tests` — nunca modificar manualmente |
+| `llantascs.dev` | frappe-bench | Producción / referencia v15 | No usar para desarrollo nuevo |
+
+**Reglas de uso:**
+- `bench migrate` → siempre con `--site`. Nunca sin site en bench compartido.
+- `bench run-tests` → siempre `test-llantascs.localhost` — nunca en el site de desarrollo.
+- `bench export-fixtures` → `llantascs-v16.dev`
+
+**Apps en test-llantascs.localhost:** frappe, erpnext, llantascs_customs
 
 ## Entorno
 Ver contexto global en `frappe-infrastructure/.claude/CLAUDE.md`.
 
-**Bench:** /home/erpnext/frappe-bench  
-**Comandos siempre con --site:**
+**Comandos frecuentes (bench v16):**
 ```bash
-bench --site llantascs.dev migrate
-bench --site llantascs.dev export-fixtures --app llantascs_customs
-bench --site llantascs.dev run-tests --app llantascs_customs
+bench --site llantascs-v16.dev migrate
+bench --site llantascs-v16.dev export-fixtures --app llantascs_customs
+bench --site llantascs-v16.dev run-tests --app llantascs_customs
 bench build --app llantascs_customs
 ```
-**NUNCA:** `bench migrate` sin --site (afecta otros sitios del bench compartido)
+**NUNCA:** `bench migrate` sin `--site` — afecta todos los sites del bench compartido
 
 ---
 
@@ -128,7 +144,7 @@ Configurable en `Comisiones Settings.negative_commission_policy`:
 
 ## Dependencias
 
-**Apps en el mismo bench:** erpnext, facturacion_mx, dfp_external_storage, hrms, wiki  
+**Apps en frappe-bench-v16:** erpnext, facturacion_mx, facturacion_mexico, dfp_external_storage, hrms, wiki  
 **Dependencias externas:** Ninguna  
 **Sin `required_apps` declarado** en hooks.py (depende implícitamente de erpnext)
 
@@ -137,20 +153,12 @@ Configurable en `Comisiones Settings.negative_commission_policy`:
 ## Tests
 
 ```bash
-bench --site llantascs.dev run-tests --app llantascs_customs
+bench --site test-llantascs.localhost run-tests --app llantascs_customs
 ```
 
+**NUNCA** correr tests en `llantascs-v16.dev` — usar siempre `test-llantascs.localhost`.
+
 **Sin cobertura real.** Los 2 archivos de test existentes están vacíos. La lógica compleja de api.py no tiene tests.
-
----
-
-## Antes de cada PR
-
-- [ ] Fixtures exportados si hubo cambios de Custom Fields, Roles, Workspaces, Dashboard Charts
-- [ ] Patch creado si hay cambios de esquema con datos
-- [ ] `bench --site llantascs.dev migrate` limpio
-- [ ] Verificar que los 4 DocTypes huérfanos no causan problemas
-- [ ] Ver checklist global en `frappe-infrastructure/CONTRIBUTING.md`
 
 ---
 
