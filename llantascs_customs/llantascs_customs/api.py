@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe.utils import now
 from frappe.utils import flt, getdate
+from facturacion_mexico.facturacion_fiscal.utils import get_invoice_uuid
 
 # Variables globales llantas Customs
 estados_comisiones = ["Sin Enviar", "Enviado", "Pagada"]
@@ -86,12 +87,16 @@ def get_costo_ventas_si(sales_invoice: str) -> float:
 
 
 def _is_service_only(si_name: str) -> bool:
-    rows = frappe.db.sql("""
+    rows = frappe.db.sql(
+        """
         SELECT i.is_stock_item
         FROM `tabSales Invoice Item` sii
         JOIN `tabItem` i ON i.name = sii.item_code
         WHERE sii.parent = %s
-    """, (si_name,), as_dict=True)
+    """,
+        (si_name,),
+        as_dict=True,
+    )
     if not rows:
         # sin renglones: tratamos como no inventario
         return True
@@ -132,7 +137,9 @@ def _cost_from_po_for_dropship(si_name: str) -> float:
             continue
 
         # delivered_by_supplier vive en el Sales Order Item (no en SI Item)
-        dbs = frappe.db.get_value("Sales Order Item", r.so_detail, "delivered_by_supplier")
+        dbs = frappe.db.get_value(
+            "Sales Order Item", r.so_detail, "delivered_by_supplier"
+        )
         if not dbs:
             continue  # no es dropship
 
@@ -166,22 +173,30 @@ def _cost_from_dn_items(si_name: str) -> float:
     dn_set = set()
 
     # Ruta 1: DN vinculados directamente en SI Item
-    rows_direct = frappe.db.sql("""
+    rows_direct = frappe.db.sql(
+        """
         SELECT DISTINCT delivery_note
         FROM `tabSales Invoice Item`
         WHERE parent=%s AND IFNULL(delivery_note,'')!=''
-    """, (si_name,), as_dict=True)
+    """,
+        (si_name,),
+        as_dict=True,
+    )
 
     for r in rows_direct:
         if r.delivery_note:
             dn_set.add(r.delivery_note)
 
     # Ruta 2: DN vinculados por against_sales_invoice
-    rows_inverse = frappe.db.sql("""
+    rows_inverse = frappe.db.sql(
+        """
         SELECT DISTINCT parent as delivery_note
         FROM `tabDelivery Note Item`
         WHERE against_sales_invoice = %s
-    """, (si_name,), as_dict=True)
+    """,
+        (si_name,),
+        as_dict=True,
+    )
 
     for r in rows_inverse:
         if r.delivery_note:
@@ -198,14 +213,18 @@ def _cost_from_dn_items(si_name: str) -> float:
     # Sumar COGS de GL Entries de todos los DN únicos
     total = 0.0
     for dn_name in dn_set:
-        dn_cogs = frappe.db.sql("""
+        dn_cogs = frappe.db.sql(
+            """
             SELECT SUM(debit) AS cogs
             FROM `tabGL Entry`
             WHERE voucher_type = 'Delivery Note'
               AND voucher_no = %s
               AND account IN %s
               AND is_cancelled = 0
-        """, (dn_name, tuple(cogs_accounts)), as_dict=True)
+        """,
+            (dn_name, tuple(cogs_accounts)),
+            as_dict=True,
+        )
 
         if dn_cogs and dn_cogs[0].cogs is not None:
             total += flt(dn_cogs[0].cogs)
@@ -218,11 +237,15 @@ def _sle_total_for_si(si_name: str):
     Devuelve la suma de SLE (stock_value_difference) para el voucher SI si existen filas.
     Si no existen SLE, retorna None (no "0 inventado").
     """
-    row = frappe.db.sql("""
+    row = frappe.db.sql(
+        """
         SELECT SUM(stock_value_difference) AS total_cost
         FROM `tabStock Ledger Entry`
         WHERE voucher_type='Sales Invoice' AND voucher_no=%s
-    """, (si_name,), as_dict=True)
+    """,
+        (si_name,),
+        as_dict=True,
+    )
     # row siempre viene, pero SUM puede ser None si no hay filas; lo respetamos
     return row[0].total_cost if row else None
 
@@ -258,7 +281,9 @@ def _cost_from_po_items(si_name: str) -> float:
 
         # Si es dropship (flag en SO Item), tampoco entra aquí (ya lo cubre _cost_from_po_for_dropship)
         if r.so_detail:
-            dbs = frappe.db.get_value("Sales Order Item", r.so_detail, "delivered_by_supplier")
+            dbs = frappe.db.get_value(
+                "Sales Order Item", r.so_detail, "delivered_by_supplier"
+            )
             if dbs:
                 continue
 
@@ -295,13 +320,17 @@ def _cost_from_gl_entries(si_name: str) -> float:
     if not cogs_accounts:
         return 0.0
 
-    row = frappe.db.sql("""
+    row = frappe.db.sql(
+        """
         SELECT SUM(debit - credit) AS cogs
         FROM `tabGL Entry`
         WHERE voucher_type = 'Sales Invoice'
           AND voucher_no   = %s
           AND account      IN %s
-    """, (si_name, tuple(cogs_accounts)), as_dict=True)
+    """,
+        (si_name, tuple(cogs_accounts)),
+        as_dict=True,
+    )
 
     return abs(flt(row[0].cogs)) if row and row[0].cogs is not None else 0.0
 
@@ -396,9 +425,7 @@ def actualizar_status_orden_pago(orden_pago_id, status):
 def get_all_cost_centers():
     """Devuelve todos los Cost Centers activos y no grupo."""
     return frappe.get_all(
-        "Cost Center",
-        filters={"is_group": 0, "disabled": 0},
-        pluck="name"
+        "Cost Center", filters={"is_group": 0, "disabled": 0}, pluck="name"
     )
 
 
@@ -439,7 +466,9 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
     if not fecha_inicial or not fecha_final:
         frappe.throw("Faltan filtros obligatorios: fecha inicial y fecha final.")
     if not sucursal:
-        frappe.throw("Faltan filtros obligatorios: seleccionar al menos una sucursal (Cost Center).")
+        frappe.throw(
+            "Faltan filtros obligatorios: seleccionar al menos una sucursal (Cost Center)."
+        )
 
     # Filtros canónicos (no se replican en JS)
     filters = {
@@ -456,11 +485,16 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
         "Sales Invoice",
         filters=filters,
         fields=[
-            "name", "posting_date", "customer", "cost_center",
-            "net_total", "base_net_total", "update_stock"
+            "name",
+            "posting_date",
+            "customer",
+            "cost_center",
+            "net_total",
+            "base_net_total",
+            "update_stock",
         ],
         order_by="posting_date asc, name asc",
-        limit=2000
+        limit=2000,
     )
 
     if not sinv:
@@ -474,12 +508,16 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
         True si TODOS los items de la SI son no-stock (servicios).
         Optimización: una sola consulta SQL con JOIN a Item.
         """
-        items = frappe.db.sql("""
+        items = frappe.db.sql(
+            """
             SELECT i.is_stock_item
             FROM `tabSales Invoice Item` sii
             JOIN `tabItem` i ON i.name = sii.item_code
             WHERE sii.parent = %s
-        """, (si_name,), as_dict=True)
+        """,
+            (si_name,),
+            as_dict=True,
+        )
 
         # Sin items: trátalo como servicio (no bloquea)
         if not items:
@@ -532,23 +570,23 @@ def _build_blacklist_with_dates():
     """Lee Comisiones Settings y construye un dict {customer: [(start,end), ...]}."""
     out = {}
     settings = frappe.get_single("Comisiones Settings")
-    for row in (getattr(settings, "clientes_sin_comision", None) or []):
+    for row in getattr(settings, "clientes_sin_comision", None) or []:
         cust = (row.customer or "").strip()
         if not cust:
             continue
         start = getdate(row.start_date) if row.start_date else None
-        end   = getdate(row.end_date)   if row.end_date   else None
+        end = getdate(row.end_date) if row.end_date else None
         out.setdefault(cust, []).append((start, end))
     return out
 
 
 def _is_blacklisted(customer: str, posting_date, bl_map: dict) -> bool:
     """True si el cliente está en la lista y la fecha cae dentro de alguna vigencia.
-       Rango abierto permitido: start only (desde start en adelante), end only (hasta end inclusive)."""
+    Rango abierto permitido: start only (desde start en adelante), end only (hasta end inclusive)."""
     if not customer or customer not in bl_map:
         return False
     pd = getdate(posting_date)
-    for (start, end) in bl_map[customer]:
+    for start, end in bl_map[customer]:
         if start and end:
             if start <= pd <= end:
                 return True
@@ -565,7 +603,9 @@ def _is_blacklisted(customer: str, posting_date, bl_map: dict) -> bool:
 
 
 @frappe.whitelist()
-def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rates_by_cc=None):
+def get_commission_rows(
+    sucursal, fecha_inicial, fecha_final, docname=None, rates_by_cc=None
+):
     invoices = get_sales_invoices(sucursal, fecha_inicial, fecha_final)
     if not invoices:
         return {"rows": [], "total": 0, "count": 0}
@@ -574,9 +614,7 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
     si_names = [si["name"] for si in invoices]
     if si_names:
         with_team = frappe.get_all(
-            "Sales Team",
-            filters={"parent": ["in", si_names]},
-            pluck="parent"
+            "Sales Team", filters={"parent": ["in", si_names]}, pluck="parent"
         )
         allowed = set(with_team)
         invoices = [si for si in invoices if si["name"] in allowed]
@@ -587,7 +625,10 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
     # default global (fallback cuando no hay tasa por sucursal)
     settings = frappe.get_single("Comisiones Settings")
     default_rate = flt(getattr(settings, "porcentaje_sobre_utilidad"))
-    negative_policy = (getattr(settings, "negative_commission_policy", "Contabilizar como cero") or "Contabilizar como cero").strip()
+    negative_policy = (
+        getattr(settings, "negative_commission_policy", "Contabilizar como cero")
+        or "Contabilizar como cero"
+    ).strip()
 
     # normalizar rates_by_cc si llega como JSON
     if isinstance(rates_by_cc, str):
@@ -598,6 +639,7 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
 
     # 1) si me mandan rates_by_cc (del doc en memoria), usarlo SIEMPRE
     if rates_by_cc:
+
         def _rate_for(cc):
             val = rates_by_cc.get(cc)
             return flt(val) if val is not None else default_rate
@@ -608,31 +650,38 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         if docname:
             try:
                 doc = frappe.get_doc("Orden de Pago Comisiones", docname)
-                for r in (doc.comisiones_por_sucursal or []):
+                for r in doc.comisiones_por_sucursal or []:
                     if r.cost_center:
-                        rates_doc[r.cost_center] = (flt(r.porcentaje_comision)
-                                                    if r.porcentaje_comision is not None else None)
+                        rates_doc[r.cost_center] = (
+                            flt(r.porcentaje_comision)
+                            if r.porcentaje_comision is not None
+                            else None
+                        )
             except Exception:
                 # doc aún no existe (new-...): seguimos sin romper
                 pass
 
         # completar con settings específicas
         specific = {}
-        for row in (getattr(settings, "tasas_por_sucursal", None) or []):
+        for row in getattr(settings, "tasas_por_sucursal", None) or []:
             cc = (row.cost_center or "").strip()
             if cc:
-                specific[cc] = (flt(row.porcentaje_comision)
-                                if row.porcentaje_comision is not None else None)
+                specific[cc] = (
+                    flt(row.porcentaje_comision)
+                    if row.porcentaje_comision is not None
+                    else None
+                )
+
         def _rate_for(cc):
             val = rates_doc.get(cc) if rates_doc else None
             if val is None:
                 val = specific.get(cc)
-            return (val if val is not None else default_rate)
+            return val if val is not None else default_rate
 
     # ===== resto de lógica actual (SIN tocar) =====
     rows, total_sum = [], 0
-    subtotal_negativas = 0.0   # NUEVO: informativo, suma de comisiones negativas brutas
-    
+    subtotal_negativas = 0.0  # NUEVO: informativo, suma de comisiones negativas brutas
+
     def _apply_policy(val: float) -> float:
         nonlocal subtotal_negativas
         # Registrar negativos brutos para el subtotal informativo
@@ -643,6 +692,7 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
             return max(val, 0.0)
         # Reduce del pago (default)
         return val
+
     for si in invoices:
         # Excluir si el cliente está en blacklist vigente
         customer = si.get("customer")
@@ -655,7 +705,9 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         if ingreso is None:
             ingreso = si.get("net_total")
         if ingreso is None:
-            frappe.throw(f"Ingreso no disponible en Sales Invoice {si.get('name')} (base_net_total / net_total).")
+            frappe.throw(
+                f"Ingreso no disponible en Sales Invoice {si.get('name')} (base_net_total / net_total)."
+            )
         ingreso = flt(ingreso)
 
         cogs = flt(get_costo_ventas_si(si["name"]))
@@ -667,18 +719,20 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         if not si_doc.sales_team:
             bruto = utilidad * (rate_cc / 100.0)
             total_comision = _apply_policy(bruto)
-            rows.append({
-                "sales_invoice_id": si["name"],
-                "posting_date": si["posting_date"],
-                "cost_center": cc,
-                "persona_de_ventas": "",
-                "porcentaje_comision": 0.0,
-                "ingreso": ingreso,
-                "costo_de_ventas": cogs,
-                "utilidad_transaccion": utilidad,
-                "total_comision": total_comision,
-                "folio_fiscal": getattr(si_doc, "custom_folio_fiscal", "") or ""
-            })
+            rows.append(
+                {
+                    "sales_invoice_id": si["name"],
+                    "posting_date": si["posting_date"],
+                    "cost_center": cc,
+                    "persona_de_ventas": "",
+                    "porcentaje_comision": 0.0,
+                    "ingreso": ingreso,
+                    "costo_de_ventas": cogs,
+                    "utilidad_transaccion": utilidad,
+                    "total_comision": total_comision,
+                    "folio_fiscal": get_invoice_uuid(si_doc.name) or "",
+                }
+            )
             total_sum += total_comision
             continue
 
@@ -687,24 +741,25 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
             person_utilidad = utilidad * (alloc / 100.0) if alloc else utilidad
             bruto = person_utilidad * (rate_cc / 100.0)
             total_comision = _apply_policy(bruto)
-            rows.append({
-                "sales_invoice_id": si["name"],
-                "posting_date": si["posting_date"],
-                "cost_center": cc,
-                "persona_de_ventas": sp.sales_person,
-                "porcentaje_comision": alloc,
-                "ingreso": ingreso,
-                "costo_de_ventas": cogs,
-                "utilidad_transaccion": person_utilidad,
-                "total_comision": total_comision,
-                "folio_fiscal": getattr(si_doc, "custom_folio_fiscal", "") or ""
-            })
+            rows.append(
+                {
+                    "sales_invoice_id": si["name"],
+                    "posting_date": si["posting_date"],
+                    "cost_center": cc,
+                    "persona_de_ventas": sp.sales_person,
+                    "porcentaje_comision": alloc,
+                    "ingreso": ingreso,
+                    "costo_de_ventas": cogs,
+                    "utilidad_transaccion": person_utilidad,
+                    "total_comision": total_comision,
+                    "folio_fiscal": get_invoice_uuid(si_doc.name) or "",
+                }
+            )
             total_sum += total_comision
 
     # Normalizar sucursal a lista de CC
     if isinstance(sucursal, str):
         try:
-            import json
             suc_list = json.loads(sucursal or "[]")
         except Exception:
             suc_list = [sucursal] if sucursal else []
@@ -712,7 +767,12 @@ def get_commission_rows(sucursal, fecha_inicial, fecha_final, docname=None, rate
         suc_list = sucursal or []
     suc_list = [cc for cc in suc_list if cc]
 
-    return {"rows": rows, "total": total_sum, "count": len(rows), "subtotal_negativas": subtotal_negativas}
+    return {
+        "rows": rows,
+        "total": total_sum,
+        "count": len(rows),
+        "subtotal_negativas": subtotal_negativas,
+    }
 
 
 @frappe.whitelist()
@@ -726,13 +786,19 @@ def sync_rates_from_settings(cost_centers):
 
     # tasas específicas por CC (si una fila no tiene tasa, cae al default)
     specific = {}
-    for row in (getattr(settings, "tasas_por_sucursal", None) or []):
+    for row in getattr(settings, "tasas_por_sucursal", None) or []:
         cc = (row.cost_center or "").strip()
         if cc:
-            specific[cc] = flt(row.porcentaje_comision) if row.porcentaje_comision is not None else default_rate
+            specific[cc] = (
+                flt(row.porcentaje_comision)
+                if row.porcentaje_comision is not None
+                else default_rate
+            )
 
-    rows = [{"cost_center": cc, "porcentaje_comision": specific.get(cc, default_rate)}
-            for cc in cost_centers]
+    rows = [
+        {"cost_center": cc, "porcentaje_comision": specific.get(cc, default_rate)}
+        for cc in cost_centers
+    ]
 
     return {"rows": rows, "applied": len(rows), "default_rate": default_rate}
 
