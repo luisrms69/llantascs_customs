@@ -83,6 +83,8 @@ App de customización para cliente LlantasCS. Implementa el sistema de comisione
 - `get_sales_invoices(sucursal, f_ini, f_fin)` — filtro canónico: `status=Paid`, entregada, sin servicios puros
 - `actualizar_status_orden_pago(opc_id, status)` — actualiza OPC y todas las SI vinculadas
 
+**Integración con facturación (PR #25):** dentro de `get_commission_rows`, el UUID fiscal de Sales Invoice se obtiene mediante `get_invoice_uuid(si_doc.name)`, importado de `facturacion_mexico.facturacion_fiscal.utils`. En esta lógica fueron eliminadas las lecturas del campo legacy `custom_folio_fiscal`. No afirmar que el campo dejó de usarse en toda la app salvo que una búsqueda exhaustiva confirme que no existen otras referencias.
+
 ### Política de comisiones negativas
 Configurable en `Comisiones Settings.negative_commission_policy`:
 - `"Contabilizar como cero"` (default)
@@ -95,7 +97,10 @@ Configurable en `Comisiones Settings.negative_commission_policy`:
 - `Customer`: custom_sucursal_predeterminada
 
 ### Override de ERPNext
-`controllers/override.py` — override de `erpnext.controllers.item_variant.create_variant` para nomenclatura de variantes con abreviaciones de atributos.
+`controllers/override.py` — override de `erpnext.controllers.item_variant.create_variant` para nomenclatura de variantes con abreviaciones de atributos. Desde PR #24, `custom_create_variant` omite atributos sin valor (`if value is not None`) para evitar `ValidationError` al crear variantes con atributos parciales.
+
+### Evento customer en Sales Invoice (core_doctype.js)
+Al seleccionar cliente: si el cliente tiene `custom_sucursal_predeterminada` **y** la SI no tiene `cost_center`, se asigna la sucursal. Si el cliente no tiene sucursal, **no se toca** el `cost_center`. Un `cost_center` ya definido siempre se respeta (PR #26).
 
 ---
 
@@ -115,7 +120,7 @@ Configurable en `Comisiones Settings.negative_commission_policy`:
 
 9 Script Reports funcionales. El más crítico:
 - `reporte_diario_director_general` (966 líneas) — reporte principal de dirección
-- `backlog_comisiones_gp_nativo` (522 líneas) — **falta el .json de declaración, no se registra en sistema**
+- `backlog_comisiones_gp_nativo` (522 líneas) — Script Report **activo**. Su definición está en `fixtures/report.json` (no como `.json` local junto al `.py`). Referenciado desde workspace y sidebar de Comisiones.
 
 ---
 
@@ -132,7 +137,7 @@ Configurable en `Comisiones Settings.negative_commission_policy`:
 
 1. **4 directorios de DocTypes vacíos** — `comisiones_rate_sucursal`, `commission_rate_by_cc`, `opc_sucursal`, `opc_sucursal_cc`. Si existen tablas en BD de producción, `bench migrate` puede fallar. No eliminar sin verificar primero.
 
-2. **`backlog_comisiones_gp_nativo`** — tiene 522 líneas de Python pero **falta el `.json`**. No está registrado en el sistema.
+2. **`backlog_comisiones_gp_nativo`** — Script Report **activo**, no huérfano. Su declaración vive en `fixtures/report.json` con `report_script` apuntando al módulo Python y 3 roles asignados (System Manager, Llantas CS Manager, Llantas CS User). Está en la whitelist de export de `hooks.py` y referenciado en `fixtures/workspace.json` y `workspace_sidebar/comisiones.json`. **Sus archivos Python NO deben eliminarse aisladamente** — borrarlos sin retirar el fixture y las referencias dejaría el reporte registrado en BD apuntando a un módulo inexistente (ImportError al abrirlo).
 
 3. **Sin tests reales** — 748 líneas de lógica en `api.py` sin ningún test automatizado. Los 2 archivos de test existentes tienen clases vacías.
 
@@ -140,13 +145,16 @@ Configurable en `Comisiones Settings.negative_commission_policy`:
 
 5. **Directorio vacío** `report/ventas_por_sucursal_chart/`.
 
+6. **PRs #24, #25 y #26 sin pruebas automatizadas** — ninguna añadió tests. La cobertura pendiente es especialmente relevante para la integración `get_invoice_uuid`, el evento `customer` de Sales Invoice y el override de creación de variantes.
+
 ---
 
 ## Dependencias
 
-**Apps en frappe-bench-v16:** erpnext, facturacion_mx, facturacion_mexico, dfp_external_storage, hrms, wiki  
-**Dependencias externas:** Ninguna  
-**Sin `required_apps` declarado** en hooks.py (depende implícitamente de erpnext)
+- **Apps presentes en el bench:** erpnext, facturacion_mx, facturacion_mexico, dfp_external_storage, hrms, wiki.
+- **Dependencia entre apps:** `api.py` importa directamente `get_invoice_uuid` desde `facturacion_mexico.facturacion_fiscal.utils`. Por lo tanto, las funciones que cargan ese módulo requieren que `facturacion_mexico` esté instalado y disponible.
+- **Dependencias Python externas adicionales:** ninguna identificada.
+- `hooks.py` no declara actualmente `required_apps`. Evaluar por separado si `facturacion_mexico` debe declararse formalmente; no modificarlo como parte de esta actualización documental.
 
 ---
 
