@@ -2,10 +2,43 @@ import frappe
 import json
 from frappe.utils import now
 from frappe.utils import flt, getdate
-from facturacion_mexico.facturacion_fiscal.utils import get_invoice_uuid
+
+# Los helpers fiscales de facturacion_mexico son OPCIONALES: si la app (o sus módulos) no están
+# instalados, el reporte de comisiones sigue funcionando con la evidencia disponible en ERPNext.
+# Nunca debe fallar por ImportError. Los fallbacks devuelven "sin evidencia fiscal".
+try:
+    from facturacion_mexico.facturacion_fiscal.utils import (
+        credit_note_lines_use_discount_account,
+        get_cuenta_descuentos,
+        get_invoice_uuid,
+    )
+except Exception:  # noqa: BLE001 — app fiscal ausente/rota → degradar sin romper el cálculo
+
+    def get_invoice_uuid(sales_invoice_name):
+        return None
+
+    def get_cuenta_descuentos(company):
+        return None
+
+    def credit_note_lines_use_discount_account(sales_invoice, cuenta_descuentos):
+        return False
+
 
 # Variables globales llantas Customs
 estados_comisiones = ["Sin Enviar", "Enviado", "Pagada"]
+
+# --- Notas de crédito: marcador fiscal persistente (motivo 01 vs 03) ---
+# Fuente de verdad: Factura Fiscal Mexico.fm_tipo_nota_credito, derivado y persistido por
+# facturacion_mexico al ejecutar "Aplicar como Descuento / Bonificación" (-> TipoRelacion 01)
+# o "Revertir a Devolucion" (-> TipoRelacion 03). Se lee el valor ALMACENADO; no se infiere el
+# motivo por cuenta contable, SLE, update_stock, item_code, descripcion ni movimiento de almacen.
+# El vinculo es: Sales Invoice.fm_factura_fiscal_mx -> Factura Fiscal Mexico.fm_tipo_nota_credito.
+NOTA_CREDITO_DESCUENTO = (
+    "Descuento / Bonificación"  # motivo 01 (bonificacion/descuento)
+)
+NOTA_CREDITO_DEVOLUCION = (
+    "Devolución de mercancía"  # motivo 03 (devolucion de mercancia)
+)
 # fix: esto no puede quedar asi, me esta ocasionando muchos problemas, necesito estandarizar
 # fix: corregido el 2 de marzo 2025, se puede elimianr
 # cogs_accounts = ['501-005-001 - COSTO DE VENTA LLANTAS   - LLCS', '501-005-002 - COSTO DE VENTA RINES  - LLCS', '501-005-003 - OTROS COSTO DE VENTA  - LLCS']
@@ -470,9 +503,19 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
             "Faltan filtros obligatorios: seleccionar al menos una sucursal (Cost Center)."
         )
 
-    # Filtros canónicos (no se replican en JS)
+    # Criterio funcional (reemplaza el filtro por status == "Paid").
+    # El status "Paid" excluía facturas liquidadas con nota de crédito, porque ERPNext las marca
+    # "Credit Note Issued" cuando existe una nota (is_return=1) ligada por return_against, aun con
+    # outstanding_amount = 0. La factura ORIGINAL liquidada se define funcionalmente como:
+    #   docstatus = 1  ·  is_return = 0  ·  outstanding_amount = 0 (con tolerancia de precisión).
+    prec = frappe.get_precision("Sales Invoice", "outstanding_amount") or 2
+    tol = (
+        1.0 / (10**prec) / 2.0
+    )  # media unidad monetaria: outstanding "== 0" respetando precisión
     filters = {
-        "status": "Paid",
+        "docstatus": 1,
+        "is_return": 0,
+        "outstanding_amount": ["<=", tol],
         "posting_date": ["between", [fecha_inicial, fecha_final]],
         "cost_center": ["in", sucursal],
     }
@@ -491,6 +534,7 @@ def get_sales_invoices(sucursal, fecha_inicial, fecha_final):
             "cost_center",
             "net_total",
             "base_net_total",
+            "outstanding_amount",
             "update_stock",
         ],
         order_by="posting_date asc, name asc",
@@ -602,6 +646,219 @@ def _is_blacklisted(customer: str, posting_date, bl_map: dict) -> bool:
     return False
 
 
+def _ffm_tipo_map(ffm_names):
+    """Devuelve {ffm_name: fm_tipo_nota_credito} desde Factura Fiscal Mexico.
+
+    Seam aislado de acceso a la app fiscal: los tests de integración lo sustituyen cuando
+    facturacion_mexico no está instalado, manteniendo real todo el resto del cálculo.
+    """
+    tipo_by_ffm = {}
+    if ffm_names:
+        for f in frappe.get_all(
+            "Factura Fiscal Mexico",
+            filters={"name": ["in", ffm_names]},
+            fields=["name", "fm_tipo_nota_credito"],
+        ):
+            tipo_by_ffm[f.name] = (f.fm_tipo_nota_credito or "").strip()
+    return tipo_by_ffm
+
+
+def _dn_cogs_gl(dn_name):
+    """COGS (magnitud >=0) de una Delivery Note desde GL Entry (cuentas Cost of Goods Sold).
+
+    Para una DN de retorno el asiento COGS es un crédito (debit-credit < 0); se devuelve el valor
+    absoluto = costo que regresa a inventario.
+    """
+    cogs_accounts = get_cogs_account()
+    if not cogs_accounts:
+        return 0.0
+    row = frappe.db.sql(
+        """
+        SELECT SUM(debit - credit) AS cogs
+        FROM `tabGL Entry`
+        WHERE voucher_type = 'Delivery Note'
+          AND voucher_no   = %s
+          AND account      IN %s
+          AND is_cancelled = 0
+        """,
+        (dn_name, tuple(cogs_accounts)),
+        as_dict=True,
+    )
+    return abs(flt(row[0].cogs)) if row and row[0].cogs is not None else 0.0
+
+
+def _cogs_revertido_return_dn(invoice_name, exclude_dn):
+    """COGS revertido por Delivery Notes de retorno del inventario de la factura original.
+
+    Cubre el caso donde la mercancía regresó por una DN de devolución (is_return=1) y NO por la
+    nota de crédito. Asociación con vínculos reales de ERPNext:
+      SI → DN de salida : Sales Invoice Item.delivery_note  ∪  Delivery Note Item.against_sales_invoice
+      DN de salida → DN de retorno : Delivery Note.is_return=1 AND return_against ∈ DN de salida
+    Deduplica por voucher_no y excluye DN ya contadas dentro de get_costo_ventas_si(nota).
+    """
+    # DN de salida (is_return=0, docstatus=1) ligadas a la factura por cualquiera de las dos rutas.
+    fwd = set(
+        frappe.get_all(
+            "Sales Invoice Item",
+            filters={"parent": invoice_name, "delivery_note": ["!=", ""]},
+            pluck="delivery_note",
+        )
+    )
+    fwd |= set(
+        frappe.get_all(
+            "Delivery Note Item",
+            filters={"against_sales_invoice": invoice_name},
+            pluck="parent",
+        )
+    )
+    fwd = [d for d in fwd if d]
+    if not fwd:
+        return 0.0
+    fwd_ok = frappe.get_all(
+        "Delivery Note",
+        filters={"name": ["in", fwd], "is_return": 0, "docstatus": 1},
+        pluck="name",
+    )
+    if not fwd_ok:
+        return 0.0
+
+    ret_dns = frappe.get_all(
+        "Delivery Note",
+        filters={"is_return": 1, "docstatus": 1, "return_against": ["in", fwd_ok]},
+        pluck="name",
+    )
+    total, seen = 0.0, set()
+    for rdn in ret_dns:
+        if rdn in exclude_dn or rdn in seen:
+            continue
+        seen.add(rdn)
+        total += _dn_cogs_gl(rdn)
+    return total
+
+
+def _es_descuento_persistente(nota_name):
+    """True si la nota de crédito lleva los marcadores persistentes de la acción
+    "Aplicar como Descuento / Bonificación" de facturacion_mexico (Issue #137).
+
+    Marcadores deterministas escritos por esa acción (no inferencia):
+      - update_stock == 0 (un descuento no mueve inventario), y
+      - TODAS las líneas usan income_account == cuenta de descuentos configurada para la empresa.
+    Si facturacion_mexico / la cuenta no están disponibles (p. ej. sitio sin la app), no se puede
+    afirmar descuento → False (se tratará como devolución con COGS medido del inventario real).
+    """
+    try:
+        doc = frappe.get_doc("Sales Invoice", nota_name)
+        if doc.get("update_stock"):
+            return False
+        cuenta = get_cuenta_descuentos(doc.get("company"))
+        if not cuenta:
+            return False
+        return credit_note_lines_use_discount_account(doc, cuenta)
+    except Exception:
+        return False
+
+
+def _build_credit_note_adjustments(invoice_names):
+    """Consolida las notas de crédito VÁLIDAS por factura de origen (motivo 01 y 03).
+
+    Una sola consulta batch para todas las notas y otra para su clasificación fiscal, evitando
+    N+1. Solo considera notas emitidas y no canceladas (docstatus=1, is_return=1) ligadas por
+    return_against a alguna de las facturas dadas.
+
+    COGS revertido (motivo 03) = costo que regresa a inventario, sumando:
+      - get_costo_ventas_si(nota) — reverso registrado por la propia nota (nota con update_stock), y
+      - Delivery Notes de retorno (is_return=1) ligadas a las DN de salida de la factura, cuando el
+        inventario regresó por una DN de devolución y no por la nota (deduplicado por voucher_no).
+
+    Devuelve: {factura: {"bonif_01": <signed>, "dev_03": <signed>, "cogs_revertido": <>=0>}}
+      - bonif_01 / dev_03: suma de base_net_total de las notas (NEGATIVO en ERPNext → reduce).
+      - cogs_revertido: magnitud (>=0) del costo que regresa a inventario por devoluciones.
+
+    Clasificación por evidencia documental (nunca detiene el cálculo): motivo FFM explícito →
+    marcadores persistentes de la acción de descuento (cuenta + update_stock) → por defecto
+    devolución con COGS medido del inventario real.
+    """
+    out = {}
+    if not invoice_names:
+        return out
+
+    notas = frappe.get_all(
+        "Sales Invoice",
+        filters={
+            "docstatus": 1,
+            "is_return": 1,
+            "return_against": ["in", list(invoice_names)],
+        },
+        fields=["name", "return_against", "base_net_total", "fm_factura_fiscal_mx"],
+    )
+    if not notas:
+        return out
+
+    # Batch: clasificación fiscal (motivo) desde Factura Fiscal Mexico.fm_tipo_nota_credito
+    ffm_names = list({n.fm_factura_fiscal_mx for n in notas if n.fm_factura_fiscal_mx})
+    tipo_by_ffm = _ffm_tipo_map(ffm_names)
+
+    for n in notas:
+        tipo = tipo_by_ffm.get(n.fm_factura_fiscal_mx, "")
+        entry = out.setdefault(
+            n.return_against, {"bonif_01": 0.0, "dev_03": 0.0, "cogs_revertido": 0.0}
+        )
+        # Clasificación por EVIDENCIA DOCUMENTAL, en orden de prioridad:
+        #   1) motivo explícito en FFM (fm_tipo_nota_credito), cuando exista;
+        #   2) marcadores persistentes de la acción "Aplicar como Descuento" (cuenta + update_stock);
+        #   3) por defecto: devolución → el COGS revertido se MIDE del inventario real
+        #      (nota con stock + Delivery Notes de retorno). Nunca se detiene el cálculo.
+        es_descuento = tipo == NOTA_CREDITO_DESCUENTO or (
+            not tipo and _es_descuento_persistente(n.name)
+        )
+        if es_descuento:
+            # Descuento/bonificación: baja el ingreso, el COGS se mantiene (mercancía con el cliente).
+            entry["bonif_01"] += flt(n.base_net_total)
+        else:
+            # Devolución (FFM=03, o sin motivo y sin marcadores de descuento): baja el ingreso y
+            # revierte el costo realmente devuelto por la propia nota (si movió stock).
+            entry["dev_03"] += flt(n.base_net_total)
+            entry["cogs_revertido"] += flt(get_costo_ventas_si(n.name))
+
+    # Netear DN de retorno del inventario (retorno registrado por una Delivery Note de devolución
+    # y no por la nota de crédito). Se excluyen las DN ya contadas dentro de get_costo_ventas_si(nota)
+    # para no duplicar por voucher_no.
+    nota_names = [n.name for n in notas]
+    dn_de_notas = (
+        set(
+            frappe.get_all(
+                "Delivery Note Item",
+                filters={"against_sales_invoice": ["in", nota_names]},
+                pluck="parent",
+            )
+        )
+        if nota_names
+        else set()
+    )
+    for inv, entry in out.items():
+        entry["cogs_revertido"] += _cogs_revertido_return_dn(inv, dn_de_notas)
+
+    return out
+
+
+def _net_from_credit_notes(ingreso_original, cogs_original, adj):
+    """Aplica el ajuste consolidado de notas de crédito a una factura (función pura, testeable).
+
+    adj: dict con bonif_01, dev_03 (signed, negativos) y cogs_revertido (>=0). Respeta los signos
+    reales de ERPNext (las notas vienen negativas): sumarlas reduce el ingreso.
+
+    Retorna (ingreso_neto, cogs_neto, utilidad_neta).
+    """
+    bonif_01 = flt((adj or {}).get("bonif_01", 0.0))
+    dev_03 = flt((adj or {}).get("dev_03", 0.0))
+    cogs_revertido = flt((adj or {}).get("cogs_revertido", 0.0))
+
+    ingreso_neto = flt(ingreso_original) + bonif_01 + dev_03
+    cogs_neto = flt(cogs_original) - cogs_revertido
+    utilidad_neta = ingreso_neto - cogs_neto
+    return ingreso_neto, cogs_neto, utilidad_neta
+
+
 @frappe.whitelist()
 def get_commission_rows(
     sucursal, fecha_inicial, fecha_final, docname=None, rates_by_cc=None
@@ -619,6 +876,9 @@ def get_commission_rows(
         allowed = set(with_team)
         invoices = [si for si in invoices if si["name"] in allowed]
     # ----------------------------------------------
+
+    # Ajuste consolidado por notas de crédito (motivo 01/03), en batch para evitar N+1.
+    credit_adjustments = _build_credit_note_adjustments([si["name"] for si in invoices])
 
     blacklist = _build_blacklist_with_dates()
 
@@ -701,38 +961,59 @@ def get_commission_rows(
 
         si_doc = frappe.get_doc("Sales Invoice", si["name"])
 
-        ingreso = si.get("base_net_total")
-        if ingreso is None:
-            ingreso = si.get("net_total")
-        if ingreso is None:
+        ingreso_original = si.get("base_net_total")
+        if ingreso_original is None:
+            ingreso_original = si.get("net_total")
+        if ingreso_original is None:
             frappe.throw(
                 f"Ingreso no disponible en Sales Invoice {si.get('name')} (base_net_total / net_total)."
             )
-        ingreso = flt(ingreso)
+        ingreso_original = flt(ingreso_original)
 
-        cogs = flt(get_costo_ventas_si(si["name"]))
-        utilidad = ingreso - cogs
+        cogs_original = flt(get_costo_ventas_si(si["name"]))
+
+        # Ajuste consolidado por notas de crédito (motivo 01/03).
+        # Sin notas → los netos son idénticos a los originales (facturas normales no cambian).
+        adj = credit_adjustments.get(si["name"], {})
+        ingreso_neto, cogs_neto, utilidad = _net_from_credit_notes(
+            ingreso_original, cogs_original, adj
+        )
 
         cc = si.get("cost_center")
         rate_cc = _rate_for(cc)
+        folio = get_invoice_uuid(si_doc.name) or ""
+
+        # Desglose informativo a nivel factura, adjunto a cada fila (contrato existente intacto).
+        breakdown = {
+            "ingreso_original": ingreso_original,
+            "bonificaciones_01": flt(adj.get("bonif_01", 0.0)),
+            "devoluciones_03": flt(adj.get("dev_03", 0.0)),
+            "ingreso_neto": ingreso_neto,
+            "cogs_original": cogs_original,
+            "cogs_revertido": flt(adj.get("cogs_revertido", 0.0)),
+            "cogs_neto": cogs_neto,
+            "utilidad_neta": utilidad,
+            "tasa_comision": rate_cc,
+        }
 
         if not si_doc.sales_team:
             bruto = utilidad * (rate_cc / 100.0)
             total_comision = _apply_policy(bruto)
-            rows.append(
-                {
-                    "sales_invoice_id": si["name"],
-                    "posting_date": si["posting_date"],
-                    "cost_center": cc,
-                    "persona_de_ventas": "",
-                    "porcentaje_comision": 0.0,
-                    "ingreso": ingreso,
-                    "costo_de_ventas": cogs,
-                    "utilidad_transaccion": utilidad,
-                    "total_comision": total_comision,
-                    "folio_fiscal": get_invoice_uuid(si_doc.name) or "",
-                }
-            )
+            row = {
+                "sales_invoice_id": si["name"],
+                "posting_date": si["posting_date"],
+                "cost_center": cc,
+                "persona_de_ventas": "",
+                "porcentaje_comision": 0.0,
+                "ingreso": ingreso_neto,
+                "costo_de_ventas": cogs_neto,
+                "utilidad_transaccion": utilidad,
+                "total_comision": total_comision,
+                "folio_fiscal": folio,
+                "comision_neta": total_comision,
+            }
+            row.update(breakdown)
+            rows.append(row)
             total_sum += total_comision
             continue
 
@@ -741,20 +1022,21 @@ def get_commission_rows(
             person_utilidad = utilidad * (alloc / 100.0) if alloc else utilidad
             bruto = person_utilidad * (rate_cc / 100.0)
             total_comision = _apply_policy(bruto)
-            rows.append(
-                {
-                    "sales_invoice_id": si["name"],
-                    "posting_date": si["posting_date"],
-                    "cost_center": cc,
-                    "persona_de_ventas": sp.sales_person,
-                    "porcentaje_comision": alloc,
-                    "ingreso": ingreso,
-                    "costo_de_ventas": cogs,
-                    "utilidad_transaccion": person_utilidad,
-                    "total_comision": total_comision,
-                    "folio_fiscal": get_invoice_uuid(si_doc.name) or "",
-                }
-            )
+            row = {
+                "sales_invoice_id": si["name"],
+                "posting_date": si["posting_date"],
+                "cost_center": cc,
+                "persona_de_ventas": sp.sales_person,
+                "porcentaje_comision": alloc,
+                "ingreso": ingreso_neto,
+                "costo_de_ventas": cogs_neto,
+                "utilidad_transaccion": person_utilidad,
+                "total_comision": total_comision,
+                "folio_fiscal": folio,
+                "comision_neta": total_comision,
+            }
+            row.update(breakdown)
+            rows.append(row)
             total_sum += total_comision
 
     # Normalizar sucursal a lista de CC
