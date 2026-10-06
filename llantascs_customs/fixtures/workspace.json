@@ -35,7 +35,7 @@
   "label": "Vendedores",
   "links": [],
   "modified": "2025-09-11 14:57:00.109609",
-  "module": "",
+  "module": "Llantascs Customs",
   "name": "Vendedores",
   "number_cards": [],
   "parent_page": "Comisiones",
@@ -107,7 +107,7 @@
   "label": "Comisiones",
   "links": [],
   "modified": "2025-09-11 14:57:00.076201",
-  "module": "",
+  "module": "Llantascs Customs",
   "name": "Comisiones",
   "number_cards": [],
   "parent_page": null,
@@ -243,7 +243,7 @@
   "label": "Direccion General",
   "links": [],
   "modified": "2025-10-19 16:37:19.895098",
-  "module": "",
+  "module": "Llantascs Customs",
   "name": "Direccion General",
   "number_cards": [
    {
@@ -477,7 +477,7 @@
   "label": "Cockpit",
   "links": [],
   "modified": "2025-10-19 16:37:19.917317",
-  "module": "",
+  "module": "Llantascs Customs",
   "name": "Cockpit",
   "number_cards": [
    {
@@ -576,7 +576,7 @@
   "label": "Direccion Operativa",
   "links": [],
   "modified": "2025-10-19 16:37:19.948404",
-  "module": null,
+  "module": "Llantascs Customs",
   "name": "Direccion Operativa",
   "number_cards": [
    {
@@ -880,7 +880,7 @@
   "label": "Direccion Financiera",
   "links": [],
   "modified": "2025-10-19 16:37:20.016694",
-  "module": null,
+  "module": "Llantascs Customs",
   "name": "Direccion Financiera",
   "number_cards": [
    {
@@ -1234,7 +1234,7 @@
   "label": "Gerente de Sucursal",
   "links": [],
   "modified": "2025-10-19 16:37:20.058200",
-  "module": "",
+  "module": "Llantascs Customs",
   "name": "Gerente de Sucursal",
   "number_cards": [
    {
@@ -1449,7 +1449,7 @@
   "label": "DG Analisis Sucursales",
   "links": [],
   "modified": "2025-10-19 16:37:20.123405",
-  "module": null,
+  "module": "Llantascs Customs",
   "name": "DG Analisis Sucursales",
   "number_cards": [
    {
